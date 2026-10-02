@@ -23,6 +23,11 @@ changes through the respective sections of
 - Parameterized integer and selected fractional connection families, with separate
   supported, candidate, rejected, and unsupported admission states.
 - Exploratory Workbench schema-v3 packages; manual completion does not certify routes.
+- [UWP P2-only inlet anchors](https://github.com/HailinHuang/HairpinWindingTool/issues/11)
+  now order each phase's positive-belt first-layer entry before its last-layer
+  entry. At `q=2,pp=4,L=6,Naa=2,m=3`, B1 is Slot 9/Layer 1 and B2 is
+  Slot 10/Layer 6. The seed rule is parameterized; connection vectors and
+  production admission are unchanged.
 - [Finite divider-status provenance and navigation](https://github.com/HailinHuang/HairpinWindingTool/issues/2)
   refreshed for the existing six geometries: 80 cells and 860 resolver requests.
   The JSON, page and summary share a 14-file local Python source signature;
@@ -82,3 +87,12 @@ mapped connection roles cover all edges despite diagnostic half-coverage from
 the native global role analyzer. The 29-file evidence readback passed. This is
 finite formula evidence within existing admission; production admission and
 universal route closure were not expanded. See [VALIDATION.md](VALIDATION.md).
+
+The 2026-10-02 UWP inlet repair passed 12 focused rule/compatibility tests,
+including 72 native cases, three integer phase-set examples, one fractional-q
+phase-set example and a post-connection shift check. Independent comparison
+preserved per-branch position sets in 54 cases and generation/failure classification
+in 144 insertion/weld-side cases. The finite status resources were regenerated
+for the repaired source. Earlier source-bound formula receipts, including the
+ZPP receipt above, require a new source binding before reuse against this source.
+Full regression and packaged/native acceptance were not rerun.

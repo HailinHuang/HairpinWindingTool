@@ -1145,7 +1145,8 @@ EMF mismatch and remain `not strong symmetry layout`, not certified strong
 symmetry. These insertion-side audit cases do not prove every odd `m`,
 nonzero shift or transposition setting; the weld-side route has its own scope.
 
-The default UWP P2-only exact audit (local research excluded)
+The recorded UWP P2-only exact audit (before the 2026-10-02 inlet repair;
+local research excluded)
 replays all 1,080 `(1,1,2)` tuples at integer `q=1..6`, `pp=1..10`,
 even `L=2..12` and sampled `m=3/5/7` under neutral Regular, zero-shift,
 insertion-side settings. Independent all-branch topology, signed phase,
@@ -1164,6 +1165,36 @@ phase-count exception. No verified P2-only case
 reports parallel EMF mismatch, which is still not a general strong-symmetry
 or manufacturing certification. The result does not prove nonzero shifts,
 transposition settings, or all odd phase counts.
+
+### UWP P2-only phase-local inlet anchors (2026-10-02)
+
+For `(Q,D,P2)=(1,1,2)`, the native integer-q wave now seeds both
+cohorts from the same phase-local positive belt. Let `n_p` be the first
+positive-polarity slot for phase `p` on layer zero in the construction phase
+map, and `tau=m*q` the default pole pitch. The raw first-layer seeds are
+`n_p` and `(n_p+tau) mod num_slots`. The existing N-to-S terminal rule
+reverses the second cohort, including its signed travel, into last-layer
+entry. Branch IDs order the first-layer cohort before the last-layer cohort.
+Public layer shifts are applied after neutral construction; phase-set arrays
+reuse the local wave and map its slots/layers through `PhaseSetSpec`.
+
+At zero shift, with `h=L/2` two-layer wave blocks, the ordered inlets are
+`(n_p,0)` and `(n_p+(h mod q),L-1)`. Native odd-phase belts give
+`n_p=q*(p+m*(p mod 2))`, with zero-based `p`. Thus `q=2,pp=4,L=6,m=3`
+has B1 at Slot 9/Layer 1 and B2 at Slot 10/Layer 6. These numbers derive
+from the phase map and wave progression; they are not tuple exceptions.
+Connection vectors, transposition settings and production admission are
+unchanged. Naa=1 and the separate Q/PP constructors retain their own paths.
+
+The repair passed 72 neutral native cases (`q=1..4`, `pp=2/4`,
+`L=4/6/8`, `m=3/5/7`), three integer-q phase-set examples at `m=6/9/12`,
+and one `q_global=1/2,m=6` local-integer example. A 54-case comparison with
+the previous source preserves each branch's conductor-position set: first-layer
+paths are identical, and odd-indexed phase tails move only by `2*tau`.
+The 144 insertion/weld-side comparisons keep the same generation/failure
+classification. A shifted example and existing manual-transposition tests
+also pass. This bounded repair evidence does not refresh the earlier 1,080-case
+audit receipt or establish all configuration variants or manufacturing acceptance.
 
 The short UWP P2 weld-terminal construction (local research excluded)
 derives both branches per phase and q lane directly from the shifted phase

@@ -5942,6 +5942,19 @@ def pattern_UWP(TP_info,Winding_Para,Layout_Para):
         
     elif Winding_Para.ab == 2 or Winding_Para.ab == 1:
         start_conductor_ids = [(i*Winding_Para.q,0,0) for i in range(Winding_Para.num_phases*2)]
+        if Winding_Para.ab == 2 and p2_divider == 2:
+            # Anchor both cohorts to the same phase-local N belt. The common
+            # P2 orientation reverses the second cohort to last-layer entry.
+            n_inlets = {}
+            for slot, layer, phase, sign in phase_map(
+                    Winding_Para.num_slots, Winding_Para.num_poles,
+                    Winding_Para.num_layers, Layout_Para.phase_shift_list,
+                    Winding_Para.num_phases):
+                if layer == 0 and sign == 1:
+                    n_inlets.setdefault(phase, slot)
+            start_conductor_ids = [
+                ((n_inlets[phase] + cohort * num_phasors) % Winding_Para.num_slots, 0, 0)
+                for cohort in range(2) for phase in range(Winding_Para.num_phases)]
         num_layer_pattern = int(Winding_Para.num_layers/2)
         # ####Assume welding side are identical
         num_poles_pattern_repeat = int(Winding_Para.num_poles/2)-1

@@ -1,8 +1,8 @@
 # Integer-q Pattern Divider Support Status — Version 7.6
 
-Generated from the V7.6 public resolver on 2026-10-02T07:14:31+00:00 UTC.
+Generated from the V7.6 public resolver on 2026-10-02T14:16:57+00:00 UTC.
 
-Source SHA-256: 429289a4580131c61bc1ae5e32e77395ea8ab54f9466936cb662a9c1b7936a7a
+Source SHA-256: 2c4f8123b14811d2177fc786244753a632a96a97949cb1e821ac090cce5bcc76
 
 Scope: Listed integer-q geometries, neutral Regular at the route-required inlet. Counts are tuple/geometry requests, not verified production layouts. This finite sample does not determine support outside its listed parameters.
 
