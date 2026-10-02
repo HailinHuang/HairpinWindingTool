@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "version": "7.6",
-  "generated_at_utc": "2026-10-02T07:14:31+00:00",
-  "source_sha256": "429289a4580131c61bc1ae5e32e77395ea8ab54f9466936cb662a9c1b7936a7a",
+  "generated_at_utc": "2026-10-02T14:16:57+00:00",
+  "source_sha256": "2c4f8123b14811d2177fc786244753a632a96a97949cb1e821ac090cce5bcc76",
   "source_hash_format": "sha256-sorted-file-map-lf-v1",
   "source_hashes": {
     "automatic_transposition.py": "bdffe24aff864db11342a686668c4026f37158fe46282f5020a1d4e08427e17b",
@@ -11,7 +11,7 @@
     "divider_connection_formulas.py": "d77e240f72d112f69c2fb95c4e2c9d27913a61631340f5a4c8a3c2735616b408",
     "end_winding_calc.py": "38d939fb64ae82bff56a8856349ccf5928f2665421e490cedbb9f1560f7a2d3b",
     "explicit_connections.py": "d3a2499167a0e00298d446ab2872778c1d1c306889d09ffd54305deda554520d",
-    "get_winding_pattern.py": "8ebb28f7121255d120c2ec70e03bd0c77c7140c19e3db619bdd55a207d7462e4",
+    "get_winding_pattern.py": "d84d4d89460f8cd39ee93649f9aefdf54bdc55a6f2a471249493983fe5cf7c08",
     "half_integer_q_connection_formulas.py": "5bba2a1e3b6fbd4f1bf3d3e6ac70e271f127e01033d6b1776ecd0d517932e196",
     "layout_analysis.py": "cbc24c009497e31791c95969574970a981b69d4c632029c516ab31d5bc2e8df3",
     "manual_layout.py": "a1cc8d6e0f1660550e0b76401a0b7bac035e410a9d9951eb53e3e0243c3ab4bd",

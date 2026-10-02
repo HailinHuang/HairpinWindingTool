@@ -1258,6 +1258,111 @@ class BwpOddPhaseMixedDividerTests(unittest.TestCase):
                                 (phases + 1) * 4)
 
 
+class UwpP2InletAnchorTests(unittest.TestCase):
+    def test_p2_only_phase_b_uses_the_selected_n_belt_and_outer_layer_order(self):
+        from pattern_rule_workbench import _base_inputs
+
+        for factors in (None, (1, 1, 2)):
+            with self.subTest(factors=factors):
+                winding, tp, layout = _base_inputs('UWP', 2, 8, 6, 2, factors)
+                starts, database = gw.get_winding_layout('UWP', tp, winding, layout)
+                records = {(s, l): (p, sign) for s, l, p, sign in
+                           phase_map(48, 8, 6, [0] * 6, 3)}
+                by_phase = {phase: [] for phase in range(3)}
+                for _, path in database:
+                    by_phase[records[path[0][:2]][0]].append(path[0][:2])
+                self.assertEqual(by_phase, {
+                    0: [(0, 0), (1, 5)],
+                    1: [(8, 0), (9, 5)],
+                    2: [(4, 0), (5, 5)],
+                })
+                self.assertEqual(starts, [path[0] for _, path in database])
+
+    def test_p2_only_inlet_rule_is_parameterized_across_native_phase_belts(self):
+        from pattern_rule_workbench import _base_inputs
+
+        for q in (1, 2, 3, 4):
+            for pp in (2, 4):
+                for layers in (4, 6, 8):
+                    for phases in (3, 5, 7):
+                        with self.subTest(q=q, pp=pp, layers=layers, phases=phases):
+                            winding, tp, layout = _base_inputs(
+                                'UWP', q, 2 * pp, layers, 2, (1, 1, 2), phases)
+                            _, database = gw.get_winding_layout(
+                                'UWP', tp, winding, layout)
+                            records = {(s, l): (p, sign) for s, l, p, sign in
+                                       phase_map(winding.num_slots, 2 * pp,
+                                                 layers, [0] * layers, phases)}
+                            occupied = [node[:2] for _, path in database for node in path]
+                            self.assertEqual(len(occupied), winding.num_slots * layers)
+                            self.assertEqual(len(set(occupied)), len(occupied))
+                            for phase in range(phases):
+                                paths = [path for _, path in database
+                                         if records[path[0][:2]][0] == phase]
+                                # Odd-indexed native phase belts start with S polarity.
+                                anchor = q * (phase + phases * (phase % 2))
+                                self.assertEqual([path[0][:2] for path in paths], [
+                                    (anchor, 0),
+                                    (anchor + (layers // 2) % q, layers - 1),
+                                ])
+                                for branch_index, path in enumerate(paths):
+                                    self.assertEqual(len(path), pp * q * layers)
+                                    self.assertEqual({records[node[:2]][0]
+                                                      for node in path}, {phase})
+                                    self.assertEqual((records[path[0][:2]][1],
+                                                      records[path[-1][:2]][1]), (1, -1))
+                                    branch_id = next(bid for bid, nodes in database
+                                                     if nodes is path)
+                                    travel = database.signed_travel[branch_id]
+                                    self.assertEqual(len(travel), len(path) - 1)
+                                    direction = 1 if branch_index == 0 else -1
+                                    for step, start, end in zip(travel, path, path[1:]):
+                                        self.assertGreater(direction * step, 0)
+                                        self.assertEqual((start[0] + step - end[0])
+                                                         % winding.num_slots, 0)
+                                        self.assertEqual(abs(end[1] - start[1]), 1)
+                            self.assertEqual(database.layout_report['pattern_identity']['status'],
+                                             'valid')
+                            self.assertTrue(database.layout_report['layout_retained'])
+                            self.assertTrue(database.layout_report['electrically_valid'])
+
+    def test_p2_only_inlet_anchors_follow_post_connection_layer_shifts(self):
+        from pattern_rule_workbench import _base_inputs
+
+        winding, tp, layout = _base_inputs('UWP', 2, 8, 6, 2, (1, 1, 2))
+        _, neutral = gw.get_winding_layout('UWP', tp, winding, layout)
+        layout.phase_shift_list = [1, 0, 2, -1, 0, 3]
+        _, shifted = gw.get_winding_layout('UWP', tp, winding, layout)
+        for (_, original), (_, actual) in zip(neutral, shifted):
+            self.assertEqual(actual, [
+                ((slot + layout.phase_shift_list[layer]) % 48, layer, lane)
+                for slot, layer, lane in original])
+
+    def test_p2_only_phase_arrays_reuse_local_n_belt_inlets(self):
+        from pattern_rule_workbench import _base_inputs
+        from phase_topology import build_winding_phase_topology
+
+        for q, phases, layers in ((2, 6, 12), (2, 9, 12), (2, 12, 8),
+                                  (Fraction(1, 2), 6, 8)):
+            with self.subTest(q=q, phases=phases, layers=layers):
+                winding, tp, layout = _base_inputs(
+                    'UWP', q, 8, layers, 2, (1, 1, 2), phases)
+                _, database = gw.get_winding_layout('UWP', tp, winding, layout)
+                topology = build_winding_phase_topology(winding, layout.phase_shift_list)
+                for spec in topology.phase_sets:
+                    local_q = int(spec.local_q)
+                    for local_phase, phase in enumerate(spec.phases):
+                        paths = [path for _, path in database
+                                 if topology.phase_of(*path[0][:2]) == phase]
+                        anchor = local_q * (local_phase + 3 * (local_phase % 2))
+                        self.assertEqual([path[0][:2] for path in paths], [
+                            spec.to_global(anchor, 0),
+                            spec.to_global(anchor + (spec.layer_count // 2) % local_q,
+                                           spec.layer_count - 1),
+                        ])
+                self.assertTrue(database.layout_report['layout_retained'])
+
+
 class UwpManualTranspositionTests(unittest.TestCase):
     def test_regular_uniform_keeps_each_full_wave_in_its_q_lane(self):
         from pattern_rule_workbench import _base_inputs
@@ -1348,6 +1453,11 @@ class UwpOddPhaseQppTests(unittest.TestCase):
                     'UWP', 2, 2, 4, 2, (1, 1, 2), phases)
                 decision = gw.resolve_pattern_route(
                     'UWP', winding, (1, 1, 2), tp, layout)
+                if phases == 9:
+                    # Three layer-assigned phase sets cannot use four layers.
+                    self.assertEqual(decision.status, 'disabled')
+                    self.assertIn('layers divisible by 3', decision.reason)
+                    continue
                 self.assertEqual(decision.status, 'enabled', decision.reason)
                 _, database = gw.get_winding_layout('UWP', tp, winding, layout)
                 travel = getattr(database, 'signed_travel', None)
@@ -1366,8 +1476,8 @@ class UwpOddPhaseQppTests(unittest.TestCase):
                 expected = (pitch, pitch + 1, pitch, pitch,
                             pitch, pitch - 1, pitch)
                 self.assertEqual(travel[1], expected)
-                self.assertEqual(travel[2],
-                                 tuple(-step for step in reversed(expected)))
+                self.assertEqual(travel[phases + 1],
+                                  tuple(-step for step in reversed(expected)))
 
     def test_short_p2_weld_terminal_route_uses_physical_alwp_pins(self):
         from layout_analysis import analyze_pattern_identity

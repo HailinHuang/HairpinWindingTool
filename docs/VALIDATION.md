@@ -149,6 +149,64 @@ families, native Windows DPI/button flows, current packaged-resource acceptance,
 manufacturing behavior, and clean installation on another machine. No complete
 suite pass is claimed.
 
+### UWP P2-only phase-local inlet repair (2026-10-02)
+
+Issue [#11](https://github.com/HailinHuang/HairpinWindingTool/issues/11) fixes
+the neutral Regular `(1,1,2)` inlet seed/order without changing connection
+vectors or admission. At `q=2,pp=4,L=6,Naa=2,m=3`, public generation now gives
+the following one-based entries, for both implicit and explicit dividers:
+
+| Phase | Branch 1 | Branch 2 |
+| --- | --- | --- |
+| A | Slot 1 / Layer 1 | Slot 2 / Layer 6 |
+| B | Slot 9 / Layer 1 | Slot 10 / Layer 6 |
+| C | Slot 5 / Layer 1 | Slot 6 / Layer 6 |
+
+The regression failed before the fix: Phase B entered at Slot 46/Layer 6,
+then Slot 9/Layer 1. Six consecutive raw belts started B in S polarity;
+the common N-to-S reversal exposed the wrong belt/order. The repair uses
+each phase's first N slot from the construction phase map, seeds its partner
+one `tau=m*q` pitch away, and orders the first-layer cohort first. The common
+reversal still owns terminal orientation and signed-travel reversal.
+The resulting tail lane is `(L/2) mod q`; see
+`PATTERN_DIVIDER_FORMULA_SUPPORT.md` for the parameterized rule.
+
+All 12 selected UWP tests passed: four new `UwpP2InletAnchorTests`, two
+`UwpManualTranspositionTests`, and six relevant `UwpOddPhaseQppTests` for
+P2 travel, PP-only configuration/travel, Q+PP configuration/construction and
+body identity. New checks cover 72 native cases (`q=1..4`, `pp=2/4`,
+`L=4/6/8`, `m=3/5/7`), mapped integer examples `(m,L)=(6,12),(9,12),(12,8)`
+at global q=2, a mapped `q_global=1/2,m=6,L=8` example, and a nonzero
+post-connection shift example. Assertions cover ordered inlets, complete
+unique occupancy, equal branch counts, phase/polarity, signed edges,
+Pattern identity and retained/electrical diagnostics as applicable.
+
+An independent comparison with `origin/main` preserves each branch's entire
+conductor-position set in 54 neutral native cases (`q=2/3/4`). First-layer
+paths are identical; odd-indexed phase tails translate by the two-pole period
+`2*m*q`, with unchanged signed edges. A separate 144-case insertion/weld-side
+comparison at `q=1..4` preserves generation/failure classification: 72 insertion
+calls pass and 72 weld-side calls keep their existing identity failure.
+Independent read-only review found no remaining production correctness issue.
+
+All 22 direct finite-status checks and two existing branch-label render checks
+passed. The five status-provenance fixtures required a rerun with writable
+Windows Temp access after sandbox permission errors; that rerun passed.
+The regenerated source signature matches, with the same 80 cells and 860
+requests and no classification/count changes in the isolated publication tree.
+An offscreen cached-path render also confirms B1/B2 labels at the requested
+positions; native Windows interaction and DPI behavior were not rerun.
+
+The affected existing travel test now selects the reversed same-phase cohort
+by `phases+1`, replacing the historical global branch ID 2. Its `m=9,L=4`
+fixture asserts the established phase-set layer-allocation rejection. Baseline
+replay confirmed 13 preexisting invalid m=9/L=2-or-4 assertions in that class;
+12 remain in two unrelated proper-Q/short-weld test methods, outside this repair.
+No whole-class or full-regression pass is claimed. The earlier 1,080-case P2
+audit and other source-bound receipts, including half-integer ZPP, were not
+rerun and need fresh binding after this production-source change.
+Public interfaces, saved formats and manufacturing certification are unchanged.
+
 Use full discovery only for broad impact, broader failures, or an explicit request:
 `python -X utf8 -m unittest discover -s . -p 'test_*.py' -v`.
 Restore offscreen overrides before a native application launch.
