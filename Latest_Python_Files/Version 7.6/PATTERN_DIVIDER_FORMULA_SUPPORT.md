@@ -2,6 +2,60 @@
 
 ## Version 7.6 current status
 
+ZPP `q_and_p2`, `(Q,1,2)` with `Q>1`, is explicitly rejected with
+`q and p2 share same route` (user decision, 2026-10-02). See the
+[rejection registry](PATTERN_REJECTION_REASONS.md).
+
+### TLP even-Q cohort joins (owner approved, 2026-10-02)
+
+The existing `tlp_q_only_pair_join` route now covers `(Q,1,1)` for even
+`2<=Q<=q`, `Q|q`, integer q, at least two pole pairs, and even `L>=2` in
+one native phase set (`m=3` or a supported odd m not divisible by three).
+Use the public full-q `(q,1,2)` source, with `2q` parents per phase and
+q parents in each outer-layer cohort. Join `g=2q/Q` consecutive complete
+parents within a cohort, preserving generated phase/cohort/lane order.
+This uses the existing generic join formula with the actual source count;
+the legacy full-Q route name/binding remains compatible.
+
+Each parent contains `pp*L` conductors. Each target has `2q*pp*L/Q`
+conductors, Q branches per phase and `Q/2` per outer-layer cohort. New seams
+advance one q lane, span `L-1` layers and have pitch magnitude `tau-1` or
+`tau+1`, `tau=m*q`; sign normalized along layer traversal is positive.
+Each seam crosses at most one pole region. Body passes,
+N-to-S parents, complete unique occupancy and normalized weld direction
+remain required; every seam is checked, including later joins.
+
+For neutral zero-shift inputs and local phase phi, a branch starting at lane
+a has complex EMF
+`pp*L*exp(i*pi*phi*(1+1/m))*sum(exp(i*pi*r/(m*q)), r=a..a+g-1)`.
+Its nonzero magnitude is `pp*L*sin(pi/(m*Q))/sin(pi/(2*m*q))`.
+Q=2 gives equal parallel complex EMF; Q>2 has successive group angles
+`2*pi/(m*Q)` and remains `not strong symmetry layout`. Two-layer cases
+retain their explicit structural-overlap qualification. Manual TP and
+post-connection shifts follow the current shared contracts below and can
+still fail actual output validation. Insert-side inlet remains required.
+
+The reviewed schema-v3 q=4/Q=2 fixture is a frozen pre-promotion path oracle;
+its old review notes/local illustration references are historical, and its
+manual non-certification flags stay false. Public generation is checked
+against its exact ordered paths. Native proper-Q finite evidence covers
+32 q/Q/pole/layer/phase cases; this is not universal or release certification.
+The existing six-geometry TLP q-only inventory now has eight supported and
+one rejected request. Multi-set TLP q-only arrays remain unsupported-yet
+pending owner review. A separate mapped-edge exploration for `m=3k`,
+`k=2,3,4`, tested 48 combinations across eight proper-q pairs and
+`(pp,L_local)=(2,2)` or `(3,4)`. In that matrix, each branch joins
+`g=2*k*q/Q` parents and each set rotates by `2*q*j` slots; global seam safety
+occurred exactly when `k` divided `Q`: 22 cases passed and 26 each had two
+joins crossing two global pole boundaries. For example, `(m,q,Q)=(9,4,2)`
+has two `+37`-slot seams across two boundaries, and `(12,4,2)` has two
+`+49`-slot seams. The six-phase `(q,Q,pp,L)=(4,2,3,8)` candidate retains
+valid local identities and all 1,152 conductors once, while its aggregate
+report keeps `multi_phase_emf_mismatch`; it is not strongly certified. This
+bounded audit does not promote any phase array: public admission remains
+`unsupported-yet` pending owner review and production integration checks. See
+[current validation](../../docs/VALIDATION.md).
+
 ### Post-connection phase/radial shifts (2026-09-29)
 
 Every implemented Pattern route now validates its connection construction
@@ -145,7 +199,7 @@ continuing to the next slice.
 | `zpp_pp_only_indexed_translation` | `(D,1,1)` | `(1,D,1)` | Within each phase, translate source branch `j` by `(a*j mod D)*num_slots/D`, where `a` is the least positive stride satisfying `gcd(a,D)=1` and `gcd(D,2*(pp/D)*a-1)=1`. Direct domains use `q=Naa=D`, `D|pp`; `D=2` retains the old half-turn. Arrayed `a>1` remains unsupported pending mapped global-edge validation. |
 | `zpp_pp_only_centered_entry_translation` | `(q,1,1)` | `(1,D,1)` | For `D>q`, `q|D`, and `D|pp`, target branch `j` takes the centered window of source branch `j mod q`, with length `source_length/(D/q)`, then translates that window from its actual source sector to `(a*j mod D)`. The stride `a` uses the indexed-sector permutation rule above. |
 | `tsp_pp_only_q_p2_identity` | `(q,1,2)` | `(1,2q,1)` | Identity transfer: preserve every public full-q TSP parent path in branch order. Exact factor binding derives source Q as target D/2; `Naa=q*1*2=1*(2q)*1`. Requires integer `q>=2` and `2q|pp`; public source and target preflight remain authoritative. |
-| `tlp_q_only_pair_join` | `(Q,1,2)` | `(Q,1,1)` | Within each phase, join adjacent public source branches in generated order. The target binding derives source P2=2 from the divider triple; full-Q even Q keeps every pair within one of the two outer-layer cohorts. |
+| `tlp_q_only_pair_join` | `(q,1,2)` | `(Q,1,1)` | Join `2q/Q` consecutive public full-q parents within each phase/outer-layer cohort; even `Q|q`, `2<=Q<=q`. Full-Q remains the two-parent special case and retains its legacy binding. |
 | `tsp_pp_p2_sector` | Direct construction | `(1,D,2)` | For region `j`, use `r_j=j*(pp/D)`, fixed lane `a_j=floor(j*q/D)`, and phase inlet `s(phi,j)=q*(phi+m*(2*r_j+(phi mod 2)))+a_j`. Pair a first-layer `+tau` path with a last-layer `-tau` path, where `tau=m*q`; each path has `C=q*pp*L/D` conductors. Require `q` to divide `D`, `D` to divide `pp`, and, for every lane `a`, exactly one visit to every residue `0..pp-1` in `{(j*(pp/D)+n*(L/2)) mod pp | 0<=j<D, floor(j*q/D)=a, 0<=n<q*pp/D}`. Arrayed phases use each set's local q/layers and must pass mapped global checks. |
 | `tlp_pp_only_even` | `(Q,2,1)` | `(Q,D,1)` | Partition each public parent into `D/2` complete layer-pass paths; source-major. The formula binding derives parent Q from target Q. Direct support keeps legacy `Q=1, q<=2` and adds full-Q `Q=q>1`. For `k=m/3` arrayed sets, map `(Q_global,D_global,1)` to `(k*Q_global,D_global/k,1)` in each local set, preserving Naa. The local divider must be even and at least 4, divide `pp`, and local `L` must be even and at least 4. |
 | `tlp_pp_p2_short_unit` | `(1,1,2)` | `(1,D,2)` | Partition into `D` complete layer-pass units; source-major, then apply the route's sector rotation. |

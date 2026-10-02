@@ -356,9 +356,13 @@ def feature_probes():
             probes['Q-only adjacent P2 pair: TSP interior-gcd contrast'] = evaluate_case(
                 'TLP', 4, 6, 8, 5, (4, 1, 1), probe_generation=True)
             probes['Q-only adjacent P2 pair: proper-Q q=4 boundary'] = evaluate_case(
-                'TLP', 4, 4, 4, 3, (2, 1, 1))
+                'TLP', 4, 4, 4, 3, (2, 1, 1), probe_generation=True)
             probes['Q-only adjacent P2 pair: proper-Q q=6 boundary'] = evaluate_case(
-                'TLP', 6, 6, 4, 5, (2, 1, 1))
+                'TLP', 6, 6, 4, 5, (2, 1, 1), probe_generation=True)
+            probes['Q-only proper-Q cohort join: reviewed q=4 draft'] = evaluate_case(
+                'TLP', 4, 2, 4, 3, (2, 1, 1), probe_generation=True)
+            probes['Q-only proper-Q cohort join: retained EMF asymmetry'] = evaluate_case(
+                'TLP', 8, 3, 4, 3, (4, 1, 1), probe_generation=True)
             probes['Q-only adjacent P2 pair: odd-Q boundary'] = evaluate_case(
                 'TLP', 3, 2, 4, 3, (3, 1, 1))
             probes['Q-only adjacent P2 pair: retained odd-Q rejection'] = evaluate_case(
@@ -418,6 +422,8 @@ def feature_probes():
             probes['PP-only even-divider short local-layer boundary'] = evaluate_case(
                 'TLP', 2, 8, 6, 6, (2, 8, 1))
         if pattern == 'ZPP':
+            probes['Q+P2 shared-route exclusion (even q)'] = evaluate_case(
+                'ZPP', 4, 4, 4, 3, (2, 1, 2))
             probes['P2=2 odd integer q: Q=1, D=1'] = evaluate_case(
                 'ZPP', 3, 4, 4, 3, (1, 1, 2))
             probes['P2=2 odd integer q: Q=1, D=2'] = evaluate_case(

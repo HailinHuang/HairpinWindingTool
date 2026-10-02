@@ -22,6 +22,10 @@ changes through the respective sections of
   Workbench. `selected_integer_divider_route()` is a compatibility wrapper.
 - Parameterized integer and selected fractional connection families, with separate
   supported, candidate, rejected, and unsupported admission states.
+- Owner-approved native TLP proper-Q cohort joins ([Issue #7](https://github.com/HailinHuang/HairpinWindingTool/issues/7))
+  and the ZPP `q_and_p2` exclusion ([Issue #8](https://github.com/HailinHuang/HairpinWindingTool/issues/8)).
+  TLP multi-set arrays remain outside production admission pending the separate
+  owner review in [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).
 - Exploratory Workbench schema-v3 packages; manual completion does not certify routes.
 - [Finite divider-status provenance and navigation](https://github.com/HailinHuang/HairpinWindingTool/issues/2)
   refreshed for the existing six geometries: 80 cells and 860 resolver requests.
@@ -52,6 +56,8 @@ Track these as discrete GitHub Issues with focused acceptance:
 2. Core: [Complete source-bound half-integer TLP/UWP validation](https://github.com/HailinHuang/HairpinWindingTool/issues/4),
    after launcher review and a fresh source binding.
 3. Application: [Establish packaged/native acceptance tied to current source](https://github.com/HailinHuang/HairpinWindingTool/issues/5).
+4. Core: decide whether to pursue TLP multi-set arrays inside the mapped seam
+   boundary documented in [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).
 
 GitHub [Issues](https://github.com/HailinHuang/HairpinWindingTool/issues) are the
 authoritative backlog. This list states priorities, not a second task database.
@@ -82,3 +88,15 @@ mapped connection roles cover all edges despite diagnostic half-coverage from
 the native global role analyzer. The 29-file evidence readback passed. This is
 finite formula evidence within existing admission; production admission and
 universal route closure were not expanded. See [VALIDATION.md](VALIDATION.md).
+
+The native TLP proper-Q implementation passed 17 focused route tests, including
+exact reviewed-path comparison, the bounded formula matrix, nonzero shifts and
+the mapped-array admission boundary. Eighteen targeted ZPP/related route tests
+passed for the named exclusion, precedence and unaffected controls. A separate
+48-case private multiphase review found 22 mapped candidates without global
+seam crossings and 26 cases with two seams crossing two global pole boundaries;
+the safe subset in that finite matrix requires `k=m/3` to divide Q. Multi-set
+TLP remains `unsupported-yet`. The six-phase example retains a global
+`multi_phase_emf_mismatch`, so local phase-set identity does not establish
+strong symmetry. These findings do not certify the route or release. See
+[VALIDATION.md](VALIDATION.md) and [Issue #7](https://github.com/HailinHuang/HairpinWindingTool/issues/7).

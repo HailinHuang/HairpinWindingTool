@@ -181,6 +181,10 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
             'Q-only adjacent P2 pair: four q lanes, odd pp',
             'Q-only adjacent P2 pair: two-layer q=4 boundary',
             'Q-only adjacent P2 pair: TSP interior-gcd contrast',
+            'Q-only adjacent P2 pair: proper-Q q=4 boundary',
+            'Q-only adjacent P2 pair: proper-Q q=6 boundary',
+            'Q-only proper-Q cohort join: reviewed q=4 draft',
+            'Q-only proper-Q cohort join: retained EMF asymmetry',
         )
         for name in positive_names:
             with self.subTest(name=name):
@@ -194,12 +198,10 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
                 self.assertEqual(sample['production']['identity_status'], 'valid')
 
         expected_boundaries = {
-            'Q-only adjacent P2 pair: proper-Q q=4 boundary': 'unsupported-yet',
-            'Q-only adjacent P2 pair: proper-Q q=6 boundary': 'unsupported-yet',
             'Q-only adjacent P2 pair: odd-Q boundary': 'rejected',
             'Q-only adjacent P2 pair: retained odd-Q rejection': 'rejected',
             'Q-only adjacent P2 pair: pp=1 boundary': 'unsupported-yet',
-            'Q-only adjacent P2 pair: phase-array boundary': 'rejected',
+            'Q-only adjacent P2 pair: phase-array boundary': 'unsupported-yet',
         }
         for name, admission in expected_boundaries.items():
             with self.subTest(name=name):
@@ -225,8 +227,9 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
         cell = next(item for item in inventory['cells']
                     if item['pattern'] == 'TLP'
                     and item['formula'] == 'q_only')
-        self.assertEqual(cell['counts'], {
-            'supported': 6, 'unsupported-yet': 2, 'rejected': 1})
+        self.assertEqual(cell['counts'], {'supported': 8, 'rejected': 1})
+        asymmetric = tlp['Q-only proper-Q cohort join: retained EMF asymmetry']
+        self.assertEqual(asymmetric['production']['status'], 'retained-not-strong')
 
     def test_tlp_full_q_even_divider_probes_show_formula_and_boundaries(self):
         from refresh_pattern_naa_division_layout import feature_probes
@@ -371,8 +374,14 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
                     self.assertEqual(sample['preflight']['admission'], 'rejected')
                     self.assertEqual(sample['preflight']['rule_id'],
                                      'zpp_factor_rejected')
-                    self.assertIn('odd positive integer effective q',
-                                  sample['preflight']['reason'])
+                    expected = ('q and p2 share same route'
+                                if q_divider > 1 and pp_divider == 1
+                                else 'odd positive integer effective q')
+                    self.assertIn(expected, sample['preflight']['reason'])
+
+        shared = probes['Q+P2 shared-route exclusion (even q)']['preflight']
+        self.assertEqual(shared['admission'], 'rejected')
+        self.assertEqual(shared['reason'], 'q and p2 share same route')
 
         even_q = probes['P2=2 even-q control']['preflight']
         self.assertNotEqual(even_q['rule_id'], 'zpp_factor_rejected')

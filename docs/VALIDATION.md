@@ -144,6 +144,31 @@ above. No production source or admission change, native three-phase
 half-integer-q ZPP formula, universal closure, or manufacturing acceptance is
 claimed. Future source changes require a fresh binding before reusing evidence.
 
+### Native TLP proper-Q and multiphase boundary (2026-10-02)
+
+The native `(Q,1,1)` proper-Q route passed 17 focused tests covering exact
+reviewed paths, 32 public matrix cases, two additional q/Q pairs, seam and
+cohort corruption, the two-layer qualification, shifts, Workbench status and
+the multiphase admission guard. The ZPP `(Q,1,2), Q>1` exclusion passed 18
+focused tests covering named-reason precedence, rejected pre-construction
+dispatch and unaffected ZPP/SLP controls. `refresh_pattern_naa_division_layout.py
+--check` confirmed the refreshed 14-file source receipt and rendered resources.
+
+A separate private candidate review covered 48 mapped cases: eight proper-q
+pairs, `(pp,L_local)=(2,2)` and `(3,4)`, and `m=6,9,12`. Its independent
+checker verified 200,448 positions, 199,152 edges and 23,760 new seams, and
+rejected seven deliberate corruptions. Twenty-two cases had no global seam
+crossing; 26 each had two insertion joins spanning two pole boundaries. The
+finite safe condition is `k=m/3` dividing Q, since `g=2*k*q/Q` must align with
+each `2*q*j` set offset. This is a candidate boundary only. A representative
+six-phase layout retains all positions and local identities while its global
+report keeps `multi_phase_emf_mismatch`; no strong-symmetry or manufacturing
+claim follows. Public TLP phase-array admission remains `unsupported-yet`
+pending owner review in
+[Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9) and production integration checks. The saved matrix,
+checker and figures remain excluded local review evidence under
+`Latest_Python_Files/Version 7.6/workbench_preview/tlp_multiphase_20261002/`.
+
 Unvalidated domains include complete integer coverage, deferred fractional
 families, native Windows DPI/button flows, current packaged-resource acceptance,
 manufacturing behavior, and clean installation on another machine. No complete

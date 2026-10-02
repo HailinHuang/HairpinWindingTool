@@ -1,5 +1,25 @@
 # Pattern Definitions and Constraints
 
+## Current TLP q-only and ZPP Q+P2 boundaries (2026-10-02)
+
+Owner-approved native TLP `(Q,1,1)` extends the earlier full-Q pair join to
+even `Q|q`, `2<=Q<=q`: join `2q/Q` complete public `(q,1,2)` parents in
+each outer-layer cohort. Preserve every body pass and check every new
+top-bottom insertion seam, one-lane advance, signed travel, one-region
+limit, occupancy, N-to-S orientation and weld direction. Q>2 remains a
+retained non-strong layout; L=2 keeps its structural overlap qualification.
+Multi-set arrays remain unsupported-yet. A bounded mapped seam review found
+safe candidates only when `k=m/3` divides Q; production admission still
+requires owner review.
+The [current formula/domain](PATTERN_DIVIDER_FORMULA_SUPPORT.md#tlp-even-q-cohort-joins-owner-approved-2026-10-02)
+supersedes only the older proper-Q unsupported conclusion, not its historical
+evidence or the shared transposition/shift rules below.
+
+ZPP `(Q,1,2)` with `Q>1` is the owner's named-type exclusion:
+`q and p2 share same route`. Apply it before odd-effective-q reasoning and
+construction, including phase-set arrays. It does not exclude `D>1`, unit-Q,
+P2=1 or other Pattern families, nor prove physical impossibility.
+
 ## Post-connection layout shifts (2026-09-29)
 
 For every implemented Pattern route, construct and validate the connections

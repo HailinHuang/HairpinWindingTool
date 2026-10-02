@@ -1,8 +1,8 @@
 # Integer-q Pattern Divider Support Status — Version 7.6
 
-Generated from the V7.6 public resolver on 2026-10-02T07:14:31+00:00 UTC.
+Generated from the V7.6 public resolver on 2026-10-02T09:18:54+00:00 UTC.
 
-Source SHA-256: 429289a4580131c61bc1ae5e32e77395ea8ab54f9466936cb662a9c1b7936a7a
+Source SHA-256: 127dc290976da5a3232d56c73739a04d492167c40d6a61ed48c22a64895591bd
 
 Scope: Listed integer-q geometries, neutral Regular at the route-required inlet. Counts are tuple/geometry requests, not verified production layouts. This finite sample does not determine support outside its listed parameters.
 
@@ -15,9 +15,9 @@ The counts below are preflight tuple/geometry requests. A supported preflight is
 | SSP | 49 | 0 | 37 | 0 |
 | TSP | 60 | 0 | 24 | 2 |
 | SLP | 71 | 2 | 5 | 8 |
-| TLP | 41 | 0 | 28 | 17 |
+| TLP | 43 | 0 | 28 | 15 |
 | ZLP | 31 | 0 | 55 | 0 |
-| ZPP | 39 | 2 | 19 | 26 |
+| ZPP | 37 | 0 | 30 | 19 |
 | CP | 51 | 0 | 29 | 6 |
 | LPP | 6 | 0 | 80 | 0 |
 

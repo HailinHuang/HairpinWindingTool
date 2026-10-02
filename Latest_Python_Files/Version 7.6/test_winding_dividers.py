@@ -1028,9 +1028,6 @@ class MultiplesOfThreePhaseSupportTests(unittest.TestCase):
         from pattern_rule_workbench import _base_inputs
 
         cases = (
-            # The integer local q=8 has a ZPP constructor although q_global=4
-            # has no matching selected global route name.
-            ('ZPP', 4, 8, 8, 8, (4, 1, 2), 6, 'zpp'),
             # Global half-q maps to an integer local q in each 3-phase set.
             ('BWP', Fraction(1, 2), 4, 4, 2, (1, 2, 1), 6, None),
             # SSP has no global half-q route; its local integer-q formula is valid.
@@ -3380,11 +3377,19 @@ class TlpQOnlyPairJoinRouteTests(unittest.TestCase):
     def test_proper_q_and_nonformula_boundaries_keep_current_status(self):
         from pattern_rule_workbench import _base_inputs
 
-        unsupported = (
-            (4, 2, 4, 4, 3),  # Current matrix proper-Q case.
-            (6, 2, 6, 4, 5),  # Current matrix proper-Q case.
-            (2, 2, 1, 4, 3),  # P2 parent unavailable at pp=1.
-        )
+        for q, Q, pp, layers, phases in ((4, 2, 4, 4, 3), (6, 2, 6, 4, 5)):
+            with self.subTest(q=q, Q=Q):
+                winding, tp, layout = _base_inputs(
+                    'TLP', q, 2 * pp, layers, Q, (Q, 1, 1), phases)
+                decision = gw.resolve_pattern_route(
+                    'TLP', winding, winding.branch_dividers, tp, layout)
+                self.assertEqual(decision.admission, 'supported')
+                _, database = gw.get_winding_layout('TLP', tp, winding, layout)
+                self.assertEqual({len(path) for _, path in database},
+                                 {2 * q * pp * layers // Q})
+                self.assertTrue(database.layout_report['layout_retained'])
+
+        unsupported = ((2, 2, 1, 4, 3),)  # P2 parent unavailable at pp=1.
         for q, Q, pp, layers, phases in unsupported:
             with self.subTest(q=q, Q=Q, pp=pp, layers=layers,
                               phases=phases):
@@ -3412,7 +3417,7 @@ class TlpQOnlyPairJoinRouteTests(unittest.TestCase):
             'TLP', winding, winding.branch_dividers, tp, layout)
         self.assertNotEqual(array_decision.admission, 'supported')
 
-    def test_formula_requires_neutral_insert_side_configuration(self):
+    def test_manual_settings_shifts_and_required_inlet_follow_shared_contract(self):
         from pattern_rule_workbench import _base_inputs
 
         winding, tp, layout = _base_inputs(
@@ -3429,7 +3434,9 @@ class TlpQOnlyPairJoinRouteTests(unittest.TestCase):
         layout.phase_shift_list[1] = 1
         self.assertEqual(gw.resolve_pattern_route(
             'TLP', winding, winding.branch_dividers, tp, layout).status,
-            'disabled')
+            'enabled')
+        _, shifted = gw.get_winding_layout('TLP', tp, winding, layout)
+        self.assertTrue(shifted.layout_report['layout_retained'])
 
         winding, tp, layout = _base_inputs(
             'TLP', 2, 4, 4, 2, (2, 1, 1), 3)
@@ -3448,7 +3455,7 @@ class TlpQOnlyPairJoinRouteTests(unittest.TestCase):
                     if item['pattern'] == 'TLP'
                     and item['formula'] == 'q_only')
         self.assertEqual(cell['counts'], {
-            'supported': 6, 'unsupported-yet': 2, 'rejected': 1})
+            'supported': 8, 'rejected': 1})
 
 
 class TspPpP2SectorRouteTests(unittest.TestCase):
@@ -3940,6 +3947,37 @@ class GeneralPatternRuleTests(unittest.TestCase):
         self.assertTrue(all(r.status == 'rejected' for r in rows if r.dividers[2] == 2))
         self.assertTrue(all(r.status == 'unsupported-yet' for r in rows if r.dividers[2] == 1))
 
+    def test_zpp_q_and_p2_is_rejected_before_construction(self):
+        from pattern_rule_workbench import _base_inputs
+
+        reason = 'q and p2 share same route'
+        for q, q_divider, phases in ((4, 2, 3), (6, 3, 3), (3, 2, 3),
+                                     (Fraction(3, 2), Fraction(3, 2), 3),
+                                     (4, 2, 6), (4, 2, 9), (4, 2, 12)):
+            factors = (q_divider, 1, 2)
+            layers = 8 if phases == 3 else 4 * (phases // 3)
+            winding, tp, layout = _base_inputs(
+                'ZPP', q, 8, layers, math.prod(factors), factors, phases)
+            with self.subTest(q=q, factors=factors, phases=phases):
+                self.assertTrue(gw.pattern_rejects_divider_tuple('ZPP', factors))
+                self.assertEqual(gw.divider_exclusion_reason('ZPP', factors, q),
+                                 reason)
+                self.assertIsNone(gw.selected_integer_divider_route('ZPP', winding))
+                decision = gw.resolve_pattern_route('ZPP', winding, factors, tp, layout)
+                self.assertEqual((decision.status, decision.admission),
+                                 ('disabled', 'rejected'))
+                self.assertIn(reason, decision.reason)
+                with patch.object(gw, '_dispatch_winding_pattern') as dispatch:
+                    with self.assertRaisesRegex(ValueError, reason):
+                        gw.get_winding_layout('ZPP', tp, winding, layout)
+                    dispatch.assert_not_called()
+
+        for pattern, factors in (('ZPP', (1, 1, 2)), ('ZPP', (2, 1, 1)),
+                                 ('ZPP', (2, 2, 2)), ('SLP', (2, 1, 2))):
+            with self.subTest(pattern=pattern, factors=factors):
+                self.assertFalse(gw.pattern_rejects_divider_tuple(
+                    pattern, factors, 4, 4))
+
     def test_zpp_odd_integer_q_rejects_every_p2_two_divider_tuple(self):
         from pattern_rule_workbench import _base_inputs
 
@@ -3959,10 +3997,14 @@ class GeneralPatternRuleTests(unittest.TestCase):
                     self.assertEqual(
                         (decision.status, decision.admission, decision.rule_id),
                         ('disabled', 'rejected', 'zpp_factor_rejected'))
-                    self.assertEqual(decision.reason, reason)
+                    expected_reason = ('q and p2 share same route'
+                                       if q_divider > 1 and pp_divider == 1
+                                       else reason)
+                    self.assertEqual(decision.reason, expected_reason)
                     with patch.object(gw, '_dispatch_winding_pattern') as dispatch:
-                        with self.assertRaisesRegex(ValueError, 'ZPP P2=2 requires'):
+                        with self.assertRaises(ValueError) as error:
                             gw.get_winding_layout('ZPP', tp, winding, layout)
+                        self.assertIn(expected_reason, str(error.exception))
                         dispatch.assert_not_called()
 
     def test_zpp_odd_q_rule_uses_effective_local_q_and_preserves_other_domains(self):
@@ -3984,11 +4026,11 @@ class GeneralPatternRuleTests(unittest.TestCase):
         self.assertIn('odd positive integer effective q', local_q_decision.reason)
 
         even_q, tp, layout = _base_inputs(
-            'ZPP', 4, 8, 4, 4, (2, 1, 2))
+            'ZPP', 4, 8, 4, 8, (2, 2, 2))
         self.assertFalse(gw.pattern_rejects_divider_tuple(
-            'ZPP', (2, 1, 2), 4, 4))
+            'ZPP', (2, 2, 2), 4, 4))
         even_decision = gw.resolve_pattern_route(
-            'ZPP', even_q, (2, 1, 2), tp, layout)
+            'ZPP', even_q, (2, 2, 2), tp, layout)
         self.assertNotEqual(even_decision.rule_id, 'zpp_factor_rejected')
 
     def test_ssp_q_and_pp_default_paths_pass_independent_geometry_oracle(self):
@@ -4444,7 +4486,7 @@ class GeneralPatternRuleTests(unittest.TestCase):
             ('SSP', 2, 8, 6, (1, 2, 1), 'enabled', 'ssp_pp_only'),
             ('SLP', 2, 8, 6, (1, 2, 1), 'enabled', 'slp_pp_only'),
             ('ZLP', 2, 8, 4, (2, 2, 1), 'disabled', 'zlp_factor_rejected'),
-            ('ZPP', 4, 8, 4, (2, 1, 2), 'enabled', 'zpp_q_pp_p2'),
+            ('ZPP', 4, 8, 4, (2, 1, 2), 'disabled', 'zpp_factor_rejected'),
             ('CP', 2, 8, 4, (1, 2, 2), 'enabled', 'cp_pp_p2'),
             ('LPP', 2, 8, 4, (1, 2, 1), 'disabled', 'lpp_factor_rejected'),
             ('LPP', 2, 8, 4, (1, 4, 1), 'enabled', 'lpp_pp_default'),

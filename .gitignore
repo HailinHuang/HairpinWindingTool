@@ -98,6 +98,7 @@
 !/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SSP_q-2_pp-4_L-4_Naa-2_Q-1_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-142928-672985.json
 !/Latest_Python_Files/Version 7.6/pattern_rule_drafts/TLP_q-2_pp-4_L-4_Naa-4_Q-1_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260924-211319-973271.json
 !/Latest_Python_Files/Version 7.6/pattern_rule_drafts/TLP_q-2_pp-4_L-4_Naa-8_Q-2_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260929-104214-297797.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/TLP_q-4_pp-2_L-4_Naa-2_Q-2_PP-1_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20261002-reviewed.json
 !/Latest_Python_Files/Version 7.6/pattern_rule_drafts/TSP_q-2_pp-4_L-4_Naa-8_Q-1_PP-4_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260927-220113-776173.json
 !/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZLP_q-2_pp-4_L-4_Naa-2_Q-1_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-225524-930786.json
 !/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZLP_q-2_pp-4_L-4_Naa-4_Q-1_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-225705-659293.json
@@ -138,6 +139,7 @@
 !/Latest_Python_Files/Version 7.6/test_stability_soak.py
 !/Latest_Python_Files/Version 7.6/test_symmetry_branch_rules.py
 !/Latest_Python_Files/Version 7.6/test_tsp_manual_route_closure.py
+!/Latest_Python_Files/Version 7.6/test_tlp_proper_q_route.py
 !/Latest_Python_Files/Version 7.6/test_vd_neighbour_summary.py
 !/Latest_Python_Files/Version 7.6/test_winding_dividers.py
 !/Latest_Python_Files/Version 7.6/test_workbench.py

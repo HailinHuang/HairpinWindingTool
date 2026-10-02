@@ -1,0 +1,2047 @@
+{
+  "pattern": "TLP",
+  "certified": false,
+  "status": "exploratory_complete_branch",
+  "phase": "A",
+  "phase_index": 0,
+  "slots": 48,
+  "poles": 4,
+  "layers": 4,
+  "q": "4",
+  "num_phases": 3,
+  "naa": 2,
+  "layer_shifts": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "first_connection_side": "weld",
+  "current_wave_direction": 1,
+  "target_branch_conductor_count": 32,
+  "phase_conductor_count": 64,
+  "used_conductor_count": 32,
+  "remaining_branch_conductor_count": 0,
+  "path": [
+    {
+      "slot": 1,
+      "layer": 1
+    },
+    {
+      "slot": 13,
+      "layer": 2
+    },
+    {
+      "slot": 1,
+      "layer": 3
+    },
+    {
+      "slot": 13,
+      "layer": 4
+    },
+    {
+      "slot": 25,
+      "layer": 1
+    },
+    {
+      "slot": 37,
+      "layer": 2
+    },
+    {
+      "slot": 25,
+      "layer": 3
+    },
+    {
+      "slot": 37,
+      "layer": 4
+    },
+    {
+      "slot": 2,
+      "layer": 1
+    },
+    {
+      "slot": 14,
+      "layer": 2
+    },
+    {
+      "slot": 2,
+      "layer": 3
+    },
+    {
+      "slot": 14,
+      "layer": 4
+    },
+    {
+      "slot": 26,
+      "layer": 1
+    },
+    {
+      "slot": 38,
+      "layer": 2
+    },
+    {
+      "slot": 26,
+      "layer": 3
+    },
+    {
+      "slot": 38,
+      "layer": 4
+    },
+    {
+      "slot": 3,
+      "layer": 1
+    },
+    {
+      "slot": 15,
+      "layer": 2
+    },
+    {
+      "slot": 3,
+      "layer": 3
+    },
+    {
+      "slot": 15,
+      "layer": 4
+    },
+    {
+      "slot": 27,
+      "layer": 1
+    },
+    {
+      "slot": 39,
+      "layer": 2
+    },
+    {
+      "slot": 27,
+      "layer": 3
+    },
+    {
+      "slot": 39,
+      "layer": 4
+    },
+    {
+      "slot": 4,
+      "layer": 1
+    },
+    {
+      "slot": 16,
+      "layer": 2
+    },
+    {
+      "slot": 4,
+      "layer": 3
+    },
+    {
+      "slot": 16,
+      "layer": 4
+    },
+    {
+      "slot": 28,
+      "layer": 1
+    },
+    {
+      "slot": 40,
+      "layer": 2
+    },
+    {
+      "slot": 28,
+      "layer": 3
+    },
+    {
+      "slot": 40,
+      "layer": 4
+    }
+  ],
+  "steps": [
+    {
+      "from": {
+        "slot": 1,
+        "layer": 1
+      },
+      "to": {
+        "slot": 13,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 13,
+        "layer": 2
+      },
+      "to": {
+        "slot": 1,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 1,
+        "layer": 3
+      },
+      "to": {
+        "slot": 13,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 13,
+        "layer": 4
+      },
+      "to": {
+        "slot": 25,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "first_last_layer",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 25,
+        "layer": 1
+      },
+      "to": {
+        "slot": 37,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 2
+      },
+      "to": {
+        "slot": 25,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 25,
+        "layer": 3
+      },
+      "to": {
+        "slot": 37,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 4
+      },
+      "to": {
+        "slot": 2,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "branch_join",
+      "signed_pitch": 13,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Exploratory full-q P2 parent join"
+    },
+    {
+      "from": {
+        "slot": 2,
+        "layer": 1
+      },
+      "to": {
+        "slot": 14,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 14,
+        "layer": 2
+      },
+      "to": {
+        "slot": 2,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 2,
+        "layer": 3
+      },
+      "to": {
+        "slot": 14,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 14,
+        "layer": 4
+      },
+      "to": {
+        "slot": 26,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "first_last_layer",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 26,
+        "layer": 1
+      },
+      "to": {
+        "slot": 38,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 38,
+        "layer": 2
+      },
+      "to": {
+        "slot": 26,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 26,
+        "layer": 3
+      },
+      "to": {
+        "slot": 38,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 38,
+        "layer": 4
+      },
+      "to": {
+        "slot": 3,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "branch_join",
+      "signed_pitch": 13,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Exploratory full-q P2 parent join"
+    },
+    {
+      "from": {
+        "slot": 3,
+        "layer": 1
+      },
+      "to": {
+        "slot": 15,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 15,
+        "layer": 2
+      },
+      "to": {
+        "slot": 3,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 3,
+        "layer": 3
+      },
+      "to": {
+        "slot": 15,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 15,
+        "layer": 4
+      },
+      "to": {
+        "slot": 27,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "first_last_layer",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 27,
+        "layer": 1
+      },
+      "to": {
+        "slot": 39,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 39,
+        "layer": 2
+      },
+      "to": {
+        "slot": 27,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 27,
+        "layer": 3
+      },
+      "to": {
+        "slot": 39,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 39,
+        "layer": 4
+      },
+      "to": {
+        "slot": 4,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "branch_join",
+      "signed_pitch": 13,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Exploratory full-q P2 parent join"
+    },
+    {
+      "from": {
+        "slot": 4,
+        "layer": 1
+      },
+      "to": {
+        "slot": 16,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 16,
+        "layer": 2
+      },
+      "to": {
+        "slot": 4,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 4,
+        "layer": 3
+      },
+      "to": {
+        "slot": 16,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 16,
+        "layer": 4
+      },
+      "to": {
+        "slot": 28,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "first_last_layer",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 28,
+        "layer": 1
+      },
+      "to": {
+        "slot": 40,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 40,
+        "layer": 2
+      },
+      "to": {
+        "slot": 28,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -12,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    },
+    {
+      "from": {
+        "slot": 28,
+        "layer": 3
+      },
+      "to": {
+        "slot": 40,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "Copied public full-q P2 reference edge"
+    }
+  ],
+  "source_route": {
+    "pattern": "TLP",
+    "q": "4",
+    "pp": 2,
+    "layers": 4,
+    "slots": 48,
+    "phases": 3,
+    "naa": 2,
+    "dividers": [
+      2,
+      1,
+      1
+    ],
+    "route_name": "q_only",
+    "status": "unsupported-yet",
+    "reason": "Unsupported TLP branch divider combination."
+  },
+  "reference_constraints": {
+    "available": false,
+    "edges": []
+  },
+  "warnings": [],
+  "designer_notes": "Candidate; owner and production review pending.",
+  "tool": "Pattern Rule Workbench",
+  "schema_version": 3,
+  "save_kind": "manual_configure",
+  "active_branch": 1,
+  "manual_edit_dirty": false,
+  "branches": [
+    {
+      "pattern": "TLP",
+      "certified": false,
+      "status": "exploratory_complete_branch",
+      "phase": "A",
+      "phase_index": 0,
+      "slots": 48,
+      "poles": 4,
+      "layers": 4,
+      "q": "4",
+      "num_phases": 3,
+      "naa": 2,
+      "layer_shifts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "first_connection_side": "weld",
+      "current_wave_direction": 1,
+      "target_branch_conductor_count": 32,
+      "phase_conductor_count": 64,
+      "used_conductor_count": 32,
+      "remaining_branch_conductor_count": 0,
+      "path": [
+        {
+          "slot": 1,
+          "layer": 1
+        },
+        {
+          "slot": 13,
+          "layer": 2
+        },
+        {
+          "slot": 1,
+          "layer": 3
+        },
+        {
+          "slot": 13,
+          "layer": 4
+        },
+        {
+          "slot": 25,
+          "layer": 1
+        },
+        {
+          "slot": 37,
+          "layer": 2
+        },
+        {
+          "slot": 25,
+          "layer": 3
+        },
+        {
+          "slot": 37,
+          "layer": 4
+        },
+        {
+          "slot": 2,
+          "layer": 1
+        },
+        {
+          "slot": 14,
+          "layer": 2
+        },
+        {
+          "slot": 2,
+          "layer": 3
+        },
+        {
+          "slot": 14,
+          "layer": 4
+        },
+        {
+          "slot": 26,
+          "layer": 1
+        },
+        {
+          "slot": 38,
+          "layer": 2
+        },
+        {
+          "slot": 26,
+          "layer": 3
+        },
+        {
+          "slot": 38,
+          "layer": 4
+        },
+        {
+          "slot": 3,
+          "layer": 1
+        },
+        {
+          "slot": 15,
+          "layer": 2
+        },
+        {
+          "slot": 3,
+          "layer": 3
+        },
+        {
+          "slot": 15,
+          "layer": 4
+        },
+        {
+          "slot": 27,
+          "layer": 1
+        },
+        {
+          "slot": 39,
+          "layer": 2
+        },
+        {
+          "slot": 27,
+          "layer": 3
+        },
+        {
+          "slot": 39,
+          "layer": 4
+        },
+        {
+          "slot": 4,
+          "layer": 1
+        },
+        {
+          "slot": 16,
+          "layer": 2
+        },
+        {
+          "slot": 4,
+          "layer": 3
+        },
+        {
+          "slot": 16,
+          "layer": 4
+        },
+        {
+          "slot": 28,
+          "layer": 1
+        },
+        {
+          "slot": 40,
+          "layer": 2
+        },
+        {
+          "slot": 28,
+          "layer": 3
+        },
+        {
+          "slot": 40,
+          "layer": 4
+        }
+      ],
+      "steps": [
+        {
+          "from": {
+            "slot": 1,
+            "layer": 1
+          },
+          "to": {
+            "slot": 13,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 13,
+            "layer": 2
+          },
+          "to": {
+            "slot": 1,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 1,
+            "layer": 3
+          },
+          "to": {
+            "slot": 13,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 13,
+            "layer": 4
+          },
+          "to": {
+            "slot": 25,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 25,
+            "layer": 1
+          },
+          "to": {
+            "slot": 37,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 2
+          },
+          "to": {
+            "slot": 25,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 25,
+            "layer": 3
+          },
+          "to": {
+            "slot": 37,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 4
+          },
+          "to": {
+            "slot": 2,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "branch_join",
+          "signed_pitch": 13,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Exploratory full-q P2 parent join"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 1
+          },
+          "to": {
+            "slot": 14,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 14,
+            "layer": 2
+          },
+          "to": {
+            "slot": 2,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 3
+          },
+          "to": {
+            "slot": 14,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 14,
+            "layer": 4
+          },
+          "to": {
+            "slot": 26,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 26,
+            "layer": 1
+          },
+          "to": {
+            "slot": 38,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 2
+          },
+          "to": {
+            "slot": 26,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 26,
+            "layer": 3
+          },
+          "to": {
+            "slot": 38,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 4
+          },
+          "to": {
+            "slot": 3,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "branch_join",
+          "signed_pitch": 13,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Exploratory full-q P2 parent join"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 1
+          },
+          "to": {
+            "slot": 15,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 15,
+            "layer": 2
+          },
+          "to": {
+            "slot": 3,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 3
+          },
+          "to": {
+            "slot": 15,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 15,
+            "layer": 4
+          },
+          "to": {
+            "slot": 27,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 27,
+            "layer": 1
+          },
+          "to": {
+            "slot": 39,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 2
+          },
+          "to": {
+            "slot": 27,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 27,
+            "layer": 3
+          },
+          "to": {
+            "slot": 39,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 4
+          },
+          "to": {
+            "slot": 4,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "branch_join",
+          "signed_pitch": 13,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Exploratory full-q P2 parent join"
+        },
+        {
+          "from": {
+            "slot": 4,
+            "layer": 1
+          },
+          "to": {
+            "slot": 16,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 16,
+            "layer": 2
+          },
+          "to": {
+            "slot": 4,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 4,
+            "layer": 3
+          },
+          "to": {
+            "slot": 16,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 16,
+            "layer": 4
+          },
+          "to": {
+            "slot": 28,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 28,
+            "layer": 1
+          },
+          "to": {
+            "slot": 40,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 40,
+            "layer": 2
+          },
+          "to": {
+            "slot": 28,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 28,
+            "layer": 3
+          },
+          "to": {
+            "slot": 40,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        }
+      ],
+      "source_route": {
+        "pattern": "TLP",
+        "q": "4",
+        "pp": 2,
+        "layers": 4,
+        "slots": 48,
+        "phases": 3,
+        "naa": 2,
+        "dividers": [
+          2,
+          1,
+          1
+        ],
+        "route_name": "q_only",
+        "status": "unsupported-yet",
+        "reason": "Unsupported TLP branch divider combination."
+      },
+      "reference_constraints": {
+        "available": false,
+        "edges": []
+      },
+      "warnings": [],
+      "designer_notes": "Candidate; owner and production review pending."
+    },
+    {
+      "pattern": "TLP",
+      "certified": false,
+      "status": "exploratory_complete_branch",
+      "phase": "A",
+      "phase_index": 0,
+      "slots": 48,
+      "poles": 4,
+      "layers": 4,
+      "q": "4",
+      "num_phases": 3,
+      "naa": 2,
+      "layer_shifts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "first_connection_side": "weld",
+      "current_wave_direction": -1,
+      "target_branch_conductor_count": 32,
+      "phase_conductor_count": 64,
+      "used_conductor_count": 32,
+      "remaining_branch_conductor_count": 0,
+      "path": [
+        {
+          "slot": 1,
+          "layer": 4
+        },
+        {
+          "slot": 37,
+          "layer": 3
+        },
+        {
+          "slot": 1,
+          "layer": 2
+        },
+        {
+          "slot": 37,
+          "layer": 1
+        },
+        {
+          "slot": 25,
+          "layer": 4
+        },
+        {
+          "slot": 13,
+          "layer": 3
+        },
+        {
+          "slot": 25,
+          "layer": 2
+        },
+        {
+          "slot": 13,
+          "layer": 1
+        },
+        {
+          "slot": 2,
+          "layer": 4
+        },
+        {
+          "slot": 38,
+          "layer": 3
+        },
+        {
+          "slot": 2,
+          "layer": 2
+        },
+        {
+          "slot": 38,
+          "layer": 1
+        },
+        {
+          "slot": 26,
+          "layer": 4
+        },
+        {
+          "slot": 14,
+          "layer": 3
+        },
+        {
+          "slot": 26,
+          "layer": 2
+        },
+        {
+          "slot": 14,
+          "layer": 1
+        },
+        {
+          "slot": 3,
+          "layer": 4
+        },
+        {
+          "slot": 39,
+          "layer": 3
+        },
+        {
+          "slot": 3,
+          "layer": 2
+        },
+        {
+          "slot": 39,
+          "layer": 1
+        },
+        {
+          "slot": 27,
+          "layer": 4
+        },
+        {
+          "slot": 15,
+          "layer": 3
+        },
+        {
+          "slot": 27,
+          "layer": 2
+        },
+        {
+          "slot": 15,
+          "layer": 1
+        },
+        {
+          "slot": 4,
+          "layer": 4
+        },
+        {
+          "slot": 40,
+          "layer": 3
+        },
+        {
+          "slot": 4,
+          "layer": 2
+        },
+        {
+          "slot": 40,
+          "layer": 1
+        },
+        {
+          "slot": 28,
+          "layer": 4
+        },
+        {
+          "slot": 16,
+          "layer": 3
+        },
+        {
+          "slot": 28,
+          "layer": 2
+        },
+        {
+          "slot": 16,
+          "layer": 1
+        }
+      ],
+      "steps": [
+        {
+          "from": {
+            "slot": 1,
+            "layer": 4
+          },
+          "to": {
+            "slot": 37,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 3
+          },
+          "to": {
+            "slot": 1,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 1,
+            "layer": 2
+          },
+          "to": {
+            "slot": 37,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 1
+          },
+          "to": {
+            "slot": 25,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 25,
+            "layer": 4
+          },
+          "to": {
+            "slot": 13,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 13,
+            "layer": 3
+          },
+          "to": {
+            "slot": 25,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 25,
+            "layer": 2
+          },
+          "to": {
+            "slot": 13,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 13,
+            "layer": 1
+          },
+          "to": {
+            "slot": 2,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "branch_join",
+          "signed_pitch": -11,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Exploratory full-q P2 parent join"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 4
+          },
+          "to": {
+            "slot": 38,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 3
+          },
+          "to": {
+            "slot": 2,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 2
+          },
+          "to": {
+            "slot": 38,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 1
+          },
+          "to": {
+            "slot": 26,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 26,
+            "layer": 4
+          },
+          "to": {
+            "slot": 14,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 14,
+            "layer": 3
+          },
+          "to": {
+            "slot": 26,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 26,
+            "layer": 2
+          },
+          "to": {
+            "slot": 14,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 14,
+            "layer": 1
+          },
+          "to": {
+            "slot": 3,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "branch_join",
+          "signed_pitch": -11,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Exploratory full-q P2 parent join"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 4
+          },
+          "to": {
+            "slot": 39,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 3
+          },
+          "to": {
+            "slot": 3,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 2
+          },
+          "to": {
+            "slot": 39,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 1
+          },
+          "to": {
+            "slot": 27,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 27,
+            "layer": 4
+          },
+          "to": {
+            "slot": 15,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 15,
+            "layer": 3
+          },
+          "to": {
+            "slot": 27,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 27,
+            "layer": 2
+          },
+          "to": {
+            "slot": 15,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 15,
+            "layer": 1
+          },
+          "to": {
+            "slot": 4,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "branch_join",
+          "signed_pitch": -11,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Exploratory full-q P2 parent join"
+        },
+        {
+          "from": {
+            "slot": 4,
+            "layer": 4
+          },
+          "to": {
+            "slot": 40,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 40,
+            "layer": 3
+          },
+          "to": {
+            "slot": 4,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 4,
+            "layer": 2
+          },
+          "to": {
+            "slot": 40,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 40,
+            "layer": 1
+          },
+          "to": {
+            "slot": 28,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "first_last_layer",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 28,
+            "layer": 4
+          },
+          "to": {
+            "slot": 16,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 16,
+            "layer": 3
+          },
+          "to": {
+            "slot": 28,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 12,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        },
+        {
+          "from": {
+            "slot": 28,
+            "layer": 2
+          },
+          "to": {
+            "slot": 16,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -12,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "Copied public full-q P2 reference edge"
+        }
+      ],
+      "source_route": {
+        "pattern": "TLP",
+        "q": "4",
+        "pp": 2,
+        "layers": 4,
+        "slots": 48,
+        "phases": 3,
+        "naa": 2,
+        "dividers": [
+          2,
+          1,
+          1
+        ],
+        "route_name": "q_only",
+        "status": "unsupported-yet",
+        "reason": "Unsupported TLP branch divider combination."
+      },
+      "reference_constraints": {
+        "available": false,
+        "edges": []
+      },
+      "warnings": [],
+      "designer_notes": "Candidate; owner and production review pending."
+    }
+  ],
+  "created_branch_count": 2,
+  "all_branch_counts_reached": true,
+  "completion_checks": {
+    "all_naa_branches_created": true,
+    "all_branch_quotas_reached": true,
+    "unique_conductor_occupancy": true,
+    "inputs_current": true,
+    "engineering_validated": false
+  },
+  "route_note": "Proper-Q cohort-join candidate; no production admission.",
+  "image_file": "typical_connections.png",
+  "handoff_file": "REVIEW.md"
+}

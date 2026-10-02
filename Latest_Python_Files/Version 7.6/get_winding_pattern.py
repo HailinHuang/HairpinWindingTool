@@ -963,6 +963,9 @@ def pattern_rejects_divider_tuple(pattern, factors, q=None, pp=None, layers=None
         if q is not None:
             q_value = Fraction(str(q))
             return q_value.denominator == 1 and q_value.numerator % 2 == 1
+    if (normalized == 'ZPP' and selected[0] > 1
+            and selected[1] == 1 and selected[2] == 2):
+        return True
     if normalized == 'ZPP' and selected[2] == 2 and q is not None:
         q_value = Fraction(str(q))
         return (q_value.denominator == 1 and q_value.numerator > 0
@@ -1087,6 +1090,9 @@ def divider_exclusion_reason(pattern, factors=None, q=None, pp=None, layers=None
                 'distinct reflected P2-only (1,1,2) construction is registered. '
                 'Use an admitted P2-only, q-only or q-and-pp route.')
     if normalized == 'ZPP':
+        if (factors is not None and len(factors) == 3 and factors[0] > 1
+                and factors[1] == 1 and factors[2] == 2):
+            return 'q and p2 share same route'
         if (factors is not None and len(factors) == 3 and factors[2] == 2
                 and q is not None):
             q_value = Fraction(str(q))
@@ -1278,7 +1284,7 @@ def supports_tlp_q_pp_two(winding, factors):
 
 
 def supports_integer_tlp_q_only_pair_join(winding, factors):
-    """Admit full-Q TLP adjacent P2 pairing at the one-region seam boundary."""
+    """Admit even-Q TLP full-q P2 cohort joins at the one-region boundary."""
     values = _integer_divider_tuple(factors)
     q = getattr(winding, 'q', None)
     poles = getattr(winding, 'num_poles', None)
@@ -1289,8 +1295,9 @@ def supports_integer_tlp_q_only_pair_join(winding, factors):
             or type(layers) is not int or layers < 2 or layers % 2
             or type(phases) is not int or not _supported_phase_domain(winding)
             or three_phase_set_count(phases) != 1
-            or values != (q, 1, 1)
-            or getattr(winding, 'ab', None) != q
+            or values[1:] != (1, 1)
+            or not 2 <= values[0] <= q or values[0] % 2 or q % values[0]
+            or getattr(winding, 'ab', None) != values[0]
             or getattr(winding, 'num_slots', None) != phases * q * poles
             or (poles // 2) < 2):
         return False
@@ -1571,7 +1578,7 @@ def _tsp_q_only_pair_join_from_reference(tp, winding, layout):
 
 
 def _tlp_q_only_pair_join_from_reference(tp, winding, layout):
-    """Join adjacent full-Q TLP P2 parents in generated phase order."""
+    """Join 2q/Q full-q P2 parents per branch in generated cohort order."""
     factors = _integer_divider_tuple(
         getattr(winding, 'branch_dividers', None))
     if not supports_integer_tlp_q_only_pair_join(winding, factors):
@@ -1584,8 +1591,8 @@ def _tlp_q_only_pair_join_from_reference(tp, winding, layout):
     phases = int(winding.num_phases)
     reference = SimpleNamespace(
         q=q, num_slots=winding.num_slots, num_poles=winding.num_poles,
-        num_phases=phases, num_layers=layers, ab=2 * Q,
-        branch_dividers=(Q, 1, 2))
+        num_phases=phases, num_layers=layers, ab=2 * q,
+        branch_dividers=(q, 1, 2))
     _, source = get_winding_layout('TLP', tp, reference, layout)
     parent_length = pp * layers
 
@@ -1635,26 +1642,28 @@ def _tlp_q_only_pair_join_from_reference(tp, winding, layout):
     database = _CandidateBranches()
     for phase in range(phases):
         parents = groups[phase]
-        if len(parents) != 2 * Q:
+        if len(parents) != 2 * q:
             raise ValueError(
                 f'TLP Q-only source phase {phase + 1} has {len(parents)} '
-                f'branches; expected {2 * Q}.')
+                f'branches; expected {2 * q}.')
         starts_by_layer = Counter(path[0][1] for _branch_id, path in parents)
-        expected_cohorts = Counter({0: Q, layers - 1: Q})
+        expected_cohorts = Counter({0: q, layers - 1: q})
         if starts_by_layer != expected_cohorts:
             raise ValueError(
                 f'TLP Q-only source phase {phase + 1} does not form two '
-                f'{Q}-branch end-layer cohorts.')
+                f'{q}-branch end-layer cohorts.')
         for layer in (0, layers - 1):
             lanes = [path[0][2] for _branch_id, path in parents
                      if path[0][1] == layer]
-            if sorted(lanes) != list(range(Q)):
+            if lanes != list(range(q)):
                 raise ValueError(
                     f'TLP Q-only source phase {phase + 1} does not partition '
                     f'q lanes in layer cohort {layer}.')
 
-        for branch in apply_route_formula(
-                'tlp_q_only_pair_join', parents, factors):
+        # Q may be a proper divisor: use the actual full-q source Naa, so
+        # the existing join formula derives g=(2q)/Q rather than always two.
+        for branch in DividerConnectionFormula(
+                'join', (q, 1, 2), factors).apply(parents):
             database.append([len(database) + 1, branch.path])
 
     starts = [path[0] for _branch_id, path in database]
@@ -2797,6 +2806,12 @@ def _resolve_phase_array_route(pattern, winding, factors, configuration,
     route_names = {item.route_name for item in local_decisions}
     route_name = (next(iter(route_names)) if len(route_names) == 1
                   else 'three_phase_set_array')
+    if 'tlp_q_only_pair_join' in route_names:
+        return PatternRouteDecision(
+            'disabled', 'tlp_q_only_phase_array_unsupported',
+            'TLP q-only cohort joins are admitted for one native phase set; '
+            'mapped phase-set arrays remain unsupported-yet for this construction.',
+            pattern, tuple(factors), admission='unsupported-yet')
     q = Fraction(str(winding.q))
     if (pattern == 'TSP' and q.denominator != 1
             and 'tsp_spiral_pass_partition' in route_names):
@@ -4363,7 +4378,7 @@ def validate_tsp_q_only_pair_join(database, winding, layout):
 
 
 def validate_tlp_q_only_pair_join(database, winding, layout):
-    """Check full-Q source pairing and the TLP insertion-return formula."""
+    """Check full-q parent groups and every TLP insertion-return seam."""
     from layout_analysis import signed_circular_distance
 
     factors = _integer_divider_tuple(
@@ -4378,6 +4393,7 @@ def validate_tlp_q_only_pair_join(database, winding, layout):
     phases = int(winding.num_phases)
     tau = phases * q
     parent_length = pp * layers
+    parents_per_branch = 2 * q // Q
     if len(database) != Q * phases:
         raise ValueError(
             f'TLP Q-only pairing produced {len(database)} branches; '
@@ -4396,7 +4412,7 @@ def validate_tlp_q_only_pair_join(database, winding, layout):
         for phase in range(phases) for layer in (0, layers - 1)
     }
     for branch_id, path in database:
-        if len(path) != 2 * parent_length:
+        if len(path) != parents_per_branch * parent_length:
             raise ValueError(
                 f'TLP Q-only branch {branch_id} has the wrong joined length.')
         if any(node[2] != (
@@ -4405,79 +4421,78 @@ def validate_tlp_q_only_pair_join(database, winding, layout):
             raise ValueError(
                 f'TLP Q-only branch {branch_id} has invalid q coordinates.')
 
-        halves = (path[:parent_length], path[parent_length:])
-        half_phase_lanes = []
-        for half in halves:
-            start_phase, start_sign = phase_sign[tuple(half[0][:2])]
-            end_phase, end_sign = phase_sign[tuple(half[-1][:2])]
+        parents = [path[offset:offset + parent_length]
+                   for offset in range(0, len(path), parent_length)]
+        parent_phase_lanes = []
+        for parent in parents:
+            start_phase, start_sign = phase_sign[tuple(parent[0][:2])]
+            end_phase, end_sign = phase_sign[tuple(parent[-1][:2])]
             if (start_sign != 1 or end_sign != -1
                     or start_phase != end_phase
                     or any(phase_sign[tuple(node[:2])][0] != start_phase
-                           for node in half)):
+                           for node in parent)):
                 raise ValueError(
-                    f'TLP Q-only branch {branch_id} has a parent half that '
+                    f'TLP Q-only branch {branch_id} has a parent that '
                     'does not run N-to-S within one phase.')
-            lane = half[0][2]
-            half_phase_lanes.append((start_phase, lane, half[0][1]))
+            lane = parent[0][2]
+            parent_phase_lanes.append((start_phase, lane, parent[0][1]))
 
-        first_phase, first_lane, first_layer = half_phase_lanes[0]
-        second_phase, second_lane, second_layer = half_phase_lanes[1]
-        if first_phase != second_phase:
+        first_phase, first_lane, first_layer = parent_phase_lanes[0]
+        if any(phase != first_phase for phase, _lane, _layer in parent_phase_lanes):
             raise ValueError(
                 f'TLP Q-only branch {branch_id} joins different phases.')
-        if (first_layer != second_layer
+        if (any(layer != first_layer for _phase, _lane, layer in parent_phase_lanes)
                 or first_layer not in (0, layers - 1)):
             raise ValueError(
                 f'TLP Q-only branch {branch_id} crosses the two source cohorts.')
 
-        outlet = halves[0][-1]
-        inlet = halves[1][0]
-        outlet_phase, outlet_sign = phase_sign[tuple(outlet[:2])]
-        inlet_phase, inlet_sign = phase_sign[tuple(inlet[:2])]
-        if (outlet_phase != inlet_phase or outlet_phase != first_phase
-                or outlet_sign != -1 or inlet_sign != 1
-                or abs(inlet[1] - outlet[1]) != layers - 1):
-            raise ValueError(
-                f'TLP Q-only branch {branch_id} does not form a top-bottom '
-                'N-to-S parent return seam.')
+        for index, (left, right) in enumerate(zip(parents, parents[1:])):
+            outlet, inlet = left[-1], right[0]
+            outlet_phase, outlet_sign = phase_sign[tuple(outlet[:2])]
+            inlet_phase, inlet_sign = phase_sign[tuple(inlet[:2])]
+            if (outlet_phase != inlet_phase or outlet_phase != first_phase
+                    or outlet_sign != -1 or inlet_sign != 1
+                    or abs(inlet[1] - outlet[1]) != layers - 1):
+                raise ValueError(
+                    f'TLP Q-only branch {branch_id} does not form a top-bottom '
+                    'N-to-S parent return seam.')
 
-        shifts = layout.phase_shift_list
-        outlet_slot = outlet[0] - shifts[outlet[1]]
-        inlet_slot = inlet[0] - shifts[inlet[1]]
-        pitch = signed_circular_distance(
-            winding.num_slots, inlet_slot, outlet_slot)
-        if abs(pitch) not in (tau - 1, tau + 1):
-            raise ValueError(
-                f'TLP Q-only branch {branch_id} seam pitch is not tau plus '
-                'or minus one.')
-        oriented_pitch = pitch if inlet[1] < outlet[1] else -pitch
-        if oriented_pitch not in (tau - 1, tau + 1):
-            raise ValueError(
-                f'TLP Q-only branch {branch_id} special return opposes layer '
-                'traversal.')
-        possible_steps = circular_travel_steps(
-            outlet_slot % winding.num_slots,
-            inlet_slot % winding.num_slots, winding.num_slots)
-        if (not possible_steps or any(
-                pole_region_crossings(outlet_slot, step, tau) > 1
-                for step in possible_steps)):
-            raise ValueError(
-                f'TLP Q-only branch {branch_id} seam crosses multiple pole '
-                'regions.')
-        lane_delta = (second_lane - first_lane) % Q
-        if min(lane_delta, Q - lane_delta) != 1:
-            raise ValueError(
-                f'TLP Q-only branch {branch_id} does not join adjacent q lanes.')
-        if any(node[2] != lane for half, (_phase, lane, _layer)
-               in zip(halves, half_phase_lanes) for node in half):
+            shifts = layout.phase_shift_list
+            outlet_slot = outlet[0] - shifts[outlet[1]]
+            inlet_slot = inlet[0] - shifts[inlet[1]]
+            pitch = signed_circular_distance(
+                winding.num_slots, inlet_slot, outlet_slot)
+            if abs(pitch) not in (tau - 1, tau + 1):
+                raise ValueError(
+                    f'TLP Q-only branch {branch_id} seam pitch is not tau plus '
+                    'or minus one.')
+            oriented_pitch = pitch if inlet[1] < outlet[1] else -pitch
+            if oriented_pitch not in (tau - 1, tau + 1):
+                raise ValueError(
+                    f'TLP Q-only branch {branch_id} special return opposes layer '
+                    'traversal.')
+            possible_steps = circular_travel_steps(
+                outlet_slot % winding.num_slots,
+                inlet_slot % winding.num_slots, winding.num_slots)
+            if (not possible_steps or any(
+                    pole_region_crossings(outlet_slot, step, tau) > 1
+                    for step in possible_steps)):
+                raise ValueError(
+                    f'TLP Q-only branch {branch_id} seam crosses multiple pole '
+                    'regions.')
+            if parent_phase_lanes[index + 1][1] != parent_phase_lanes[index][1] + 1:
+                raise ValueError(
+                    f'TLP Q-only branch {branch_id} does not join consecutive q lanes.')
+        if any(node[2] != lane for parent, (_phase, lane, _layer)
+               in zip(parents, parent_phase_lanes) for node in parent):
             raise ValueError(
                 f'TLP Q-only branch {branch_id} changes q lane within a '
-                'parent half.')
+                'parent.')
 
         branches_by_phase[first_phase] += 1
         starts_by_phase_layer[(first_phase, first_layer)] += 1
         lanes_by_phase_layer[(first_phase, first_layer)].extend(
-            (first_lane, second_lane))
+            lane for _phase, lane, _layer in parent_phase_lanes)
 
     if branches_by_phase != Counter({phase: Q for phase in range(phases)}):
         raise ValueError(
@@ -4492,7 +4507,7 @@ def validate_tlp_q_only_pair_join(database, winding, layout):
             'cohort per phase.')
     for phase in range(phases):
         for layer in (0, layers - 1):
-            if sorted(lanes_by_phase_layer[(phase, layer)]) != list(range(Q)):
+            if sorted(lanes_by_phase_layer[(phase, layer)]) != list(range(q)):
                 raise ValueError(
                     'TLP Q-only pairs must partition every q lane once per '
                     'phase and end-layer cohort.')

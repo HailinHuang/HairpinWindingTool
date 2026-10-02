@@ -206,6 +206,11 @@ three-phase construction.
   local layers >=4, each outer-layer positive sector receives two distinct
   inlet q-lanes. Adjacent lanes are allowed when the complete path passes
   independent checks; the saved manual draft alone is not production evidence.
+- TLP `(Q,1,1)` joins `g=2q/Q` consecutive full-q `(q,1,2)` parents within
+  each outer-layer cohort. Even Q divides integer q, pp>=2, even L>=2 and
+  one native phase set are required. Q>2 neutral groups retain unequal
+  parallel complex EMF as not strong symmetry; two-layer overlap stays visible.
+  Preflight and manual completion do not establish public generation.
 - TSP `(1,D,2)` uses the fixed-lane two-inlet formula only when `q|D|pp` and
   every local q lane covers every pole-pair residue exactly once. Phase-set
   arrays apply that check locally and then validate the mapped global paths;
