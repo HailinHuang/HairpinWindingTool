@@ -19,6 +19,15 @@ from pattern_identity import PATTERN_CONTRACTS
 
 
 ROOT = Path(__file__).resolve().parent
+SOURCE_FILES = (
+    'automatic_transposition.py', 'cond_info_operation.py', 'csv_operation.py',
+    'divider_connection_formulas.py', 'end_winding_calc.py',
+    'explicit_connections.py', 'get_winding_pattern.py',
+    'half_integer_q_connection_formulas.py', 'layout_analysis.py',
+    'manual_layout.py', 'pattern_identity.py', 'pattern_route_contract.py',
+    'phase_topology.py', 'refresh_pattern_naa_division_layout.py',
+)
+SOURCE_HASH_FORMAT = 'sha256-sorted-file-map-lf-v1'
 PAGE = ROOT / 'pattern_naa_division_layout.html'
 DATA = ROOT / 'pattern_route_inventory.json'
 STATUS = ROOT / 'INTEGER_Q_DIVIDER_SUPPORT_STATUS.md'
@@ -48,15 +57,18 @@ def scan_geometries():
             (4, 4, 4, 3), (6, 6, 4, 5)]
 
 
+def source_hashes():
+    """Fingerprint the declared local import closure with Git-stable newlines."""
+    return {
+        name: hashlib.sha256((ROOT / name).read_bytes().replace(
+            b'\r\n', b'\n')).hexdigest()
+        for name in SOURCE_FILES
+    }
+
+
 def source_hash():
-    digest = hashlib.sha256()
-    for name in ('get_winding_pattern.py', 'pattern_route_contract.py',
-                 'divider_connection_formulas.py',
-                 'half_integer_q_connection_formulas.py',
-                 'pattern_identity.py', 'explicit_connections.py',
-                 'refresh_pattern_naa_division_layout.py'):
-        digest.update((ROOT / name).read_bytes())
-    return digest.hexdigest()
+    return hashlib.sha256(json.dumps(
+        source_hashes(), sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
 
 def _inputs(pattern, q, pp, layers, phases, factors):
@@ -180,6 +192,8 @@ def scan_inventory(geometries, *, probe_generation=True):
         'generated_at_utc': datetime.now(timezone.utc).isoformat(
             timespec='seconds'),
         'source_sha256': source_hash(),
+        'source_hash_format': SOURCE_HASH_FORMAT,
+        'source_hashes': source_hashes(),
         'geometries': [list(row) for row in geometries],
         'scope': ('Listed integer-q geometries, neutral Regular at the '
                   'route-required inlet. Counts are tuple/geometry requests, '
@@ -552,10 +566,11 @@ def render_page(inventory):
         'retained-not-strong keeps a generated path with EMF asymmetry '
         'visible without certifying strong symmetry.</p>',
         '<p>The 80 Pattern × divider-type cells below count resolver '
-        'admissions over five listed integer-q geometries. Mixed cells can '
+        'admissions over ' + str(len(inventory['geometries'])) +
+        ' listed integer-q geometries. Mixed cells can '
         'contain multiple admissions. A generated example is one case, '
-        'not a family-wide result. Configuration probes below show '
-        'preflight only.</p>',
+        'not a family-wide result. Configuration probes report preflight; '
+        'public generation is shown where explicitly run.</p>',
         '<p><strong>Sample scope:</strong> ' + escape(inventory['scope']) +
         ' <strong>Generated:</strong> ' +
         escape(inventory['generated_at_utc']) + ' UTC. '
@@ -568,10 +583,8 @@ def render_page(inventory):
         '<a href="INTEGER_Q_DIVIDER_SUPPORT_STATUS.md">'
         'finite status summary</a> · <a href="PATTERN_DIVIDER_FORMULA_SUPPORT.md">'
         'support notes</a>.</p>',
-        '<p><a href="../Version%207.5/pattern_naa_division_layout.html">'
-        'V7.5 historical research</a> and '
-        '<a href="../Version%207.5/pattern_naa_review_cards.html">'
-        'historical candidate review</a> retain the dated research '
+        '<p>V7.5 historical research and historical candidate review '
+        '(local research excluded) retain the dated research '
         'evidence. Their counts are not current V7.6 admissions.</p>',
         '<p>Fractional q interfaces remain in the V7.6 resolver. This '
         'integer-q scan does not add fractional cases or promote the '
@@ -652,9 +665,7 @@ def render_page(inventory):
         'the generated connection. Explicit production examples '
         'are reported separately.</p>',
             '<p><strong>Fractional q:</strong> not scanned here; '
-            '<a href="../Version%207.5/pattern_naa_division_layout.html'
-            '#pattern-' + pattern.lower() + '">V7.5 evidence</a> '
-            'remains historical.</p>',
+            'V7.5 evidence (local research excluded) remains historical.</p>',
             '<div class="table-wrap"><table><thead><tr><th>Setting or route sample</th>'
             '<th>Preflight</th><th>Rule and reason</th>'
             '<th>Public generation</th></tr></thead><tbody>',
@@ -677,8 +688,7 @@ def render_page(inventory):
     lines += [
         '</main><footer class="wrap">V7.6 finite source view. '
         '<a href="pattern_guide.html">Pattern Guide</a> · '
-        '<a href="../Version%207.5/pattern_naa_division_layout.html">'
-        'V7.5 historical research</a>.</footer></body></html>',
+        'V7.5 historical research (local research excluded).</footer></body></html>',
     ]
     return refresh_identity_policy('\n'.join(lines))
 
@@ -719,10 +729,8 @@ def render_status_document(inventory):
         '(pattern_naa_division_layout.html) and '
         '[machine-readable finite scan](pattern_route_inventory.json).',
         '',
-        'Historical evidence: [V7.5 integer-q status]'
-        '(<../Version 7.5/INTEGER_Q_DIVIDER_SUPPORT_STATUS.md>) and '
-        '[V7.5 Naa research]'
-        '(<../Version 7.5/pattern_naa_division_layout.html>). '
+        'Historical evidence: V7.5 integer-q status and V7.5 Naa research '
+        '(local research excluded). '
         'Their dated counts are not current V7.6 admissions.',
         '',
         'Fractional q is outside this finite scan. Its V7.6 public '
@@ -742,14 +750,20 @@ def main():
         saved = json.loads(DATA.read_text(encoding='utf-8'))
         if saved['source_sha256'] != source_hash():
             raise ValueError('The saved V7.6 status view has stale source code.')
-        if saved['source_sha256'] not in PAGE.read_text(encoding='utf-8'):
-            raise ValueError('HTML source signature differs from JSON.')
-        if saved['source_sha256'] not in STATUS.read_text(encoding='utf-8'):
-            raise ValueError('Markdown source signature differs from JSON.')
+        if (saved.get('source_hash_format') != SOURCE_HASH_FORMAT
+                or saved.get('source_hashes') != source_hashes()):
+            raise ValueError('The saved source-closure metadata differs from current code.')
+        if PAGE.read_text(encoding='utf-8') != render_page(saved):
+            raise ValueError('HTML content differs from the saved finite scan.')
+        if STATUS.read_text(encoding='utf-8') != render_status_document(saved):
+            raise ValueError('Markdown content differs from the saved finite scan.')
         print('V7.6 status signatures match.')
         return
+    signature = source_hash()
     inventory = scan_inventory(scan_geometries())
     inventory['feature_probes'] = feature_probes()
+    if source_hash() != signature or inventory['source_sha256'] != signature:
+        raise ValueError('V7.6 source changed during the finite status refresh.')
     DATA.write_text(json.dumps(inventory, ensure_ascii=False, indent=2),
                     encoding='utf-8')
     PAGE.write_text(render_page(inventory), encoding='utf-8')

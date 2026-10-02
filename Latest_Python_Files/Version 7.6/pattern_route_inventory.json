@@ -1,8 +1,25 @@
 {
   "schema": 1,
   "version": "7.6",
-  "generated_at_utc": "2026-09-29T08:50:25+00:00",
-  "source_sha256": "5a6f0b8eb99463e4c9789e0464f6ddacd73cd7e6d54c6562e318fc799116abad",
+  "generated_at_utc": "2026-10-02T07:14:31+00:00",
+  "source_sha256": "429289a4580131c61bc1ae5e32e77395ea8ab54f9466936cb662a9c1b7936a7a",
+  "source_hash_format": "sha256-sorted-file-map-lf-v1",
+  "source_hashes": {
+    "automatic_transposition.py": "bdffe24aff864db11342a686668c4026f37158fe46282f5020a1d4e08427e17b",
+    "cond_info_operation.py": "f36ff44a92e659a401c512012f43ff869a1ba94b749b48df4f31f13c5c9b6364",
+    "csv_operation.py": "2184fe65ae49e0ebe053fb345d42a5867274c98b9694a18d08cc329476a7b40c",
+    "divider_connection_formulas.py": "d77e240f72d112f69c2fb95c4e2c9d27913a61631340f5a4c8a3c2735616b408",
+    "end_winding_calc.py": "38d939fb64ae82bff56a8856349ccf5928f2665421e490cedbb9f1560f7a2d3b",
+    "explicit_connections.py": "d3a2499167a0e00298d446ab2872778c1d1c306889d09ffd54305deda554520d",
+    "get_winding_pattern.py": "8ebb28f7121255d120c2ec70e03bd0c77c7140c19e3db619bdd55a207d7462e4",
+    "half_integer_q_connection_formulas.py": "5bba2a1e3b6fbd4f1bf3d3e6ac70e271f127e01033d6b1776ecd0d517932e196",
+    "layout_analysis.py": "cbc24c009497e31791c95969574970a981b69d4c632029c516ab31d5bc2e8df3",
+    "manual_layout.py": "a1cc8d6e0f1660550e0b76401a0b7bac035e410a9d9951eb53e3e0243c3ab4bd",
+    "pattern_identity.py": "12262eb39fb7b28707f992d16d980594988fbc3474c66df6b03c4074b425d540",
+    "pattern_route_contract.py": "f59a30fd5b1ec026b4a9a3c6ce65a2853f6ae885c2ff5eadf79097f297eb1f67",
+    "phase_topology.py": "7de75ef6018d457b0e65b94114ed069246807e9885458986296e69b797f0e759",
+    "refresh_pattern_naa_division_layout.py": "6080cae99022490d949de34f4e17263a8bda888af5dfeb9e0118c2db917f6fcf"
+  },
   "geometries": [
     [
       2,
@@ -4995,10 +5012,10 @@
           "setting": "Shift",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "ssp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "ssp_default satisfies the symbolic construction and pin-profile contract.",
             "is_default": true,
             "required_inlet": "insert",
             "pin_profile": [
@@ -5079,7 +5096,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "ssp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "This production route requires no inlet adjustment and its required insert-side inlet.",
             "is_default": true,
             "required_inlet": "insert",
             "pin_profile": [
@@ -6541,10 +6558,10 @@
           "setting": "Shift",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "slp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "slp_default satisfies the symbolic construction and pin-profile contract.",
             "is_default": true,
             "required_inlet": "insert",
             "pin_profile": [
@@ -7671,10 +7688,10 @@
           "setting": "Shift",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "tlp_q_only_pair_join",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "tlp_q_only_pair_join satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": [
@@ -7701,7 +7718,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "tlp_q_only_pair_join",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "This production route requires no inlet adjustment and its required insert-side inlet.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": [
@@ -8006,10 +8023,10 @@
           "setting": "Shift",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "tlp_q_pp_p2_parent_slices",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "tlp_q_pp_p2_parent_slices satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": [
@@ -8471,10 +8488,10 @@
           "setting": "Shift",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "zlp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "zlp_default satisfies the symbolic construction and pin-profile contract.",
             "is_default": true,
             "required_inlet": "insert",
             "pin_profile": [
@@ -8555,7 +8572,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "zlp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "This production route requires no inlet adjustment and its required insert-side inlet.",
             "is_default": true,
             "required_inlet": "insert",
             "pin_profile": [
@@ -8637,10 +8654,10 @@
           "setting": "Shift",
           "inlet": "weld",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "zpp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required weld-side inlet.",
+            "reason": "zpp_default satisfies the symbolic construction and pin-profile contract.",
             "is_default": true,
             "required_inlet": "weld",
             "pin_profile": [
@@ -8718,7 +8735,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "zpp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required weld-side inlet.",
+            "reason": "This production route requires no inlet adjustment and its required weld-side inlet.",
             "is_default": true,
             "required_inlet": "weld",
             "pin_profile": [
@@ -9171,10 +9188,10 @@
           "setting": "Shift",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "cp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "cp_default satisfies the symbolic construction and pin-profile contract.",
             "is_default": true,
             "required_inlet": "insert",
             "pin_profile": [
@@ -9252,7 +9269,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "cp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required insert-side inlet.",
+            "reason": "This production route requires no inlet adjustment and its required insert-side inlet.",
             "is_default": true,
             "required_inlet": "insert",
             "pin_profile": [
@@ -10023,10 +10040,10 @@
           "setting": "Shift",
           "inlet": "weld",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "lpp_pp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required weld-side inlet.",
+            "reason": "lpp_pp_default satisfies the symbolic construction and pin-profile contract.",
             "is_default": true,
             "required_inlet": "weld",
             "pin_profile": [
@@ -10104,7 +10121,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "lpp_pp_default",
-            "reason": "This production route requires zero phase/radial shifts, no inlet adjustment, and its required weld-side inlet.",
+            "reason": "This production route requires no inlet adjustment and its required weld-side inlet.",
             "is_default": true,
             "required_inlet": "weld",
             "pin_profile": [

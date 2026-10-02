@@ -4,6 +4,16 @@ Version 7.6 is the supported development target. Current executable support come
 from the production resolver and successful public generation. This repository
 selects current source/tests, required help resources, and regression inputs.
 
+## Workstreams
+
+GitHub `main` is the shared baseline. Core / Workbench owns Pattern/divider
+construction, branch routing, phase topology, identity, connection formulas,
+resolver admission, exploratory Workbench and engineering validation.
+Application / UI / JMAG owns main-application UI/configuration, JMAG integration,
+result export, packaging and peripheral features. Coordinate shared interface
+changes through the respective sections of
+[Master Work Status](https://github.com/HailinHuang/HairpinWindingTool/issues/1).
+
 ## Implemented
 
 - PyQt6 layout/phase/branch views, configuration/data export, winding-function and
@@ -13,12 +23,16 @@ selects current source/tests, required help resources, and regression inputs.
 - Parameterized integer and selected fractional connection families, with separate
   supported, candidate, rejected, and unsupported admission states.
 - Exploratory Workbench schema-v3 packages; manual completion does not certify routes.
+- [Finite divider-status provenance and navigation](https://github.com/HailinHuang/HairpinWindingTool/issues/2)
+  refreshed for the existing six geometries: 80 cells and 860 resolver requests.
+  The JSON, page and summary share a 14-file local Python source signature;
+  navigation stays within repository resources.
 
 ## Limitations and blockers
 
-- Saved `pattern_route_inventory.json`, `pattern_naa_division_layout.html`, and
-  `INTEGER_Q_DIVIDER_SUPPORT_STATUS.md` describe an older finite sample. Their
-  source signature differs from current code; counts are not current support.
+- The finite status view covers only its listed geometries/settings. Counts are
+  preflight requests; selected public examples do not establish family-wide or
+  complete integer-domain support. Recheck its source signature before reuse.
 - Half-integer ZPP has fresh finite evidence for the six-phase construction
   described below. Other geometries remain unverified; local probe outputs and
   receipts are excluded from the repository selection.
@@ -33,20 +47,27 @@ selects current source/tests, required help resources, and regression inputs.
 
 Track these as discrete GitHub Issues with focused acceptance:
 
-1. [Refresh finite divider-status provenance and navigation](https://github.com/HailinHuang/HairpinWindingTool/issues/2).
-2. [Define the bounded integer-divider acceptance domain](https://github.com/HailinHuang/HairpinWindingTool/issues/3).
-3. [Complete source-bound half-integer TLP/UWP validation](https://github.com/HailinHuang/HairpinWindingTool/issues/4).
-4. [Establish packaged/native acceptance tied to current source](https://github.com/HailinHuang/HairpinWindingTool/issues/5).
+1. Core: [Define the bounded integer-divider acceptance domain](https://github.com/HailinHuang/HairpinWindingTool/issues/3),
+   after q/configuration-domain decisions.
+2. Core: [Complete source-bound half-integer TLP/UWP validation](https://github.com/HailinHuang/HairpinWindingTool/issues/4),
+   after launcher review and a fresh source binding.
+3. Application: [Establish packaged/native acceptance tied to current source](https://github.com/HailinHuang/HairpinWindingTool/issues/5).
 
 GitHub [Issues](https://github.com/HailinHuang/HairpinWindingTool/issues) are the
 authoritative backlog. This list states priorities, not a second task database.
 
 Delivery coordination lives in [Master Work Status](https://github.com/HailinHuang/HairpinWindingTool/issues/1),
-separate from the four engineering Issues above. Keep its update time, task/phase,
+separate from the engineering Issues. Keep its update time, task/phase,
 branch/commit, unpushed changes, validation, blockers and next action current.
 Use live Git for branch/commit and unpushed state.
 
 ## Last meaningful validation
+
+The finite-status refresh passed all 22 direct status tests, including five new
+provenance/navigation checks, and `refresh_pattern_naa_division_layout.py --check`.
+The six geometries and preflight counts are unchanged. Four TLP status assertions
+now follow the established shift/manual-transposition admission contract;
+production rules, inlet rejection and generation certification gates are unchanged.
 
 On 2026-10-02, 31 focused tests passed from an isolated copy of the staged files.
 Runtime pins/imports, required fixtures, help navigation, staged secret/size checks,

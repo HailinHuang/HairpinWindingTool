@@ -34,6 +34,7 @@ $env:MPLCONFIGDIR = Join-Path $env:TEMP 'hairpin-matplotlib'
 | Public route versus saved independent path | `test_zpp_centered_entry_admission.ZppCenteredEntryAdmissionTests.test_q2_d4_public_paths_match_the_saved_manual_package` |
 | Workbench serialization | `test_pattern_rule_workbench.PatternDraftTests.test_complete_rule_package_enables_copy_and_writes_schema_v3` |
 | Help-page navigation | `test_pattern_naa_division_layout.PatternNaaDivisionLayoutTests.test_saved_page_covers_patterns_and_links_to_archived_evidence` |
+| Finite-status decisions, source drift and navigation | `test_pattern_naa_division_layout` |
 | Finite-status provenance after refresh | `python refresh_pattern_naa_division_layout.py --check` |
 
 Selected JSON fixtures retain their original names because tests read those
@@ -70,9 +71,32 @@ An additional bounded probe at BWP `q=5/2`, 12 poles, 6 layers, `Naa=3`, divider
 because actual connections cross multiple pole regions. This is a current
 candidate boundary, not a certified construction or a migration regression.
 
-The finite-status resources have a stale source signature. Their archived examples
-are not current acceptance. Refresh is a separate source-bound task; this import
-does not rerun all routes or change production admission.
+### Finite divider-status provenance (2026-10-02)
+
+The existing six-geometry sample was refreshed without changing production rules:
+80 Pattern/formula cells contain 860 preflight requests, with unchanged counts
+of 430 supported, four Candidate, 367 rejected and 59 unsupported-yet requests.
+Public generation is shown only for explicitly run examples; retained EMF
+asymmetry remains `retained-not-strong`, separate from strong-symmetry certification.
+Neither the counts nor those examples establish complete-domain support.
+
+The inventory records the 14-file local Python import closure, per-file SHA-256
+values and an aggregate digest of the sorted compact file map, normalizing CRLF
+to LF (`sha256-sorted-file-map-lf-v1`). The generator compares entry/exit source
+signatures before writing resources. `--check` verifies that map and the exact
+HTML/Markdown rendering of the saved JSON, including its generation timestamp.
+Excluded V7.5 research is described without links to missing repository files.
+
+All 22 direct status tests passed, including five new checks for newline
+portability, topology-source changes, source drift, rendering consistency and
+repository navigation. The exact staged source also passed `--check` in an
+isolated LF checkout using the existing environment. Four older TLP preflight
+assertions were corrected using
+the current 2026-09-29 post-connection-shift and manual-transposition rules in
+`PATTERN_DIVIDER_FORMULA_SUPPORT.md`, confirmed by the resolver implementation.
+They assert `enabled`/`supported` and the original rule IDs, retain inlet rejection,
+and do not claim public generation for preflight-only probes. Unchanged runtime,
+fixtures and environment reuse prior scoped evidence; no full regression was run.
 
 ### Finite half-integer ZPP formula evidence (2026-10-02)
 

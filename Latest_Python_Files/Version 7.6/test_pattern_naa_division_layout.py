@@ -3,6 +3,8 @@
 import unittest
 from unittest.mock import patch
 import json
+import sys
+import tempfile
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote
@@ -26,6 +28,95 @@ class Links(HTMLParser):
             self.ids.add(values['id'])
         if tag == 'a' and values.get('href'):
             self.hrefs.append(values['href'])
+
+
+class StatusProvenanceTests(unittest.TestCase):
+    def setUp(self):
+        import refresh_pattern_naa_division_layout as refresh
+
+        self.refresh = refresh
+        self.inventory = json.loads((ROOT / 'pattern_route_inventory.json').read_text(
+            encoding='utf-8'))
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.source_root = Path(self.temp.name)
+        for name in refresh.SOURCE_FILES:
+            (self.source_root / name).write_bytes((name + '\noriginal\n').encode())
+
+    def test_source_hash_is_stable_across_git_line_endings(self):
+        with patch.object(self.refresh, 'ROOT', self.source_root):
+            expected = self.refresh.source_hash()
+            for name in self.refresh.SOURCE_FILES:
+                path = self.source_root / name
+                path.write_bytes(path.read_bytes().replace(b'\n', b'\r\n'))
+            self.assertEqual(self.refresh.source_hash(), expected)
+
+    def test_source_hash_includes_phase_topology(self):
+        with patch.object(self.refresh, 'ROOT', self.source_root):
+            before = self.refresh.source_hash()
+            (self.source_root / 'phase_topology.py').write_bytes(b'changed\n')
+            self.assertNotEqual(self.refresh.source_hash(), before)
+
+    def test_generated_navigation_stays_with_repository_resources(self):
+        links = Links()
+        links.feed(self.refresh.render_page(self.inventory))
+        for href in links.hrefs:
+            if href.startswith('#'):
+                self.assertIn(href[1:], links.ids)
+                continue
+            path = (ROOT / unquote(href.split('#', 1)[0])).resolve()
+            with self.subTest(href=href):
+                self.assertTrue(path.is_relative_to(ROOT))
+                self.assertTrue(path.is_file())
+        document = self.refresh.render_status_document(self.inventory)
+        self.assertNotIn('../Version 7.5/', document)
+
+    def test_refresh_rejects_source_drift_before_writing_resources(self):
+        refresh = self.refresh
+        outputs = {name: self.source_root / name for name in ('data', 'page', 'status')}
+        for path in outputs.values():
+            path.write_text('previous resource', encoding='utf-8')
+
+        def drift(*args, **kwargs):
+            (self.source_root / 'phase_topology.py').write_bytes(b'changed\n')
+            return self.inventory
+
+        with (patch.object(refresh, 'ROOT', self.source_root),
+              patch.object(refresh, 'DATA', outputs['data']),
+              patch.object(refresh, 'PAGE', outputs['page']),
+              patch.object(refresh, 'STATUS', outputs['status']),
+              patch.object(refresh, 'scan_inventory', side_effect=drift),
+              patch.object(refresh, 'feature_probes', return_value=[]),
+              patch.object(sys, 'argv', ['refresh'])):
+            self.inventory['source_sha256'] = refresh.source_hash()
+            self.inventory['source_hashes'] = refresh.source_hashes()
+            with self.assertRaisesRegex(ValueError, 'source changed'):
+                refresh.main()
+        for path in outputs.values():
+            self.assertEqual(path.read_text(encoding='utf-8'), 'previous resource')
+
+    def test_check_rejects_resources_from_a_different_generation(self):
+        refresh = self.refresh
+        outputs = {name: self.source_root / name for name in ('data', 'page', 'status')}
+        with (patch.object(refresh, 'ROOT', self.source_root),
+              patch.object(refresh, 'DATA', outputs['data']),
+              patch.object(refresh, 'PAGE', outputs['page']),
+              patch.object(refresh, 'STATUS', outputs['status']),
+              patch.object(sys, 'argv', ['refresh', '--check'])):
+            inventory = refresh.scan_inventory([], probe_generation=False)
+            inventory['feature_probes'] = []
+            outputs['data'].write_text(json.dumps(inventory), encoding='utf-8')
+            page = refresh.render_page(inventory)
+            status = refresh.render_status_document(inventory)
+            for target, content in (('page', page), ('status', status)):
+                with self.subTest(resource=target):
+                    outputs['page'].write_text(page, encoding='utf-8')
+                    outputs['status'].write_text(status, encoding='utf-8')
+                    outputs[target].write_text(content.replace(
+                        inventory['generated_at_utc'], 'another generation'),
+                        encoding='utf-8')
+                    with self.assertRaisesRegex(ValueError, 'content differs'):
+                        refresh.main()
 
 
 class PatternNaaDivisionLayoutTests(unittest.TestCase):
@@ -65,7 +156,11 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
                 'Q+PP+P2 parent slices: phase-shift boundary',
                 'Q+PP+P2 parent slices: transposition boundary'):
             with self.subTest(name=name):
-                self.assertEqual(tlp[name]['preflight']['status'], 'disabled')
+                # Current shift/manual-TP admission permits an attempt, not certification.
+                self.assertEqual(tlp[name]['preflight']['status'], 'enabled')
+                self.assertEqual(tlp[name]['preflight']['admission'], 'supported')
+                self.assertEqual(tlp[name]['preflight']['rule_id'],
+                                 'tlp_q_pp_p2_parent_slices')
                 self.assertNotIn('production', tlp[name])
 
     def test_tlp_q_only_pair_probes_show_formula_and_matrix_delta(self):
@@ -114,11 +209,16 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
 
         for name in (
                 'Q-only adjacent P2 pair: transposition boundary',
-                'Q-only adjacent P2 pair: phase-shift boundary',
-                'Q-only adjacent P2 pair: wrong-inlet boundary'):
+                'Q-only adjacent P2 pair: phase-shift boundary'):
             with self.subTest(name=name):
-                self.assertEqual(tlp[name]['preflight']['status'], 'disabled')
+                self.assertEqual(tlp[name]['preflight']['status'], 'enabled')
+                self.assertEqual(tlp[name]['preflight']['admission'], 'supported')
+                self.assertEqual(tlp[name]['preflight']['rule_id'],
+                                 'tlp_q_only_pair_join')
                 self.assertNotIn('production', tlp[name])
+        wrong_inlet = tlp['Q-only adjacent P2 pair: wrong-inlet boundary']
+        self.assertEqual(wrong_inlet['preflight']['status'], 'disabled')
+        self.assertNotIn('production', wrong_inlet)
 
         inventory = scan_inventory(
             scan_geometries(), probe_generation=False)
