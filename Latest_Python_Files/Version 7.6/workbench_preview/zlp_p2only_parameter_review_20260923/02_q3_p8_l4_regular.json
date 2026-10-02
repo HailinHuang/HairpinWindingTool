@@ -1,0 +1,3092 @@
+{
+  "tool": "Pattern Rule Workbench",
+  "status": "exploratory_complete_branch",
+  "certified": false,
+  "pattern_family": "wave",
+  "pattern": "ZLP",
+  "slots": 72,
+  "poles": 8,
+  "layers": 4,
+  "q": "3",
+  "num_phases": 3,
+  "phase": "A",
+  "phase_index": 0,
+  "layer_shifts": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "naa": 2,
+  "target_branch_conductor_count": 48,
+  "source_route": {
+    "pattern": "ZLP",
+    "q": "3",
+    "pp": 4,
+    "layers": 4,
+    "slots": 72,
+    "phases": 3,
+    "naa": 2,
+    "dividers": [
+      1,
+      1,
+      2
+    ],
+    "route_name": "p2_only",
+    "status": "disabled",
+    "reason": "ZLP has no validated construction for divider tuple (1, 1, 2)."
+  },
+  "reference_constraints": {
+    "available": false,
+    "reason": "Hand-assembled review path; see construction and validation metadata.",
+    "edges": []
+  },
+  "main_pitches": [
+    9
+  ],
+  "first_connection_side": "weld",
+  "current_wave_direction": 1,
+  "phase_conductor_count": 96,
+  "used_conductor_count": 48,
+  "remaining_branch_conductor_count": 0,
+  "path": [
+    {
+      "slot": 1,
+      "layer": 1
+    },
+    {
+      "slot": 10,
+      "layer": 2
+    },
+    {
+      "slot": 3,
+      "layer": 1
+    },
+    {
+      "slot": 12,
+      "layer": 2
+    },
+    {
+      "slot": 2,
+      "layer": 1
+    },
+    {
+      "slot": 11,
+      "layer": 2
+    },
+    {
+      "slot": 21,
+      "layer": 3
+    },
+    {
+      "slot": 30,
+      "layer": 4
+    },
+    {
+      "slot": 20,
+      "layer": 3
+    },
+    {
+      "slot": 29,
+      "layer": 4
+    },
+    {
+      "slot": 19,
+      "layer": 3
+    },
+    {
+      "slot": 28,
+      "layer": 4
+    },
+    {
+      "slot": 37,
+      "layer": 4
+    },
+    {
+      "slot": 28,
+      "layer": 3
+    },
+    {
+      "slot": 38,
+      "layer": 4
+    },
+    {
+      "slot": 29,
+      "layer": 3
+    },
+    {
+      "slot": 39,
+      "layer": 4
+    },
+    {
+      "slot": 30,
+      "layer": 3
+    },
+    {
+      "slot": 20,
+      "layer": 2
+    },
+    {
+      "slot": 11,
+      "layer": 1
+    },
+    {
+      "slot": 21,
+      "layer": 2
+    },
+    {
+      "slot": 12,
+      "layer": 1
+    },
+    {
+      "slot": 19,
+      "layer": 2
+    },
+    {
+      "slot": 10,
+      "layer": 1
+    },
+    {
+      "slot": 19,
+      "layer": 1
+    },
+    {
+      "slot": 28,
+      "layer": 2
+    },
+    {
+      "slot": 21,
+      "layer": 1
+    },
+    {
+      "slot": 30,
+      "layer": 2
+    },
+    {
+      "slot": 20,
+      "layer": 1
+    },
+    {
+      "slot": 29,
+      "layer": 2
+    },
+    {
+      "slot": 39,
+      "layer": 3
+    },
+    {
+      "slot": 48,
+      "layer": 4
+    },
+    {
+      "slot": 38,
+      "layer": 3
+    },
+    {
+      "slot": 47,
+      "layer": 4
+    },
+    {
+      "slot": 37,
+      "layer": 3
+    },
+    {
+      "slot": 46,
+      "layer": 4
+    },
+    {
+      "slot": 55,
+      "layer": 4
+    },
+    {
+      "slot": 46,
+      "layer": 3
+    },
+    {
+      "slot": 56,
+      "layer": 4
+    },
+    {
+      "slot": 47,
+      "layer": 3
+    },
+    {
+      "slot": 57,
+      "layer": 4
+    },
+    {
+      "slot": 48,
+      "layer": 3
+    },
+    {
+      "slot": 38,
+      "layer": 2
+    },
+    {
+      "slot": 29,
+      "layer": 1
+    },
+    {
+      "slot": 39,
+      "layer": 2
+    },
+    {
+      "slot": 30,
+      "layer": 1
+    },
+    {
+      "slot": 37,
+      "layer": 2
+    },
+    {
+      "slot": 28,
+      "layer": 1
+    }
+  ],
+  "steps": [
+    {
+      "from": {
+        "slot": 1,
+        "layer": 1
+      },
+      "to": {
+        "slot": 10,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 10,
+        "layer": 2
+      },
+      "to": {
+        "slot": 3,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -7,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 3,
+        "layer": 1
+      },
+      "to": {
+        "slot": 12,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 12,
+        "layer": 2
+      },
+      "to": {
+        "slot": 2,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 2,
+        "layer": 1
+      },
+      "to": {
+        "slot": 11,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 11,
+        "layer": 2
+      },
+      "to": {
+        "slot": 21,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 21,
+        "layer": 3
+      },
+      "to": {
+        "slot": 30,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 30,
+        "layer": 4
+      },
+      "to": {
+        "slot": 20,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 20,
+        "layer": 3
+      },
+      "to": {
+        "slot": 29,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 29,
+        "layer": 4
+      },
+      "to": {
+        "slot": 19,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 19,
+        "layer": 3
+      },
+      "to": {
+        "slot": 28,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 28,
+        "layer": 4
+      },
+      "to": {
+        "slot": 37,
+        "layer": 4
+      },
+      "side": "insert",
+      "kind": "turnaround",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 4
+      },
+      "to": {
+        "slot": 28,
+        "layer": 3
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 28,
+        "layer": 3
+      },
+      "to": {
+        "slot": 38,
+        "layer": 4
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 38,
+        "layer": 4
+      },
+      "to": {
+        "slot": 29,
+        "layer": 3
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 29,
+        "layer": 3
+      },
+      "to": {
+        "slot": 39,
+        "layer": 4
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 39,
+        "layer": 4
+      },
+      "to": {
+        "slot": 30,
+        "layer": 3
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 30,
+        "layer": 3
+      },
+      "to": {
+        "slot": 20,
+        "layer": 2
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 20,
+        "layer": 2
+      },
+      "to": {
+        "slot": 11,
+        "layer": 1
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 11,
+        "layer": 1
+      },
+      "to": {
+        "slot": 21,
+        "layer": 2
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 21,
+        "layer": 2
+      },
+      "to": {
+        "slot": 12,
+        "layer": 1
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 12,
+        "layer": 1
+      },
+      "to": {
+        "slot": 19,
+        "layer": 2
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 7,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 19,
+        "layer": 2
+      },
+      "to": {
+        "slot": 10,
+        "layer": 1
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 10,
+        "layer": 1
+      },
+      "to": {
+        "slot": 19,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "turnaround",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 19,
+        "layer": 1
+      },
+      "to": {
+        "slot": 28,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 28,
+        "layer": 2
+      },
+      "to": {
+        "slot": 21,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -7,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 21,
+        "layer": 1
+      },
+      "to": {
+        "slot": 30,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 30,
+        "layer": 2
+      },
+      "to": {
+        "slot": 20,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 20,
+        "layer": 1
+      },
+      "to": {
+        "slot": 29,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 29,
+        "layer": 2
+      },
+      "to": {
+        "slot": 39,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 39,
+        "layer": 3
+      },
+      "to": {
+        "slot": 48,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 48,
+        "layer": 4
+      },
+      "to": {
+        "slot": 38,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 38,
+        "layer": 3
+      },
+      "to": {
+        "slot": 47,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 47,
+        "layer": 4
+      },
+      "to": {
+        "slot": 37,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 3
+      },
+      "to": {
+        "slot": 46,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 46,
+        "layer": 4
+      },
+      "to": {
+        "slot": 55,
+        "layer": 4
+      },
+      "side": "insert",
+      "kind": "turnaround",
+      "signed_pitch": 9,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 55,
+        "layer": 4
+      },
+      "to": {
+        "slot": 46,
+        "layer": 3
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 46,
+        "layer": 3
+      },
+      "to": {
+        "slot": 56,
+        "layer": 4
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 56,
+        "layer": 4
+      },
+      "to": {
+        "slot": 47,
+        "layer": 3
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 47,
+        "layer": 3
+      },
+      "to": {
+        "slot": 57,
+        "layer": 4
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 57,
+        "layer": 4
+      },
+      "to": {
+        "slot": 48,
+        "layer": 3
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 48,
+        "layer": 3
+      },
+      "to": {
+        "slot": 38,
+        "layer": 2
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": -10,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 38,
+        "layer": 2
+      },
+      "to": {
+        "slot": 29,
+        "layer": 1
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 29,
+        "layer": 1
+      },
+      "to": {
+        "slot": 39,
+        "layer": 2
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 10,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 39,
+        "layer": 2
+      },
+      "to": {
+        "slot": 30,
+        "layer": 1
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 30,
+        "layer": 1
+      },
+      "to": {
+        "slot": 37,
+        "layer": 2
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 7,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 2
+      },
+      "to": {
+        "slot": 28,
+        "layer": 1
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": -9,
+      "wave_direction": -1,
+      "direction_ok": true,
+      "note": "ZLP P2-only mirror review candidate"
+    }
+  ],
+  "warnings": [],
+  "designer_notes": "",
+  "schema_version": 3,
+  "manual_edit_dirty": true,
+  "active_branch": 1,
+  "branches": [
+    {
+      "tool": "Pattern Rule Workbench",
+      "status": "exploratory_complete_branch",
+      "certified": false,
+      "pattern_family": "wave",
+      "pattern": "ZLP",
+      "slots": 72,
+      "poles": 8,
+      "layers": 4,
+      "q": "3",
+      "num_phases": 3,
+      "phase": "A",
+      "phase_index": 0,
+      "layer_shifts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "naa": 2,
+      "target_branch_conductor_count": 48,
+      "source_route": {
+        "pattern": "ZLP",
+        "q": "3",
+        "pp": 4,
+        "layers": 4,
+        "slots": 72,
+        "phases": 3,
+        "naa": 2,
+        "dividers": [
+          1,
+          1,
+          2
+        ],
+        "route_name": "p2_only",
+        "status": "disabled",
+        "reason": "ZLP has no validated construction for divider tuple (1, 1, 2)."
+      },
+      "reference_constraints": {
+        "available": false,
+        "reason": "Hand-assembled review path; see construction and validation metadata.",
+        "edges": []
+      },
+      "main_pitches": [
+        9
+      ],
+      "first_connection_side": "weld",
+      "current_wave_direction": 1,
+      "phase_conductor_count": 96,
+      "used_conductor_count": 48,
+      "remaining_branch_conductor_count": 0,
+      "path": [
+        {
+          "slot": 1,
+          "layer": 1
+        },
+        {
+          "slot": 10,
+          "layer": 2
+        },
+        {
+          "slot": 3,
+          "layer": 1
+        },
+        {
+          "slot": 12,
+          "layer": 2
+        },
+        {
+          "slot": 2,
+          "layer": 1
+        },
+        {
+          "slot": 11,
+          "layer": 2
+        },
+        {
+          "slot": 21,
+          "layer": 3
+        },
+        {
+          "slot": 30,
+          "layer": 4
+        },
+        {
+          "slot": 20,
+          "layer": 3
+        },
+        {
+          "slot": 29,
+          "layer": 4
+        },
+        {
+          "slot": 19,
+          "layer": 3
+        },
+        {
+          "slot": 28,
+          "layer": 4
+        },
+        {
+          "slot": 37,
+          "layer": 4
+        },
+        {
+          "slot": 28,
+          "layer": 3
+        },
+        {
+          "slot": 38,
+          "layer": 4
+        },
+        {
+          "slot": 29,
+          "layer": 3
+        },
+        {
+          "slot": 39,
+          "layer": 4
+        },
+        {
+          "slot": 30,
+          "layer": 3
+        },
+        {
+          "slot": 20,
+          "layer": 2
+        },
+        {
+          "slot": 11,
+          "layer": 1
+        },
+        {
+          "slot": 21,
+          "layer": 2
+        },
+        {
+          "slot": 12,
+          "layer": 1
+        },
+        {
+          "slot": 19,
+          "layer": 2
+        },
+        {
+          "slot": 10,
+          "layer": 1
+        },
+        {
+          "slot": 19,
+          "layer": 1
+        },
+        {
+          "slot": 28,
+          "layer": 2
+        },
+        {
+          "slot": 21,
+          "layer": 1
+        },
+        {
+          "slot": 30,
+          "layer": 2
+        },
+        {
+          "slot": 20,
+          "layer": 1
+        },
+        {
+          "slot": 29,
+          "layer": 2
+        },
+        {
+          "slot": 39,
+          "layer": 3
+        },
+        {
+          "slot": 48,
+          "layer": 4
+        },
+        {
+          "slot": 38,
+          "layer": 3
+        },
+        {
+          "slot": 47,
+          "layer": 4
+        },
+        {
+          "slot": 37,
+          "layer": 3
+        },
+        {
+          "slot": 46,
+          "layer": 4
+        },
+        {
+          "slot": 55,
+          "layer": 4
+        },
+        {
+          "slot": 46,
+          "layer": 3
+        },
+        {
+          "slot": 56,
+          "layer": 4
+        },
+        {
+          "slot": 47,
+          "layer": 3
+        },
+        {
+          "slot": 57,
+          "layer": 4
+        },
+        {
+          "slot": 48,
+          "layer": 3
+        },
+        {
+          "slot": 38,
+          "layer": 2
+        },
+        {
+          "slot": 29,
+          "layer": 1
+        },
+        {
+          "slot": 39,
+          "layer": 2
+        },
+        {
+          "slot": 30,
+          "layer": 1
+        },
+        {
+          "slot": 37,
+          "layer": 2
+        },
+        {
+          "slot": 28,
+          "layer": 1
+        }
+      ],
+      "steps": [
+        {
+          "from": {
+            "slot": 1,
+            "layer": 1
+          },
+          "to": {
+            "slot": 10,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 10,
+            "layer": 2
+          },
+          "to": {
+            "slot": 3,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -7,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 1
+          },
+          "to": {
+            "slot": 12,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 12,
+            "layer": 2
+          },
+          "to": {
+            "slot": 2,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 1
+          },
+          "to": {
+            "slot": 11,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 11,
+            "layer": 2
+          },
+          "to": {
+            "slot": 21,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 21,
+            "layer": 3
+          },
+          "to": {
+            "slot": 30,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 30,
+            "layer": 4
+          },
+          "to": {
+            "slot": 20,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 20,
+            "layer": 3
+          },
+          "to": {
+            "slot": 29,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 29,
+            "layer": 4
+          },
+          "to": {
+            "slot": 19,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 19,
+            "layer": 3
+          },
+          "to": {
+            "slot": 28,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 28,
+            "layer": 4
+          },
+          "to": {
+            "slot": 37,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "turnaround",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 4
+          },
+          "to": {
+            "slot": 28,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 28,
+            "layer": 3
+          },
+          "to": {
+            "slot": 38,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 4
+          },
+          "to": {
+            "slot": 29,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 29,
+            "layer": 3
+          },
+          "to": {
+            "slot": 39,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 4
+          },
+          "to": {
+            "slot": 30,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 30,
+            "layer": 3
+          },
+          "to": {
+            "slot": 20,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 20,
+            "layer": 2
+          },
+          "to": {
+            "slot": 11,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 11,
+            "layer": 1
+          },
+          "to": {
+            "slot": 21,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 21,
+            "layer": 2
+          },
+          "to": {
+            "slot": 12,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 12,
+            "layer": 1
+          },
+          "to": {
+            "slot": 19,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 7,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 19,
+            "layer": 2
+          },
+          "to": {
+            "slot": 10,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 10,
+            "layer": 1
+          },
+          "to": {
+            "slot": 19,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "turnaround",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 19,
+            "layer": 1
+          },
+          "to": {
+            "slot": 28,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 28,
+            "layer": 2
+          },
+          "to": {
+            "slot": 21,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -7,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 21,
+            "layer": 1
+          },
+          "to": {
+            "slot": 30,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 30,
+            "layer": 2
+          },
+          "to": {
+            "slot": 20,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 20,
+            "layer": 1
+          },
+          "to": {
+            "slot": 29,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 29,
+            "layer": 2
+          },
+          "to": {
+            "slot": 39,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 3
+          },
+          "to": {
+            "slot": 48,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 48,
+            "layer": 4
+          },
+          "to": {
+            "slot": 38,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 3
+          },
+          "to": {
+            "slot": 47,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 47,
+            "layer": 4
+          },
+          "to": {
+            "slot": 37,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 3
+          },
+          "to": {
+            "slot": 46,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 46,
+            "layer": 4
+          },
+          "to": {
+            "slot": 55,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "turnaround",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 55,
+            "layer": 4
+          },
+          "to": {
+            "slot": 46,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 46,
+            "layer": 3
+          },
+          "to": {
+            "slot": 56,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 56,
+            "layer": 4
+          },
+          "to": {
+            "slot": 47,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 47,
+            "layer": 3
+          },
+          "to": {
+            "slot": 57,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 57,
+            "layer": 4
+          },
+          "to": {
+            "slot": 48,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 48,
+            "layer": 3
+          },
+          "to": {
+            "slot": 38,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 2
+          },
+          "to": {
+            "slot": 29,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 29,
+            "layer": 1
+          },
+          "to": {
+            "slot": 39,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 2
+          },
+          "to": {
+            "slot": 30,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 30,
+            "layer": 1
+          },
+          "to": {
+            "slot": 37,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 7,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 2
+          },
+          "to": {
+            "slot": 28,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        }
+      ],
+      "warnings": [],
+      "designer_notes": ""
+    },
+    {
+      "tool": "Pattern Rule Workbench",
+      "status": "exploratory_complete_branch",
+      "certified": false,
+      "pattern_family": "wave",
+      "pattern": "ZLP",
+      "slots": 72,
+      "poles": 8,
+      "layers": 4,
+      "q": "3",
+      "num_phases": 3,
+      "phase": "A",
+      "phase_index": 0,
+      "layer_shifts": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "naa": 2,
+      "target_branch_conductor_count": 48,
+      "source_route": {
+        "pattern": "ZLP",
+        "q": "3",
+        "pp": 4,
+        "layers": 4,
+        "slots": 72,
+        "phases": 3,
+        "naa": 2,
+        "dividers": [
+          1,
+          1,
+          2
+        ],
+        "route_name": "p2_only",
+        "status": "disabled",
+        "reason": "ZLP has no validated construction for divider tuple (1, 1, 2)."
+      },
+      "reference_constraints": {
+        "available": false,
+        "reason": "Hand-assembled review path; see construction and validation metadata.",
+        "edges": []
+      },
+      "main_pitches": [
+        9
+      ],
+      "first_connection_side": "weld",
+      "current_wave_direction": -1,
+      "phase_conductor_count": 96,
+      "used_conductor_count": 48,
+      "remaining_branch_conductor_count": 0,
+      "path": [
+        {
+          "slot": 21,
+          "layer": 4
+        },
+        {
+          "slot": 12,
+          "layer": 3
+        },
+        {
+          "slot": 19,
+          "layer": 4
+        },
+        {
+          "slot": 10,
+          "layer": 3
+        },
+        {
+          "slot": 20,
+          "layer": 4
+        },
+        {
+          "slot": 11,
+          "layer": 3
+        },
+        {
+          "slot": 1,
+          "layer": 2
+        },
+        {
+          "slot": 64,
+          "layer": 1
+        },
+        {
+          "slot": 2,
+          "layer": 2
+        },
+        {
+          "slot": 65,
+          "layer": 1
+        },
+        {
+          "slot": 3,
+          "layer": 2
+        },
+        {
+          "slot": 66,
+          "layer": 1
+        },
+        {
+          "slot": 57,
+          "layer": 1
+        },
+        {
+          "slot": 66,
+          "layer": 2
+        },
+        {
+          "slot": 56,
+          "layer": 1
+        },
+        {
+          "slot": 65,
+          "layer": 2
+        },
+        {
+          "slot": 55,
+          "layer": 1
+        },
+        {
+          "slot": 64,
+          "layer": 2
+        },
+        {
+          "slot": 2,
+          "layer": 3
+        },
+        {
+          "slot": 11,
+          "layer": 4
+        },
+        {
+          "slot": 1,
+          "layer": 3
+        },
+        {
+          "slot": 10,
+          "layer": 4
+        },
+        {
+          "slot": 3,
+          "layer": 3
+        },
+        {
+          "slot": 12,
+          "layer": 4
+        },
+        {
+          "slot": 3,
+          "layer": 4
+        },
+        {
+          "slot": 66,
+          "layer": 3
+        },
+        {
+          "slot": 1,
+          "layer": 4
+        },
+        {
+          "slot": 64,
+          "layer": 3
+        },
+        {
+          "slot": 2,
+          "layer": 4
+        },
+        {
+          "slot": 65,
+          "layer": 3
+        },
+        {
+          "slot": 55,
+          "layer": 2
+        },
+        {
+          "slot": 46,
+          "layer": 1
+        },
+        {
+          "slot": 56,
+          "layer": 2
+        },
+        {
+          "slot": 47,
+          "layer": 1
+        },
+        {
+          "slot": 57,
+          "layer": 2
+        },
+        {
+          "slot": 48,
+          "layer": 1
+        },
+        {
+          "slot": 39,
+          "layer": 1
+        },
+        {
+          "slot": 48,
+          "layer": 2
+        },
+        {
+          "slot": 38,
+          "layer": 1
+        },
+        {
+          "slot": 47,
+          "layer": 2
+        },
+        {
+          "slot": 37,
+          "layer": 1
+        },
+        {
+          "slot": 46,
+          "layer": 2
+        },
+        {
+          "slot": 56,
+          "layer": 3
+        },
+        {
+          "slot": 65,
+          "layer": 4
+        },
+        {
+          "slot": 55,
+          "layer": 3
+        },
+        {
+          "slot": 64,
+          "layer": 4
+        },
+        {
+          "slot": 57,
+          "layer": 3
+        },
+        {
+          "slot": 66,
+          "layer": 4
+        }
+      ],
+      "steps": [
+        {
+          "from": {
+            "slot": 21,
+            "layer": 4
+          },
+          "to": {
+            "slot": 12,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 12,
+            "layer": 3
+          },
+          "to": {
+            "slot": 19,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 7,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 19,
+            "layer": 4
+          },
+          "to": {
+            "slot": 10,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 10,
+            "layer": 3
+          },
+          "to": {
+            "slot": 20,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 20,
+            "layer": 4
+          },
+          "to": {
+            "slot": 11,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 11,
+            "layer": 3
+          },
+          "to": {
+            "slot": 1,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 1,
+            "layer": 2
+          },
+          "to": {
+            "slot": 64,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 64,
+            "layer": 1
+          },
+          "to": {
+            "slot": 2,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 2
+          },
+          "to": {
+            "slot": 65,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 65,
+            "layer": 1
+          },
+          "to": {
+            "slot": 3,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 2
+          },
+          "to": {
+            "slot": 66,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 66,
+            "layer": 1
+          },
+          "to": {
+            "slot": 57,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "turnaround",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 57,
+            "layer": 1
+          },
+          "to": {
+            "slot": 66,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 66,
+            "layer": 2
+          },
+          "to": {
+            "slot": 56,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 56,
+            "layer": 1
+          },
+          "to": {
+            "slot": 65,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 65,
+            "layer": 2
+          },
+          "to": {
+            "slot": 55,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 55,
+            "layer": 1
+          },
+          "to": {
+            "slot": 64,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 64,
+            "layer": 2
+          },
+          "to": {
+            "slot": 2,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 3
+          },
+          "to": {
+            "slot": 11,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 11,
+            "layer": 4
+          },
+          "to": {
+            "slot": 1,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 1,
+            "layer": 3
+          },
+          "to": {
+            "slot": 10,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 10,
+            "layer": 4
+          },
+          "to": {
+            "slot": 3,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -7,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 3
+          },
+          "to": {
+            "slot": 12,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 12,
+            "layer": 4
+          },
+          "to": {
+            "slot": 3,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "turnaround",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 3,
+            "layer": 4
+          },
+          "to": {
+            "slot": 66,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 66,
+            "layer": 3
+          },
+          "to": {
+            "slot": 1,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 7,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 1,
+            "layer": 4
+          },
+          "to": {
+            "slot": 64,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 64,
+            "layer": 3
+          },
+          "to": {
+            "slot": 2,
+            "layer": 4
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 2,
+            "layer": 4
+          },
+          "to": {
+            "slot": 65,
+            "layer": 3
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 65,
+            "layer": 3
+          },
+          "to": {
+            "slot": 55,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 55,
+            "layer": 2
+          },
+          "to": {
+            "slot": 46,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 46,
+            "layer": 1
+          },
+          "to": {
+            "slot": 56,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 56,
+            "layer": 2
+          },
+          "to": {
+            "slot": 47,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 47,
+            "layer": 1
+          },
+          "to": {
+            "slot": 57,
+            "layer": 2
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 57,
+            "layer": 2
+          },
+          "to": {
+            "slot": 48,
+            "layer": 1
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 48,
+            "layer": 1
+          },
+          "to": {
+            "slot": 39,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "turnaround",
+          "signed_pitch": -9,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 39,
+            "layer": 1
+          },
+          "to": {
+            "slot": 48,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 48,
+            "layer": 2
+          },
+          "to": {
+            "slot": 38,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 38,
+            "layer": 1
+          },
+          "to": {
+            "slot": 47,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 47,
+            "layer": 2
+          },
+          "to": {
+            "slot": 37,
+            "layer": 1
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 37,
+            "layer": 1
+          },
+          "to": {
+            "slot": 46,
+            "layer": 2
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 46,
+            "layer": 2
+          },
+          "to": {
+            "slot": 56,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": 10,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 56,
+            "layer": 3
+          },
+          "to": {
+            "slot": 65,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 65,
+            "layer": 4
+          },
+          "to": {
+            "slot": 55,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -10,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 55,
+            "layer": 3
+          },
+          "to": {
+            "slot": 64,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 64,
+            "layer": 4
+          },
+          "to": {
+            "slot": 57,
+            "layer": 3
+          },
+          "side": "insert",
+          "kind": "regular",
+          "signed_pitch": -7,
+          "wave_direction": -1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        },
+        {
+          "from": {
+            "slot": 57,
+            "layer": 3
+          },
+          "to": {
+            "slot": 66,
+            "layer": 4
+          },
+          "side": "weld",
+          "kind": "regular",
+          "signed_pitch": 9,
+          "wave_direction": 1,
+          "direction_ok": true,
+          "note": "ZLP P2-only mirror review candidate"
+        }
+      ],
+      "warnings": [],
+      "designer_notes": "P2-only (1,1,2); phase-A zero-based mirror axis K=20; candidate remains outside production admission."
+    }
+  ],
+  "created_branch_count": 2,
+  "all_branch_counts_reached": true,
+  "completion_checks": {
+    "all_naa_branches_created": true,
+    "all_branch_quotas_reached": true,
+    "unique_conductor_occupancy": true,
+    "inputs_current": true,
+    "engineering_validated": false
+  },
+  "route_note": "",
+  "save_kind": "review_candidate",
+  "image_file": "02_q3_p8_l4_regular.png",
+  "handoff_file": "02_q3_p8_l4_regular.md",
+  "review_validation": {
+    "full_phase_occupancy_pass": true,
+    "electrical_errors": [],
+    "branch_emf": {
+      "0": [
+        [
+          43.29179302247818,
+          15.756924048195312
+        ],
+        [
+          43.29179302247819,
+          15.756924048195305
+        ]
+      ],
+      "1": [
+        [
+          -8.000000000000028,
+          -45.37025455694168
+        ],
+        [
+          -8.000000000000036,
+          -45.37025455694165
+        ]
+      ],
+      "2": [
+        [
+          -35.291793022478174,
+          29.613330508746355
+        ],
+        [
+          -35.291793022478174,
+          29.613330508746362
+        ]
+      ]
+    },
+    "all_branches_n_to_s": true,
+    "zlp_edge_validator_pass": true,
+    "zlp_edge_validator_reason": "",
+    "zlp_invalid_edges": [],
+    "identity_status": "valid",
+    "identity_reason": "Observed body pin inventory matches the Pattern contract.",
+    "pin_types": {
+      "ALLP": 120,
+      "SLPP": 18
+    },
+    "unexpected_pin_types": [],
+    "all_candidate_checks_pass": true
+  },
+  "candidate_status": "candidate checks pass; not production admitted",
+  "construction": [
+    "Generate the same-Pattern ZLP default (1,1,1) reference using the current low-level generator.",
+    "Orient each phase reference N-to-S before splitting it into parallel branches.",
+    "Take the first half of each phase-A/B/C reference path as Branch 1.",
+    "Construct Branch 2 by layer reversal and phase-dependent circumferential mirror axis.",
+    "Use K_phi = ((3*L - 5)*q - 1 + 2*q*phi) modulo slots in the unshifted slot frame.",
+    "For layer shifts, reflect unshifted slots then apply the destination layer shift.",
+    "This is an exploratory visual review package; ZLP P2-only is not production-admitted."
+  ],
+  "phase_mirror_axes_zero_based": {
+    "A": 20,
+    "B": 26,
+    "C": 32
+  },
+  "transposition_parameters": {
+    "tp_type": "Regular",
+    "tp_interval": 0,
+    "tp_times": 0
+  }
+}

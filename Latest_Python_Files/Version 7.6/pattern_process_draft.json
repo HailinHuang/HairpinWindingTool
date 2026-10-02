@@ -1,0 +1,501 @@
+{
+  "tool": "Pattern Rule Workbench",
+  "status": "exploratory_complete_branch",
+  "certified": false,
+  "pattern_family": "wave",
+  "pattern": "BWP",
+  "slots": 48,
+  "poles": 4,
+  "layers": 6,
+  "q": "4",
+  "phase": "A",
+  "layer_shifts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "naa": 4,
+  "target_branch_conductor_count": 24,
+  "main_pitches": [
+    12
+  ],
+  "first_connection_side": "weld",
+  "current_wave_direction": 1,
+  "phase_conductor_count": 96,
+  "used_conductor_count": 24,
+  "remaining_branch_conductor_count": 0,
+  "path": [
+    {
+      "slot": 1,
+      "layer": 1
+    },
+    {
+      "slot": 13,
+      "layer": 2
+    },
+    {
+      "slot": 25,
+      "layer": 1
+    },
+    {
+      "slot": 37,
+      "layer": 2
+    },
+    {
+      "slot": 2,
+      "layer": 1
+    },
+    {
+      "slot": 14,
+      "layer": 2
+    },
+    {
+      "slot": 26,
+      "layer": 1
+    },
+    {
+      "slot": 38,
+      "layer": 2
+    },
+    {
+      "slot": 1,
+      "layer": 3
+    },
+    {
+      "slot": 13,
+      "layer": 4
+    },
+    {
+      "slot": 25,
+      "layer": 3
+    },
+    {
+      "slot": 37,
+      "layer": 4
+    },
+    {
+      "slot": 2,
+      "layer": 3
+    },
+    {
+      "slot": 14,
+      "layer": 4
+    },
+    {
+      "slot": 26,
+      "layer": 3
+    },
+    {
+      "slot": 38,
+      "layer": 4
+    },
+    {
+      "slot": 1,
+      "layer": 5
+    },
+    {
+      "slot": 13,
+      "layer": 6
+    },
+    {
+      "slot": 25,
+      "layer": 5
+    },
+    {
+      "slot": 37,
+      "layer": 6
+    },
+    {
+      "slot": 2,
+      "layer": 5
+    },
+    {
+      "slot": 14,
+      "layer": 6
+    },
+    {
+      "slot": 26,
+      "layer": 5
+    },
+    {
+      "slot": 38,
+      "layer": 6
+    }
+  ],
+  "steps": [
+    {
+      "from": {
+        "slot": 1,
+        "layer": 1
+      },
+      "to": {
+        "slot": 13,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 13,
+        "layer": 2
+      },
+      "to": {
+        "slot": 25,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 25,
+        "layer": 1
+      },
+      "to": {
+        "slot": 37,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 2
+      },
+      "to": {
+        "slot": 2,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "jumper",
+      "signed_pitch": 13,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 2,
+        "layer": 1
+      },
+      "to": {
+        "slot": 14,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 14,
+        "layer": 2
+      },
+      "to": {
+        "slot": 26,
+        "layer": 1
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 26,
+        "layer": 1
+      },
+      "to": {
+        "slot": 38,
+        "layer": 2
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 38,
+        "layer": 2
+      },
+      "to": {
+        "slot": 1,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "jumper",
+      "signed_pitch": 11,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 1,
+        "layer": 3
+      },
+      "to": {
+        "slot": 13,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 13,
+        "layer": 4
+      },
+      "to": {
+        "slot": 25,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 25,
+        "layer": 3
+      },
+      "to": {
+        "slot": 37,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 4
+      },
+      "to": {
+        "slot": 2,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "jumper",
+      "signed_pitch": 13,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 2,
+        "layer": 3
+      },
+      "to": {
+        "slot": 14,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 14,
+        "layer": 4
+      },
+      "to": {
+        "slot": 26,
+        "layer": 3
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 26,
+        "layer": 3
+      },
+      "to": {
+        "slot": 38,
+        "layer": 4
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 38,
+        "layer": 4
+      },
+      "to": {
+        "slot": 1,
+        "layer": 5
+      },
+      "side": "insert",
+      "kind": "jumper",
+      "signed_pitch": 11,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 1,
+        "layer": 5
+      },
+      "to": {
+        "slot": 13,
+        "layer": 6
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 13,
+        "layer": 6
+      },
+      "to": {
+        "slot": 25,
+        "layer": 5
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 25,
+        "layer": 5
+      },
+      "to": {
+        "slot": 37,
+        "layer": 6
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 37,
+        "layer": 6
+      },
+      "to": {
+        "slot": 2,
+        "layer": 5
+      },
+      "side": "insert",
+      "kind": "jumper",
+      "signed_pitch": 13,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 2,
+        "layer": 5
+      },
+      "to": {
+        "slot": 14,
+        "layer": 6
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 14,
+        "layer": 6
+      },
+      "to": {
+        "slot": 26,
+        "layer": 5
+      },
+      "side": "insert",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    },
+    {
+      "from": {
+        "slot": 26,
+        "layer": 5
+      },
+      "to": {
+        "slot": 38,
+        "layer": 6
+      },
+      "side": "weld",
+      "kind": "regular",
+      "signed_pitch": 12,
+      "wave_direction": 1,
+      "direction_ok": true,
+      "note": ""
+    }
+  ],
+  "warnings": [],
+  "designer_notes": "",
+  "image_file": "pattern_process_draft.png"
+}

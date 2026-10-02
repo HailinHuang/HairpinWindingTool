@@ -1,0 +1,2298 @@
+[
+  {
+    "pattern": "BWP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        19,
+        3
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        19,
+        1
+      ],
+      [
+        13,
+        2
+      ],
+      [
+        7,
+        1
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      13,
+      19,
+      25,
+      31,
+      37,
+      43,
+      49,
+      43,
+      37,
+      31,
+      25,
+      19,
+      13,
+      7
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": false,
+      "errors": [
+        "parallel_emf_mismatch"
+      ],
+      "branch_emf": {
+        "0": [
+          [
+            16.0,
+            -2.939152317953647e-15
+          ],
+          [
+            13.856406460551023,
+            7.999999999999996
+          ]
+        ],
+        "1": [
+          [
+            -8.000000000000002,
+            -13.85640646055102
+          ],
+          [
+            -7.471583436072032e-15,
+            -16.0
+          ]
+        ],
+        "2": [
+          [
+            -7.999999999999993,
+            13.856406460551025
+          ],
+          [
+            -13.856406460551014,
+            8.000000000000007
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "UWP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        14,
+        1
+      ],
+      [
+        20,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        14,
+        3
+      ],
+      [
+        20,
+        4
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        19,
+        4
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      13,
+      19,
+      26,
+      32,
+      38,
+      44,
+      50,
+      56,
+      62,
+      68,
+      73,
+      79,
+      85,
+      91
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": true,
+      "errors": [],
+      "branch_emf": {
+        "0": [
+          [
+            14.92820323027551,
+            3.9999999999999956
+          ],
+          [
+            14.928203230275512,
+            3.999999999999996
+          ]
+        ],
+        "1": [
+          [
+            -4.000000000000005,
+            -14.92820323027551
+          ],
+          [
+            -4.000000000000005,
+            -14.92820323027551
+          ]
+        ],
+        "2": [
+          [
+            -10.928203230275503,
+            10.928203230275518
+          ],
+          [
+            -10.928203230275507,
+            10.928203230275516
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "SSP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        19,
+        3
+      ],
+      [
+        13,
+        2
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        19,
+        1
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      13,
+      19,
+      25,
+      19,
+      13,
+      7,
+      13,
+      19,
+      25,
+      31,
+      37,
+      31,
+      25,
+      19
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": false,
+      "errors": [
+        "parallel_emf_mismatch"
+      ],
+      "branch_emf": {
+        "0": [
+          [
+            16.0,
+            -2.9391523179536475e-15
+          ],
+          [
+            13.856406460551023,
+            7.999999999999996
+          ]
+        ],
+        "1": [
+          [
+            -8.000000000000002,
+            -13.85640646055102
+          ],
+          [
+            -7.47158343607203e-15,
+            -16.0
+          ]
+        ],
+        "2": [
+          [
+            -7.999999999999993,
+            13.856406460551025
+          ],
+          [
+            -13.856406460551016,
+            8.000000000000007
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "TSP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        14,
+        3
+      ],
+      [
+        20,
+        4
+      ],
+      [
+        14,
+        1
+      ],
+      [
+        20,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        8,
+        4
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": -3
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -5,
+        "layer_delta": -3
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": -3
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      13,
+      19,
+      13,
+      19,
+      25,
+      31,
+      26,
+      32,
+      38,
+      44,
+      38,
+      44,
+      50,
+      56
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": true,
+      "errors": [],
+      "branch_emf": {
+        "0": [
+          [
+            14.928203230275514,
+            3.999999999999996
+          ],
+          [
+            14.92820323027551,
+            3.9999999999999956
+          ]
+        ],
+        "1": [
+          [
+            -4.000000000000005,
+            -14.928203230275514
+          ],
+          [
+            -4.0000000000000036,
+            -14.928203230275507
+          ]
+        ],
+        "2": [
+          [
+            -10.928203230275503,
+            10.928203230275514
+          ],
+          [
+            -10.928203230275507,
+            10.928203230275516
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 1,
+      "jld": -1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "SLP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        19,
+        3
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        19,
+        1
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        13,
+        2
+      ],
+      [
+        7,
+        1
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      1,
+      7,
+      1,
+      -5,
+      1,
+      -5,
+      -11,
+      -5,
+      -11,
+      -5,
+      -11,
+      -17,
+      -11,
+      -17
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": false,
+      "errors": [
+        "parallel_emf_mismatch"
+      ],
+      "branch_emf": {
+        "0": [
+          [
+            16.0,
+            -2.939152317953647e-15
+          ],
+          [
+            13.856406460551023,
+            7.999999999999996
+          ]
+        ],
+        "1": [
+          [
+            -8.000000000000002,
+            -13.85640646055102
+          ],
+          [
+            -7.47158343607203e-15,
+            -16.0
+          ]
+        ],
+        "2": [
+          [
+            -7.999999999999992,
+            13.856406460551023
+          ],
+          [
+            -13.856406460551014,
+            8.000000000000007
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "ZLP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        14,
+        3
+      ],
+      [
+        20,
+        4
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        20,
+        3
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        19,
+        3
+      ],
+      [
+        14,
+        2
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        13,
+        2
+      ],
+      [
+        7,
+        1
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -5,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -5,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -5,
+        "layer_delta": -1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      2,
+      8,
+      13,
+      19,
+      14,
+      20,
+      26,
+      20,
+      25,
+      19,
+      14,
+      8,
+      13,
+      7
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": true,
+      "errors": [],
+      "branch_emf": {
+        "0": [
+          [
+            14.928203230275512,
+            3.999999999999996
+          ],
+          [
+            14.928203230275512,
+            3.999999999999996
+          ]
+        ],
+        "1": [
+          [
+            -4.000000000000005,
+            -14.928203230275509
+          ],
+          [
+            -4.000000000000004,
+            -14.928203230275509
+          ]
+        ],
+        "2": [
+          [
+            -10.928203230275503,
+            10.928203230275516
+          ],
+          [
+            -10.928203230275503,
+            10.928203230275516
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "CP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        19,
+        3
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        1,
+        4
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        14,
+        4
+      ],
+      [
+        20,
+        3
+      ],
+      [
+        14,
+        1
+      ],
+      [
+        20,
+        2
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        8,
+        3
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 2
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": -2
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 2
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -5,
+        "layer_delta": -2
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 2
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": -2
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": 2
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": -1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      13,
+      19,
+      13,
+      19,
+      25,
+      31,
+      26,
+      32,
+      38,
+      44,
+      38,
+      44,
+      50,
+      56
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": true,
+      "errors": [],
+      "branch_emf": {
+        "0": [
+          [
+            14.928203230275514,
+            3.999999999999996
+          ],
+          [
+            14.92820323027551,
+            3.9999999999999956
+          ]
+        ],
+        "1": [
+          [
+            -4.000000000000005,
+            -14.928203230275514
+          ],
+          [
+            -4.0000000000000036,
+            -14.928203230275507
+          ]
+        ],
+        "2": [
+          [
+            -10.928203230275503,
+            10.928203230275514
+          ],
+          [
+            -10.928203230275507,
+            10.928203230275516
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "ZPP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "insert",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        14,
+        2
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        20,
+        1
+      ],
+      [
+        2,
+        2
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        14,
+        4
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        20,
+        3
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        7,
+        4
+      ]
+    ],
+    "edges": [
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 0
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      8,
+      14,
+      19,
+      13,
+      20,
+      26,
+      31,
+      25,
+      32,
+      38,
+      43,
+      37,
+      44,
+      50,
+      55
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": true,
+      "errors": [],
+      "branch_emf": {
+        "0": [
+          [
+            14.928203230275512,
+            3.999999999999996
+          ],
+          [
+            14.928203230275512,
+            3.9999999999999956
+          ]
+        ],
+        "1": [
+          [
+            -4.000000000000005,
+            -14.928203230275509
+          ],
+          [
+            -4.000000000000005,
+            -14.92820323027551
+          ]
+        ],
+        "2": [
+          [
+            -10.928203230275505,
+            10.928203230275516
+          ],
+          [
+            -10.928203230275503,
+            10.928203230275514
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 1
+    }
+  },
+  {
+    "pattern": "TLP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "weld",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        13,
+        1
+      ],
+      [
+        19,
+        2
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        19,
+        4
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        8,
+        4
+      ],
+      [
+        14,
+        1
+      ],
+      [
+        20,
+        2
+      ],
+      [
+        14,
+        3
+      ],
+      [
+        20,
+        4
+      ]
+    ],
+    "edges": [
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -3
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": -3
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 6,
+        "layer_delta": -3
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 1
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      7,
+      1,
+      7,
+      13,
+      19,
+      13,
+      19,
+      26,
+      32,
+      26,
+      32,
+      38,
+      44,
+      38,
+      44
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": true,
+      "errors": [],
+      "branch_emf": {
+        "0": [
+          [
+            14.928203230275514,
+            3.9999999999999964
+          ],
+          [
+            14.92820323027551,
+            3.9999999999999956
+          ]
+        ],
+        "1": [
+          [
+            -4.000000000000005,
+            -14.928203230275514
+          ],
+          [
+            -4.0000000000000036,
+            -14.928203230275507
+          ]
+        ],
+        "2": [
+          [
+            -10.928203230275503,
+            10.928203230275516
+          ],
+          [
+            -10.928203230275507,
+            10.928203230275516
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 0
+    }
+  },
+  {
+    "pattern": "LPP",
+    "slots": 24,
+    "poles": 4,
+    "layers": 4,
+    "q": 2,
+    "naa": 2,
+    "first_edge": "insert",
+    "nodes": [
+      [
+        1,
+        1
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        14,
+        2
+      ],
+      [
+        8,
+        2
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        7,
+        1
+      ],
+      [
+        13,
+        2
+      ],
+      [
+        7,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        13,
+        4
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        8,
+        3
+      ],
+      [
+        14,
+        4
+      ],
+      [
+        8,
+        4
+      ]
+    ],
+    "edges": [
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -5,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 5,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": -6,
+        "layer_delta": -1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": 7,
+        "layer_delta": 0
+      },
+      {
+        "side": "weld",
+        "signed_pitch": 6,
+        "layer_delta": 1
+      },
+      {
+        "side": "insert",
+        "signed_pitch": -6,
+        "layer_delta": 0
+      }
+    ],
+    "unwrapped_slots": [
+      1,
+      8,
+      14,
+      8,
+      2,
+      7,
+      13,
+      7,
+      2,
+      7,
+      13,
+      7,
+      1,
+      8,
+      14,
+      8
+    ],
+    "independent_electrical_report": {
+      "topology_valid": true,
+      "electrically_valid": true,
+      "errors": [],
+      "branch_emf": {
+        "0": [
+          [
+            14.928203230275512,
+            3.9999999999999973
+          ],
+          [
+            14.928203230275512,
+            3.9999999999999942
+          ]
+        ],
+        "1": [
+          [
+            -4.000000000000005,
+            -14.92820323027551
+          ],
+          [
+            -4.000000000000004,
+            -14.92820323027551
+          ]
+        ],
+        "2": [
+          [
+            -10.928203230275507,
+            10.92820323027551
+          ],
+          [
+            -10.928203230275502,
+            10.928203230275518
+          ]
+        ]
+      }
+    },
+    "source": "get_winding_layout via pattern_rule_workbench._base_inputs; sides from draw_figure.initial_connection_side",
+    "captured": "2026-09-21",
+    "transposition": {
+      "tp_type": "Regular",
+      "tp_interval": 0,
+      "tp_times": 0,
+      "uni_tp": 0,
+      "pltp_fl": 0,
+      "pltp_ll": 0,
+      "jltp": 0,
+      "jld": 1
+    },
+    "layout": {
+      "phase_shift_list": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "radial_shift": 0,
+      "inlet_from_weld_side": 1
+    }
+  }
+]

@@ -1,0 +1,165 @@
+# Explicit durable-file selection. Add new source/tests/resources here.
+# Other versions, simulations, backups, outputs and local state stay local.
+/*
+!/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/hairpin-workflow/
+/.agents/skills/hairpin-workflow/*
+!/.agents/skills/hairpin-workflow/SKILL.md
+!/.agents/skills/hairpin-workflow/agents/
+/.agents/skills/hairpin-workflow/agents/*
+!/.agents/skills/hairpin-workflow/agents/openai.yaml
+!/.agents/skills/hairpin-workflow/references/
+/.agents/skills/hairpin-workflow/references/*
+!/.agents/skills/hairpin-workflow/references/algorithm.md
+!/.agents/skills/hairpin-workflow/references/divider-rules.md
+!/.agents/skills/hairpin-workflow/references/prompts.md
+!/.agents/skills/hairpin-workflow/references/testing.md
+!/.gitattributes
+!/.gitignore
+!/AGENTS.md
+!/Latest_Python_Files/
+/Latest_Python_Files/*
+!/Latest_Python_Files/Version 7.6/
+/Latest_Python_Files/Version 7.6/*
+!/Latest_Python_Files/Version 7.6/AUTO_CONFIGURE_RULES.md
+!/Latest_Python_Files/Version 7.6/BWP_AUTO_CONFIGURE_RULE_WORKFLOW.md
+!/Latest_Python_Files/Version 7.6/INTEGER_Q_DIVIDER_SUPPORT_STATUS.md
+!/Latest_Python_Files/Version 7.6/MAIN_PYQT6_GUIDE.md
+!/Latest_Python_Files/Version 7.6/PATTERN_DEFINITIONS_AND_CONSTRAINTS.md
+!/Latest_Python_Files/Version 7.6/PATTERN_DIVIDER_FORMULA_SUPPORT.md
+!/Latest_Python_Files/Version 7.6/PATTERN_REJECTION_REASONS.md
+!/Latest_Python_Files/Version 7.6/Pin_Info.csv
+!/Latest_Python_Files/Version 7.6/app_diagnostics.py
+!/Latest_Python_Files/Version 7.6/assets/
+/Latest_Python_Files/Version 7.6/assets/*
+!/Latest_Python_Files/Version 7.6/assets/checkmark.svg
+!/Latest_Python_Files/Version 7.6/assets/pattern_guide/
+/Latest_Python_Files/Version 7.6/assets/pattern_guide/*
+!/Latest_Python_Files/Version 7.6/assets/pattern_guide/branch_examples.json
+!/Latest_Python_Files/Version 7.6/automatic_transposition.py
+!/Latest_Python_Files/Version 7.6/branch_start_preview.py
+!/Latest_Python_Files/Version 7.6/build_main_pyqt6.bat
+!/Latest_Python_Files/Version 7.6/calculation_cache.py
+!/Latest_Python_Files/Version 7.6/calculation_state.py
+!/Latest_Python_Files/Version 7.6/cond_info_operation.py
+!/Latest_Python_Files/Version 7.6/config_io.py
+!/Latest_Python_Files/Version 7.6/configs/
+/Latest_Python_Files/Version 7.6/configs/*
+!/Latest_Python_Files/Version 7.6/configs/config_20260703_104422_Slot48_Pole8_Layer6_Naa2.json
+!/Latest_Python_Files/Version 7.6/configs/config_20260703_145245_Slot72_Pole6_Layer8_Naa3.json
+!/Latest_Python_Files/Version 7.6/configs/config_20260703_193838_Slot72_Pole6_Layer8_Naa3 Paper 2.json
+!/Latest_Python_Files/Version 7.6/configs/config_20260703_194315_Slot96_Pole8_Layer6_Naa4 paper 1.json
+!/Latest_Python_Files/Version 7.6/configs/config_20260704_143258_Slot48_Pole8_Layer6_Naa2 inlet positions.json
+!/Latest_Python_Files/Version 7.6/configs/config_20260713_150643_Slot96_Pole8_Layer6_Naa2 Cummins.json
+!/Latest_Python_Files/Version 7.6/connection_rules.html
+!/Latest_Python_Files/Version 7.6/csv_operation.py
+!/Latest_Python_Files/Version 7.6/divider_connection_formulas.py
+!/Latest_Python_Files/Version 7.6/draw_figure.py
+!/Latest_Python_Files/Version 7.6/end_winding_calc.py
+!/Latest_Python_Files/Version 7.6/explicit_connections.py
+!/Latest_Python_Files/Version 7.6/get_winding_pattern.py
+!/Latest_Python_Files/Version 7.6/half_integer_q_connection_formulas.py
+!/Latest_Python_Files/Version 7.6/inductance_calculation.py
+!/Latest_Python_Files/Version 7.6/inductance_guide.html
+!/Latest_Python_Files/Version 7.6/inductance_ui.py
+!/Latest_Python_Files/Version 7.6/layout_analysis.py
+!/Latest_Python_Files/Version 7.6/main_pyqt6.py
+!/Latest_Python_Files/Version 7.6/manual_layout.py
+!/Latest_Python_Files/Version 7.6/manual_layout_core.py
+!/Latest_Python_Files/Version 7.6/manual_layout_pyqt6.py
+!/Latest_Python_Files/Version 7.6/pattern_guide.html
+!/Latest_Python_Files/Version 7.6/pattern_identity.py
+!/Latest_Python_Files/Version 7.6/pattern_naa_division_layout.html
+!/Latest_Python_Files/Version 7.6/pattern_process_draft.json
+!/Latest_Python_Files/Version 7.6/pattern_process_draft_q4_UWP_sample.json
+!/Latest_Python_Files/Version 7.6/pattern_route_contract.py
+!/Latest_Python_Files/Version 7.6/pattern_route_inventory.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/
+/Latest_Python_Files/Version 7.6/pattern_rule_drafts/*
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/CP_q-2_pp-4_L-4_Naa-2_Q-1_PP-2_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-230947-042949.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/CP_q-2_pp-4_L-4_Naa-2_Q-1_PP-2_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20260925-153535-498962.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/CP_q-2_pp-4_L-4_Naa-4_Q-1_PP-4_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20260925-170545-125560.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/CP_q-2_pp-4_L-4_Naa-8_Q-2_PP-4_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20260925-153022-297220.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-2_Q-1_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-215915-451313.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-2_Q-1_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260923-171108-051958.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-2_Q-1_PP-2_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-213917-060899.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-2_Q-1_PP-2_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-215449-281272.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-2_Q-1_PP-2_P2-1_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-215626-831046.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-4_Q-1_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-214848-465854.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-4_Q-1_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-224750-076466.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-4_Q-1_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260923-175737-766554.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-4_Q-2_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-221841-621435.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-4_Q-2_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-225156-377603.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-8_Q-1_PP-4_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-221549-303114.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SLP_q-2_pp-4_L-4_Naa-8_Q-2_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-223714-810649.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/SSP_q-2_pp-4_L-4_Naa-2_Q-1_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-142928-672985.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/TLP_q-2_pp-4_L-4_Naa-4_Q-1_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260924-211319-973271.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/TLP_q-2_pp-4_L-4_Naa-8_Q-2_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260929-104214-297797.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/TSP_q-2_pp-4_L-4_Naa-8_Q-1_PP-4_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260927-220113-776173.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZLP_q-2_pp-4_L-4_Naa-2_Q-1_PP-1_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-225524-930786.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZLP_q-2_pp-4_L-4_Naa-4_Q-1_PP-2_P2-2_Ph-A_Side-weld_Shifts-0-0-0-0_20260922-225705-659293.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZPP_q-2_pp-4_L-4_Naa-2_Q-1_PP-2_P2-1_Ph-A_Side-insert_Shifts-0-0-0-0_20260925-154131-072893.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZPP_q-2_pp-4_L-4_Naa-4_Q-1_PP-4_P2-1_Ph-A_Side-insert_Shifts-0-0-0-0_20260925-160009-173286.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZPP_q-2_pp-4_L-4_Naa-4_Q-2_PP-1_P2-2_Ph-A_Side-insert_Shifts-0-0-0-0_20260929-090545-046455.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_drafts/ZPP_q-2_pp-4_L-4_Naa-8_Q-2_PP-2_P2-2_Ph-A_Side-insert_Shifts-0-0-0-0_20260929-090700-346973.json
+!/Latest_Python_Files/Version 7.6/pattern_rule_workbench.py
+!/Latest_Python_Files/Version 7.6/phase_topology.py
+!/Latest_Python_Files/Version 7.6/refresh_pattern_naa_division_layout.py
+!/Latest_Python_Files/Version 7.6/result_export.py
+!/Latest_Python_Files/Version 7.6/run_main.bat
+!/Latest_Python_Files/Version 7.6/run_pattern_rule_workbench.bat
+!/Latest_Python_Files/Version 7.6/stability_soak.py
+!/Latest_Python_Files/Version 7.6/test_app_diagnostics.py
+!/Latest_Python_Files/Version 7.6/test_auto_configure_pending_rules.py
+!/Latest_Python_Files/Version 7.6/test_auto_configure_strategy_ui.py
+!/Latest_Python_Files/Version 7.6/test_automatic_transposition.py
+!/Latest_Python_Files/Version 7.6/test_branch_start_preview.py
+!/Latest_Python_Files/Version 7.6/test_classic_regression.py
+!/Latest_Python_Files/Version 7.6/test_draw_figure_same_layer_routes.py
+!/Latest_Python_Files/Version 7.6/test_draw_unwrapped.py
+!/Latest_Python_Files/Version 7.6/test_explicit_connections.py
+!/Latest_Python_Files/Version 7.6/test_fractional_bwp_draft.py
+!/Latest_Python_Files/Version 7.6/test_half_integer_q_connection_formulas.py
+!/Latest_Python_Files/Version 7.6/half_integer_q_source_receipt.py
+!/Latest_Python_Files/Version 7.6/test_half_integer_q_source_receipt.py
+!/Latest_Python_Files/Version 7.6/test_inductance_calculation.py
+!/Latest_Python_Files/Version 7.6/test_inductance_ui.py
+!/Latest_Python_Files/Version 7.6/test_main_pattern_route_ui.py
+!/Latest_Python_Files/Version 7.6/test_main_pyqt6_same_layer_route_ui.py
+!/Latest_Python_Files/Version 7.6/test_pattern_identity.py
+!/Latest_Python_Files/Version 7.6/test_pattern_identity_integration.py
+!/Latest_Python_Files/Version 7.6/test_pattern_naa_division_layout.py
+!/Latest_Python_Files/Version 7.6/test_pattern_rule_workbench.py
+!/Latest_Python_Files/Version 7.6/test_phase_topology.py
+!/Latest_Python_Files/Version 7.6/test_plot_docking.py
+!/Latest_Python_Files/Version 7.6/test_stability_soak.py
+!/Latest_Python_Files/Version 7.6/test_symmetry_branch_rules.py
+!/Latest_Python_Files/Version 7.6/test_tsp_manual_route_closure.py
+!/Latest_Python_Files/Version 7.6/test_vd_neighbour_summary.py
+!/Latest_Python_Files/Version 7.6/test_winding_dividers.py
+!/Latest_Python_Files/Version 7.6/test_workbench.py
+!/Latest_Python_Files/Version 7.6/test_zpp_centered_entry_admission.py
+!/Latest_Python_Files/Version 7.6/vd_optimize.py
+!/Latest_Python_Files/Version 7.6/winding_function_calculation.py
+!/Latest_Python_Files/Version 7.6/workbench_preview/
+/Latest_Python_Files/Version 7.6/workbench_preview/*
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/
+/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/*
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/01_q2_p8_l4_regular.json
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/02_q3_p8_l4_regular.json
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/03_q2_p10_l4_regular.json
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/04_q2_p8_l2_regular.json
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/05_q2_p8_l6_regular.json
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/06_q2_p8_l4_interval2.json
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/07_q2_p8_l4_shift_0-1-0-1.json
+!/Latest_Python_Files/Version 7.6/workbench_preview/zlp_p2only_parameter_review_20260923/08_q2_p8_l4_shift_0-1-2-3.json
+!/README.md
+!/docs/
+/docs/*
+!/docs/DECISIONS.md
+!/docs/STATUS.md
+!/docs/VALIDATION.md
+!/requirements.txt

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Hairpin Workflow"
+  short_description: "Route Hairpin development and select focused checks"

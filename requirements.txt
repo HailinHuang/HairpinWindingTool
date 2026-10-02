@@ -1,0 +1,9 @@
+# Runtime versions observed with Python 3.11.15 on Windows.
+# Optional packaging: install PyInstaller separately.
+numpy==2.4.6
+pandas==3.0.3
+matplotlib==3.11.0
+scipy==1.17.1
+PyQt6==6.11.0
+PyQt6-Qt6==6.11.1
+PyQt6-sip==13.11.1
