@@ -45,11 +45,16 @@ one rejected request. Multi-set TLP q-only arrays remain unsupported-yet
 pending owner review. A separate mapped-edge exploration for `m=3k`,
 `k=2,3,4`, tested 48 combinations across eight proper-q pairs and
 `(pp,L_local)=(2,2)` or `(3,4)`. In that matrix, each branch joins
-`g=2*k*q/Q` parents and each set rotates by `2*q*j` slots; global seam safety
-occurred exactly when `k` divided `Q`: 22 cases passed and 26 each had two
-joins crossing two global pole boundaries. For example, `(m,q,Q)=(9,4,2)`
-has two `+37`-slot seams across two boundaries, and `(12,4,2)` has two
-`+49`-slot seams. The six-phase `(q,Q,pp,L)=(4,2,3,8)` candidate retains
+`g=2*k*q/Q` parents and each set rotates by `2*q*j` slots. All 48 pass the
+one-region connection-stage check in canonical local coordinates. The earlier
+22/26 safe/unsafe split and `k|Q` admission inference are withdrawn: the 26
+cases have 52 two-boundary records only against fixed global slot-zero
+intervals after rotation. For `(m,q,Q)=(9,4,2)`, the +37 seam local 135->28
+becomes global 143->36 with offset 8 and tau=36. Its local unwrapped 135->172
+crosses one region; global 143->180 crosses two fixed intervals. The current
+post-connection contract does not repeat that gate after rigid relocation.
+Canonical phase-set mapping preserves the complete parents and creates no
+new connections. The six-phase `(q,Q,pp,L)=(4,2,3,8)` candidate retains
 valid local identities and all 1,152 conductors once, while its aggregate
 report keeps `multi_phase_emf_mismatch`; it is not strongly certified. This
 bounded audit does not promote any phase array: public admission remains

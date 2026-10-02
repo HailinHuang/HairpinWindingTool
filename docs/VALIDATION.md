@@ -144,7 +144,7 @@ above. No production source or admission change, native three-phase
 half-integer-q ZPP formula, universal closure, or manufacturing acceptance is
 claimed. Future source changes require a fresh binding before reusing evidence.
 
-### Native TLP proper-Q and multiphase boundary (2026-10-02)
+### Native TLP proper-Q and multiphase review (2026-10-02)
 
 The native `(Q,1,1)` proper-Q route passed 17 focused tests covering exact
 reviewed paths, 32 public matrix cases, two additional q/Q pairs, seam and
@@ -157,10 +157,17 @@ dispatch and unaffected ZPP/SLP controls. `refresh_pattern_naa_division_layout.p
 A separate private candidate review covered 48 mapped cases: eight proper-q
 pairs, `(pp,L_local)=(2,2)` and `(3,4)`, and `m=6,9,12`. Its independent
 checker verified 200,448 positions, 199,152 edges and 23,760 new seams, and
-rejected seven deliberate corruptions. Twenty-two cases had no global seam
-crossing; 26 each had two insertion joins spanning two pole boundaries. The
-finite safe condition is `k=m/3` dividing Q, since `g=2*k*q/Q` must align with
-each `2*q*j` set offset. This is a candidate boundary only. A representative
+rejected seven deliberate corruptions. A bounded re-review corrected the earlier
+22/26 safe/unsafe classification: all 48 pass the one-region connection-stage
+check in their canonical local phase-set coordinates. The 26 cases still have
+52 two-boundary records against fixed global slot-zero intervals after rotation;
+these are coordinate diagnostics, not failed construction edges. The proposed
+`k=m/3` dividing Q restriction is withdrawn. Existing source and saved paths were
+reused without generation or production changes. For q=4, Q=2, m=9, a +37 seam
+maps local 135->28 to global 143->36 with offset 8 and tau=36: unwrapped local
+135->172 crosses one region, while global 143->180 crosses two fixed intervals.
+The current contract checks connections before relocation and does not repeat
+pole-region identity checks on rotated endpoints. A representative
 six-phase layout retains all positions and local identities while its global
 report keeps `multi_phase_emf_mismatch`; no strong-symmetry or manufacturing
 claim follows. Public TLP phase-array admission remains `unsupported-yet`

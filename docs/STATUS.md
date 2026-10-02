@@ -56,8 +56,8 @@ Track these as discrete GitHub Issues with focused acceptance:
 2. Core: [Complete source-bound half-integer TLP/UWP validation](https://github.com/HailinHuang/HairpinWindingTool/issues/4),
    after launcher review and a fresh source binding.
 3. Application: [Establish packaged/native acceptance tied to current source](https://github.com/HailinHuang/HairpinWindingTool/issues/5).
-4. Core: decide whether to pursue TLP multi-set arrays inside the mapped seam
-   boundary documented in [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).
+4. Core: review TLP multi-set candidates and retained electrical diagnostics in
+   [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).
 
 GitHub [Issues](https://github.com/HailinHuang/HairpinWindingTool/issues) are the
 authoritative backlog. This list states priorities, not a second task database.
@@ -93,10 +93,12 @@ The native TLP proper-Q implementation passed 17 focused route tests, including
 exact reviewed-path comparison, the bounded formula matrix, nonzero shifts and
 the mapped-array admission boundary. Eighteen targeted ZPP/related route tests
 passed for the named exclusion, precedence and unaffected controls. A separate
-48-case private multiphase review found 22 mapped candidates without global
-seam crossings and 26 cases with two seams crossing two global pole boundaries;
-the safe subset in that finite matrix requires `k=m/3` to divide Q. Multi-set
-TLP remains `unsupported-yet`. The six-phase example retains a global
+48-case private multiphase review passes the connection-stage edge checks in
+all cases. The earlier 22/26 safe/unsafe classification was a false positive:
+fixed slot-zero pole intervals were checked after rigid phase-set rotation.
+The 52 two-boundary records remain coordinate diagnostics; they do not impose
+`k=m/3` dividing Q. Multi-set TLP remains `unsupported-yet`. The six-phase
+example retains a global
 `multi_phase_emf_mismatch`, so local phase-set identity does not establish
 strong symmetry. These findings do not certify the route or release. See
 [VALIDATION.md](VALIDATION.md) and [Issue #7](https://github.com/HailinHuang/HairpinWindingTool/issues/7).

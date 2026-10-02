@@ -8,9 +8,11 @@ each outer-layer cohort. Preserve every body pass and check every new
 top-bottom insertion seam, one-lane advance, signed travel, one-region
 limit, occupancy, N-to-S orientation and weld direction. Q>2 remains a
 retained non-strong layout; L=2 keeps its structural overlap qualification.
-Multi-set arrays remain unsupported-yet. A bounded mapped seam review found
-safe candidates only when `k=m/3` divides Q; production admission still
-requires owner review.
+Multi-set arrays remain unsupported-yet. The bounded 48-case review passes
+connection-stage checks in each canonical local set. Its earlier `k=m/3`
+dividing Q restriction is withdrawn: fixed global pole counts after rigid
+set rotation are coordinate diagnostics, not construction-stage failures.
+Production admission still requires owner review and integration validation.
 The [current formula/domain](PATTERN_DIVIDER_FORMULA_SUPPORT.md#tlp-even-q-cohort-joins-owner-approved-2026-10-02)
 supersedes only the older proper-Q unsupported conclusion, not its historical
 evidence or the shared transposition/shift rules below.
