@@ -369,8 +369,8 @@ def feature_probes():
                 'TLP', 6, 6, 4, 5, (3, 1, 1))
             probes['Q-only adjacent P2 pair: pp=1 boundary'] = evaluate_case(
                 'TLP', 2, 1, 4, 3, (2, 1, 1))
-            probes['Q-only adjacent P2 pair: phase-array boundary'] = evaluate_case(
-                'TLP', 2, 2, 4, 6, (2, 1, 1))
+            probes['Q-only cohort join: phase-array construction'] = evaluate_case(
+                'TLP', 2, 2, 4, 6, (2, 1, 1), probe_generation=True)
             probes['Q-only adjacent P2 pair: transposition boundary'] = evaluate_case(
                 'TLP', 2, 2, 4, 3, (2, 1, 1), setting='Times=1')
             probes['Q-only adjacent P2 pair: phase-shift boundary'] = evaluate_case(

@@ -155,9 +155,8 @@ class TlpProperQRouteTests(unittest.TestCase):
         self.assertEqual(len(positions), len(set(positions)))
         self.assertEqual(len(positions), winding.num_slots * winding.num_layers)
 
-    def test_odd_nondivisor_short_source_and_phase_arrays_stay_closed(self):
-        cases = ((6, 3, 2, 4, 3), (8, 6, 2, 4, 3), (4, 2, 1, 4, 3),
-                 (4, 2, 2, 8, 6), (4, 2, 2, 12, 9))
+    def test_odd_nondivisor_and_short_native_source_stay_closed(self):
+        cases = ((6, 3, 2, 4, 3), (8, 6, 2, 4, 3), (4, 2, 1, 4, 3))
         for q, Q, pp, L, m in cases:
             with self.subTest(q=q, Q=Q, pp=pp, layers=L, phases=m):
                 winding, tp, layout = _inputs('TLP', q, pp, L, m, (Q, 1, 1))
@@ -166,6 +165,175 @@ class TlpProperQRouteTests(unittest.TestCase):
                 self.assertNotEqual(decision.admission, 'supported')
                 with self.assertRaises(ValueError):
                     gw.get_winding_layout('TLP', tp, winding, layout)
+
+    def assert_array_formula(self, database, winding, Q):
+        """Derive every mapped parent node and phase/EMF without route helpers."""
+        q, m, L = winding.q, winding.num_phases, winding.num_layers
+        k, pp, S = m // 3, winding.num_poles // 2, winding.num_slots
+        qs, Ls, tau = k * q, L // k, m * q
+        g, width = 2 * qs // Q, pp * Ls
+        positions = [tuple(node[:2]) for _, path in database for node in path]
+        self.assertEqual(len(positions), len(set(positions)))
+        self.assertEqual(set(positions), {(s, l) for s in range(S) for l in range(L)})
+        phase_counts, cohort_counts, cohort_lanes = Counter(), Counter(), {}
+        for _, path in database:
+            self.assertEqual(len(path), g * width)
+            j, outer = divmod(path[0][1], Ls)
+            phi = ((path[0][0] - 2 * q * j) % S // qs) % 3
+            phase_counts[3 * j + phi] += 1
+            cohort_counts[3 * j + phi, outer] += 1
+            direction = 1 if outer == 0 else -1
+            first_lane = path[0][2]
+            lanes = list(range(first_lane, first_lane + g))
+            cohort_lanes.setdefault((3 * j + phi, outer), []).extend(lanes)
+            anchor = phi * qs
+            if phi % 2:
+                anchor += tau if direction == 1 else (2 * pp - 1) * tau
+            actual = 0j
+            for index, node in enumerate(path):
+                parent_index, within_parent = divmod(index, width)
+                lap, within = divmod(within_parent, Ls)
+                lane = first_lane + parent_index
+                expected_slot = (anchor + lane + direction * tau *
+                                 (2 * lap + within % 2) + 2 * q * j) % S
+                self.assertEqual(tuple(node), (expected_slot,
+                    j * Ls + outer + direction * within, lane))
+                local_slot = (node[0] - 2 * q * j) % S
+                belt = local_slot // qs
+                self.assertEqual(belt % 3, phi)
+                self.assertEqual((-1) ** belt, (-1) ** index)
+                actual += (-1) ** belt * cmath.exp(1j * math.pi * node[0] / tau)
+                if index + 1 < len(path):
+                    end = path[index + 1]
+                    step = (end[0] - node[0]) % S
+                    step = step if 2 * step < S else step - S
+                    crossings = abs((local_slot + step) // tau - local_slot // tau)
+                    self.assertEqual(crossings, 1)
+                    seam = (index + 1) % width == 0
+                    outer_return = (index + 1) % Ls == 0
+                    self.assertEqual(step, direction * tau + 1 if seam else
+                                     direction * tau if outer_return else
+                                     direction * tau * (-1) ** within)
+            expected = width * cmath.exp(2j * math.pi * j / m) * cmath.exp(
+                4j * math.pi * phi / 3) * sum(cmath.exp(1j * math.pi * lane / tau)
+                                            for lane in lanes)
+            magnitude = width * math.sin(math.pi / (3 * Q)) / math.sin(math.pi / (2 * tau))
+            self.assertLess(abs(actual - expected) / magnitude, 1e-10)
+            self.assertAlmostEqual(abs(actual) / magnitude, 1, places=10)
+        self.assertEqual(phase_counts, Counter({p: Q for p in range(m)}))
+        self.assertEqual(cohort_counts, Counter({(p, l): Q // 2 for p in range(m)
+                                               for l in (0, Ls - 1)}))
+        for lanes in cohort_lanes.values():
+            self.assertEqual(lanes, list(range(qs)))
+        report = database.layout_report
+        self.assertEqual(report['pattern_route']['admission'], 'supported')
+        self.assertTrue(report['layout_retained'])
+        self.assertEqual(report['pattern_identity']['status'], 'valid')
+        self.assertFalse(report['electrically_valid'])
+        self.assertEqual(set(report['errors']), {'multi_phase_emf_mismatch'} |
+                         ({'parallel_emf_mismatch'} if Q > 2 else set()))
+        self.assertEqual(report['layout_status'], 'not strong symmetry layout')
+
+    def test_phase_array_admits_rotated_tau_plus_one_seam(self):
+        winding, tp, layout = _inputs('TLP', 4, 2, 12, 9, (2, 1, 1))
+        decision = gw.resolve_pattern_route('TLP', winding, winding.branch_dividers, tp, layout)
+        self.assertEqual(decision.admission, 'supported', decision.reason)
+        _, database = gw.get_winding_layout('TLP', tp, winding, layout)
+        self.assert_array_formula(database, winding, 2)
+        start, end = database[10][1][31:33]
+        self.assertEqual((start[0], end[0]), (143, 36))
+        step, tau, offset = 37, 36, 8
+        self.assertEqual(abs((start[0] + step) // tau - start[0] // tau), 2)
+        local_start = (start[0] - offset) % winding.num_slots
+        self.assertEqual(abs((local_start + step) // tau - local_start // tau), 1)
+
+    def test_phase_array_public_matrix_matches_independent_formula(self):
+        pairs = [(q, Q) for q in (4, 6, 8, 10, 12)
+                 for Q in range(2, q, 2) if q % Q == 0]
+        for k in (2, 3, 4):
+            for q, Q in pairs:
+                for pp, Ls in ((2, 2), (3, 4)):
+                    with self.subTest(q=q, Q=Q, pp=pp, local_layers=Ls, sets=k):
+                        winding, tp, layout = _inputs('TLP', q, pp, k * Ls, 3 * k, (Q, 1, 1))
+                        _, database = gw.get_winding_layout('TLP', tp, winding, layout)
+                        self.assert_array_formula(database, winding, Q)
+
+    def test_phase_array_uses_local_q_and_parameterized_set_count(self):
+        for q, Q, pp, Ls, k in ((1, 2, 2, 2, 2), (3, 2, 2, 4, 2),
+                               (2, 6, 2, 4, 3), (2, 2, 2, 2, 5), (1, 2, 3, 4, 6)):
+            with self.subTest(q=q, Q=Q, sets=k):
+                winding, tp, layout = _inputs('TLP', q, pp, k * Ls, 3 * k, (Q, 1, 1))
+                _, database = gw.get_winding_layout('TLP', tp, winding, layout)
+                self.assert_array_formula(database, winding, Q)
+
+    def test_phase_array_keeps_local_domain_and_fractional_scope_boundaries(self):
+        for q, Q, pp, L, m in ((6, 3, 2, 8, 6), (4, 6, 2, 8, 6),
+                               (4, 2, 1, 8, 6), (4, 2, 2, 6, 6),
+                               (4, 2, 2, 8, 9), (1, 2, 2, 12, 9),
+                               ('1/2', 2, 2, 8, 12)):
+            with self.subTest(q=q, Q=Q, pp=pp, layers=L, phases=m):
+                winding, tp, layout = _inputs('TLP', q, pp, L, m, (Q, 1, 1))
+                decision = gw.resolve_pattern_route('TLP', winding, winding.branch_dividers, tp, layout)
+                self.assertNotEqual(decision.admission, 'supported')
+                if q == '1/2':
+                    self.assertEqual(decision.admission, 'unsupported-yet')
+                with self.assertRaises(ValueError):
+                    gw.get_winding_layout('TLP', tp, winding, layout)
+
+    def test_phase_array_public_generation_rejects_corrupt_seam(self):
+        winding, tp, layout = _inputs('TLP', 4, 2, 12, 9, (2, 1, 1))
+        self.assertEqual(gw.resolve_pattern_route(
+            'TLP', winding, winding.branch_dividers, tp, layout).admission, 'supported')
+        original = gw._array_three_phase_winding_sets
+
+        def corrupt(*args, **kwargs):
+            starts, database = original(*args, **kwargs)
+            path, width = database[10][1], 2 * 4
+            path[width], path[2 * width] = path[2 * width], path[width]
+            return starts, database
+
+        with patch.object(gw, '_array_three_phase_winding_sets', side_effect=corrupt):
+            with self.assertRaisesRegex(ValueError, 'tau plus or minus one'):
+                gw.get_winding_layout('TLP', tp, winding, layout)
+
+    def test_phase_array_post_connection_shifts_keep_identity_and_occupancy(self):
+        for m, L in ((6, 8), (9, 12)):
+            with self.subTest(phases=m):
+                winding, tp, layout = _inputs('TLP', 4, 2, L, m, (2, 1, 1))
+                layout.phase_shift_list = [index % 2 for index in range(L)]
+                layout.radial_shift = 1
+                _, database = gw.get_winding_layout('TLP', tp, winding, layout)
+                report = database.layout_report
+                self.assertTrue(report['layout_retained'])
+                self.assertEqual(report['pattern_identity']['status'], 'valid')
+                self.assertEqual(report['pattern_route']['admission'], 'supported')
+                positions = [tuple(node[:2]) for _, path in database for node in path]
+                self.assertEqual(len(positions), len(set(positions)))
+                self.assertEqual(len(positions), winding.num_slots * winding.num_layers)
+
+    @patch('pattern_rule_workbench.PATTERNS', ('TLP',))
+    def test_phase_array_workbench_uses_public_generation_and_retention_status(self):
+        from pattern_rule_workbench import build_divider_route_catalog
+
+        for m, L in ((6, 8), (9, 12), (12, 16)):
+            with self.subTest(phases=m):
+                records = build_divider_route_catalog('4', 2, L, phases=m)
+                record = next(r for r in records if r.dividers == (2, 1, 1))
+                self.assertEqual(record.status, 'Validated')
+                self.assertTrue(record.reason.startswith('auto configure pending'))
+                self.assertIn('layout status: not strong symmetry layout', record.reason)
+                self.assertIn('multi_phase_emf_mismatch', record.reason)
+
+    @patch('pattern_rule_workbench.PATTERNS', ('TLP',))
+    def test_phase_array_workbench_enumerates_local_q_divisors(self):
+        from pattern_rule_workbench import build_divider_route_catalog
+
+        records = build_divider_route_catalog('1', 2, 4, phases=6)
+        matching = [r for r in records if r.dividers == (2, 1, 1)]
+        self.assertEqual(len(matching), 1)
+        self.assertEqual(matching[0].status, 'Validated')
+        self.assertIn('layout status: not strong symmetry layout', matching[0].reason)
+        self.assertIn('multi_phase_emf_mismatch', matching[0].reason)
 
     @patch('pattern_rule_workbench.PATTERNS', ('TLP', 'ZPP'))
     def test_workbench_consumes_public_route_results_and_zpp_exclusion(self):

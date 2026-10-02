@@ -24,8 +24,9 @@ changes through the respective sections of
   supported, candidate, rejected, and unsupported admission states.
 - Owner-approved native TLP proper-Q cohort joins ([Issue #7](https://github.com/HailinHuang/HairpinWindingTool/issues/7))
   and the ZPP `q_and_p2` exclusion ([Issue #8](https://github.com/HailinHuang/HairpinWindingTool/issues/8)).
-  TLP multi-set arrays remain outside production admission pending the separate
-  owner review in [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).
+  Owner-approved integer-global-q TLP phase arrays now resolve through local
+  constructors and full-array gates; local q-only factors are visible in
+  Workbench. See [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).
 - Exploratory Workbench schema-v3 packages; manual completion does not certify routes.
 - [Finite divider-status provenance and navigation](https://github.com/HailinHuang/HairpinWindingTool/issues/2)
   refreshed for the existing six geometries: 80 cells and 860 resolver requests.
@@ -56,8 +57,6 @@ Track these as discrete GitHub Issues with focused acceptance:
 2. Core: [Complete source-bound half-integer TLP/UWP validation](https://github.com/HailinHuang/HairpinWindingTool/issues/4),
    after launcher review and a fresh source binding.
 3. Application: [Establish packaged/native acceptance tied to current source](https://github.com/HailinHuang/HairpinWindingTool/issues/5).
-4. Core: review TLP multi-set candidates and retained electrical diagnostics in
-   [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).
 
 GitHub [Issues](https://github.com/HailinHuang/HairpinWindingTool/issues) are the
 authoritative backlog. This list states priorities, not a second task database.
@@ -97,8 +96,12 @@ passed for the named exclusion, precedence and unaffected controls. A separate
 all cases. The earlier 22/26 safe/unsafe classification was a false positive:
 fixed slot-zero pole intervals were checked after rigid phase-set rotation.
 The 52 two-boundary records remain coordinate diagnostics; they do not impose
-`k=m/3` dividing Q. Multi-set TLP remains `unsupported-yet`. The six-phase
-example retains a global
+`k=m/3` dividing Q. Owner-approved integer-global-q arrays now pass strict
+public generation for the same 48 cases, plus local-only Q factors, full local
+Q and 15/18 phases. Fractional-global-q arrays for this route remain
+`unsupported-yet`. The six-phase example retains a global
 `multi_phase_emf_mismatch`, so local phase-set identity does not establish
-strong symmetry. These findings do not certify the route or release. See
-[VALIDATION.md](VALIDATION.md) and [Issue #7](https://github.com/HailinHuang/HairpinWindingTool/issues/7).
+strong symmetry. Workbench preserves Auto pending and retained-layout errors
+while marking successfully generated routes Validated. These findings do not
+certify strong symmetry or a release. See
+[VALIDATION.md](VALIDATION.md) and [Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9).

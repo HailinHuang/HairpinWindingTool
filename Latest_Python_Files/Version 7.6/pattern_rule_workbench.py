@@ -208,8 +208,11 @@ three-phase construction.
   independent checks; the saved manual draft alone is not production evidence.
 - TLP `(Q,1,1)` joins `g=2q/Q` consecutive full-q `(q,1,2)` parents within
   each outer-layer cohort. Even Q divides integer q, pp>=2, even L>=2 and
-  one native phase set are required. Q>2 neutral groups retain unequal
-  parallel complex EMF as not strong symmetry; two-layer overlap stays visible.
+  the supported native phase domain are required. Integer-global-q arrays
+  use q_s=k*q and L_s=L/k for m=3k; even Q divides q_s and L_s is even >=2.
+  The local construction is validated before the canonical set rotation;
+  no k|Q restriction applies. Q>2 neutral groups retain unequal parallel
+  complex EMF as not strong symmetry; two-layer overlap stays visible.
   Preflight and manual completion do not establish public generation.
 - TSP `(1,D,2)` uses the fixed-lane two-inlet formula only when `q|D|pp` and
   every local q lane covers every pole-pair residue exactly once. Phase-set
@@ -226,6 +229,8 @@ Catalog status
 Default = the Pattern's automatic factor route passed production generation.
 Validated = a selected non-default route passed production generation.
 Manual drafts cannot confer either status. Strong symmetry is reported separately.
+An Auto-pending generated route can be Validated while its retained layout
+is not strong symmetry; its layout status and electrical errors remain visible.
 Loading a production route uses its generated paths and effective parameters;
 manual exports remain non-certified.
 not strong symmetry layout = retained layout with a count-divisibility proof.
@@ -301,8 +306,12 @@ def _probe_route(pattern, q, poles, layers, naa, dividers, phases=3,
         return True, reason
     if hasattr(database,'auto_configuration'):
         auto = database.auto_configuration
-        return True, auto['status'] + ': ' + auto['assessment']['reason'] + (
+        reason = auto['status'] + ': ' + auto['assessment']['reason'] + (
             ' Auto parameters: ' + str(auto['parameters']) if auto['parameters'] else '')
+        if getattr(database, 'layout_status', '') == 'not strong symmetry layout':
+            reason += ('; layout status: not strong symmetry layout; '
+                       + ', '.join(database.layout_report['errors']))
+        return True, reason
     if getattr(database, 'layout_status', '') == 'not strong symmetry layout':
         return True, 'not strong symmetry layout: ' + ', '.join(database.layout_report['errors'])
     return True, "Complete base layout passed the current generator validators."
@@ -381,7 +390,15 @@ def build_divider_route_catalog(q_text: str, pp: int, layers: int,
             configurations += ((int(2 * q), (q, 2, 1)),)
     records = []
     for pattern in PATTERNS:
-        for naa, dividers in configurations:
+        pattern_configurations = configurations
+        if (pattern == 'TLP' and q.denominator == 1
+                and three_phase_set_count(phases) > 1):
+            local_q = int(q) * three_phase_set_count(phases)
+            # Enumerate the local q-only requests; the public resolver owns support.
+            pattern_configurations += tuple(
+                (Q, (Q, 1, 1)) for Q in _divisors(local_q)
+                if (Q, (Q, 1, 1)) not in configurations)
+        for naa, dividers in pattern_configurations:
             winding, transposition, layout = _base_inputs(
                 pattern, q, poles, layers, naa, dividers, phases)
             decision = gw.resolve_pattern_route(

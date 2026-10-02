@@ -40,9 +40,18 @@ its old review notes/local illustration references are historical, and its
 manual non-certification flags stay false. Public generation is checked
 against its exact ordered paths. Native proper-Q finite evidence covers
 32 q/Q/pole/layer/phase cases; this is not universal or release certification.
-The existing six-geometry TLP q-only inventory now has eight supported and
-one rejected request. Multi-set TLP q-only arrays remain unsupported-yet
-pending owner review. A separate mapped-edge exploration for `m=3k`,
+The existing six-geometry TLP q-only inventory has eight supported and
+one rejected request. Owner-approved integer-global-q arrays now reuse the
+same local construction. For `m=3k`, `k>=2`, use `q_s=k*q`, `L_s=L/k`,
+even `2<=Q<=q_s`, `Q|q_s`, `pp>=2`, and even `L_s>=2`. Global q need not
+be even and Q need not divide global q; each local public route must pass.
+Join `g=2q_s/Q` whole `(q_s,1,2)` parents per cohort, then apply the
+canonical `2*q*j` slot and `L_s*j` layer offsets. The global branch length
+is `2q*pp*L/Q`, with Q branches per phase and `Q/2` per outer-layer cohort.
+No `k|Q` condition applies. Fractional-global-q arrays remain unsupported-yet.
+Insert-side entry and the existing TP/post-connection-shift contracts remain.
+
+A separate pre-admission mapped-edge exploration for `m=3k`,
 `k=2,3,4`, tested 48 combinations across eight proper-q pairs and
 `(pp,L_local)=(2,2)` or `(3,4)`. In that matrix, each branch joins
 `g=2*k*q/Q` parents and each set rotates by `2*q*j` slots. All 48 pass the
@@ -54,11 +63,16 @@ becomes global 143->36 with offset 8 and tau=36. Its local unwrapped 135->172
 crosses one region; global 143->180 crosses two fixed intervals. The current
 post-connection contract does not repeat that gate after rigid relocation.
 Canonical phase-set mapping preserves the complete parents and creates no
-new connections. The six-phase `(q,Q,pp,L)=(4,2,3,8)` candidate retains
+new connections. The six-phase `(q,Q,pp,L)=(4,2,3,8)` example retains
 valid local identities and all 1,152 conductors once, while its aggregate
-report keeps `multi_phase_emf_mismatch`; it is not strongly certified. This
-bounded audit does not promote any phase array: public admission remains
-`unsupported-yet` pending owner review and production integration checks. See
+report keeps `multi_phase_emf_mismatch`; it is not strongly certified. Fresh
+strict public generation now verifies those 48 cases against an independent
+complete-parent, edge and complex-EMF formula, plus local-only/full local Q,
+15/18 phases, shifts and rejection cases. Workbench includes local q-only
+divisors and reports public generation separately from retained layout/Auto
+diagnostics. Source changes make the earlier private hash receipt historical;
+the current public tests and refreshed finite-status receipt bind this admission.
+This remains finite validation, not universal or release certification. See
 [current validation](../../docs/VALIDATION.md).
 
 ### Post-connection phase/radial shifts (2026-09-29)

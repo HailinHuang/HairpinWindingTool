@@ -2806,11 +2806,11 @@ def _resolve_phase_array_route(pattern, winding, factors, configuration,
     route_names = {item.route_name for item in local_decisions}
     route_name = (next(iter(route_names)) if len(route_names) == 1
                   else 'three_phase_set_array')
-    if 'tlp_q_only_pair_join' in route_names:
+    if 'tlp_q_only_pair_join' in route_names and q.denominator != 1:
         return PatternRouteDecision(
-            'disabled', 'tlp_q_only_phase_array_unsupported',
-            'TLP q-only cohort joins are admitted for one native phase set; '
-            'mapped phase-set arrays remain unsupported-yet for this construction.',
+            'disabled', 'tlp_q_only_integer_scope',
+            'TLP q-only cohort joins are registered for integer global q; '
+            'fractional-global-q phase arrays remain unsupported-yet for this construction.',
             pattern, tuple(factors), admission='unsupported-yet')
     q = Fraction(str(winding.q))
     if (pattern == 'TSP' and q.denominator != 1

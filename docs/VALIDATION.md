@@ -170,11 +170,46 @@ The current contract checks connections before relocation and does not repeat
 pole-region identity checks on rotated endpoints. A representative
 six-phase layout retains all positions and local identities while its global
 report keeps `multi_phase_emf_mismatch`; no strong-symmetry or manufacturing
-claim follows. Public TLP phase-array admission remains `unsupported-yet`
-pending owner review in
-[Issue #9](https://github.com/HailinHuang/HairpinWindingTool/issues/9) and production integration checks. The saved matrix,
+claim follows. At that private-review stage, public TLP phase-array admission
+was `unsupported-yet`; the subsequent owner-approved admission below supersedes
+that boundary. The saved matrix,
 checker and figures remain excluded local review evidence under
 `Latest_Python_Files/Version 7.6/workbench_preview/tlp_multiphase_20261002/`.
+
+### Owner-approved TLP phase-array admission (2026-10-02)
+
+The integer-global-q array guard now delegates to supported local constructors
+and the existing aggregate structural preflight. For `m=3k`, use `q_s=k*q`
+and `L_s=L/k`: even `2<=Q<=q_s`, `Q|q_s`, `pp>=2`, even `L_s>=2`,
+and insert-side entry. No `k|Q` restriction or global-Q-divides-q test is added.
+Fractional-global-q remains unsupported-yet for this route.
+
+A failing public test first reproduced rejection of the rotated +37-slot seam;
+a separate failing catalog test reproduced the missing local Q=2 row at
+global q=1, m=6. The updated public tests cover all 48 former private cases,
+five local-factor/set-count cases including 15/18 phases, exact mapped parent
+nodes, phase/polarity, occupancy, branch counts, local signed edges and an
+independent nonzero complex-EMF formula. Corrupting a seam through the public
+generation path still fails; invalid factors, local layers, short sources,
+fractional scope and post-connection shifts are covered.
+
+Workbench enumerates extra TLP q-only requests from local q. Successful public
+generation can mark a route Validated while Auto remains pending; its retained
+`not strong symmetry layout` and EMF diagnostics are now visible in the reason.
+The Auto decision algorithm and production certification gates are unchanged.
+The private saved-source receipt predates this source edit and is historical;
+current tests and refreshed 14-file finite-status resources supply fresh evidence.
+
+Scoped checks passed: 17 TLP proper-Q tests, eight existing TLP q-only tests,
+eight existing phase-array tests, the named ZPP exclusion control, two existing
+Workbench status checks, all 22 direct finite-status tests, and the refreshed
+status `--check`. Two legacy array-rejection expectations were updated for the
+approved local-construction contract and now verify public generation/retention.
+The initial status probe lacked its generation call; it now exercises the
+public route. Six affected status/provenance checks were rerun successfully
+outside the Windows sandbox after temporary-directory ACLs blocked fixture setup;
+the other 16 passing status checks were reused for unchanged cases.
+Unchanged fixtures and environment reuse prior evidence; no full regression ran.
 
 Unvalidated domains include complete integer coverage, deferred fractional
 families, native Windows DPI/button flows, current packaged-resource acceptance,

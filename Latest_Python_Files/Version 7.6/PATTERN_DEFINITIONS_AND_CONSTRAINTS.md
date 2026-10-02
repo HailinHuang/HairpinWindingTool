@@ -8,11 +8,13 @@ each outer-layer cohort. Preserve every body pass and check every new
 top-bottom insertion seam, one-lane advance, signed travel, one-region
 limit, occupancy, N-to-S orientation and weld direction. Q>2 remains a
 retained non-strong layout; L=2 keeps its structural overlap qualification.
-Multi-set arrays remain unsupported-yet. The bounded 48-case review passes
-connection-stage checks in each canonical local set. Its earlier `k=m/3`
-dividing Q restriction is withdrawn: fixed global pole counts after rigid
-set rotation are coordinate diagnostics, not construction-stage failures.
-Production admission still requires owner review and integration validation.
+Owner-approved integer-global-q arrays use `m=3k`, `q_s=k*q`, and
+`L_s=L/k`: even `2<=Q<=q_s`, `Q|q_s`, `pp>=2`, and even `L_s>=2`.
+Each local public constructor and the full array must pass the existing gates.
+The earlier `k|Q` restriction is withdrawn: fixed global pole counts after
+rigid set rotation are coordinate diagnostics, not construction-stage failures.
+Fractional-global-q arrays for this route remain unsupported-yet. Public
+generation, layout retention, Auto completion and strong symmetry stay distinct.
 The [current formula/domain](PATTERN_DIVIDER_FORMULA_SUPPORT.md#tlp-even-q-cohort-joins-owner-approved-2026-10-02)
 supersedes only the older proper-Q unsupported conclusion, not its historical
 evidence or the shared transposition/shift rules below.

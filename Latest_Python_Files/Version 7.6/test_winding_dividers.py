@@ -3415,7 +3415,12 @@ class TlpQOnlyPairJoinRouteTests(unittest.TestCase):
             'TLP', 2, 4, 4, 2, (2, 1, 1), 6)
         array_decision = gw.resolve_pattern_route(
             'TLP', winding, winding.branch_dividers, tp, layout)
-        self.assertNotEqual(array_decision.admission, 'supported')
+        self.assertEqual(array_decision.admission, 'supported')
+        _, array = gw.get_winding_layout('TLP', tp, winding, layout)
+        self.assertEqual(len(array), winding.num_phases * winding.ab)
+        self.assertEqual({len(path) for _, path in array}, {16})
+        self.assertTrue(array.layout_report['layout_retained'])
+        self.assertIn('multi_phase_emf_mismatch', array.layout_report['errors'])
 
     def test_manual_settings_shifts_and_required_inlet_follow_shared_contract(self):
         from pattern_rule_workbench import _base_inputs

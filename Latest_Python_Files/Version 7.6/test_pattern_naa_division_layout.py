@@ -185,6 +185,7 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
             'Q-only adjacent P2 pair: proper-Q q=6 boundary',
             'Q-only proper-Q cohort join: reviewed q=4 draft',
             'Q-only proper-Q cohort join: retained EMF asymmetry',
+            'Q-only cohort join: phase-array construction',
         )
         for name in positive_names:
             with self.subTest(name=name):
@@ -201,7 +202,6 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
             'Q-only adjacent P2 pair: odd-Q boundary': 'rejected',
             'Q-only adjacent P2 pair: retained odd-Q rejection': 'rejected',
             'Q-only adjacent P2 pair: pp=1 boundary': 'unsupported-yet',
-            'Q-only adjacent P2 pair: phase-array boundary': 'unsupported-yet',
         }
         for name, admission in expected_boundaries.items():
             with self.subTest(name=name):

@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "version": "7.6",
-  "generated_at_utc": "2026-10-02T09:18:54+00:00",
-  "source_sha256": "127dc290976da5a3232d56c73739a04d492167c40d6a61ed48c22a64895591bd",
+  "generated_at_utc": "2026-10-02T11:26:53+00:00",
+  "source_sha256": "aeba57914a57395d4dddc71d3c373a4f458fffc3e564bfded4cd523094d837fe",
   "source_hash_format": "sha256-sorted-file-map-lf-v1",
   "source_hashes": {
     "automatic_transposition.py": "bdffe24aff864db11342a686668c4026f37158fe46282f5020a1d4e08427e17b",
@@ -11,14 +11,14 @@
     "divider_connection_formulas.py": "d77e240f72d112f69c2fb95c4e2c9d27913a61631340f5a4c8a3c2735616b408",
     "end_winding_calc.py": "38d939fb64ae82bff56a8856349ccf5928f2665421e490cedbb9f1560f7a2d3b",
     "explicit_connections.py": "d3a2499167a0e00298d446ab2872778c1d1c306889d09ffd54305deda554520d",
-    "get_winding_pattern.py": "ab792890dcc344463e00959d45a58691054322235d6295f25521ca42bbeb8d70",
+    "get_winding_pattern.py": "c5e60426af7896db6dd7f0afd32037c67b225313d1fab01d347a33ae68a15e4d",
     "half_integer_q_connection_formulas.py": "5bba2a1e3b6fbd4f1bf3d3e6ac70e271f127e01033d6b1776ecd0d517932e196",
     "layout_analysis.py": "cbc24c009497e31791c95969574970a981b69d4c632029c516ab31d5bc2e8df3",
     "manual_layout.py": "a1cc8d6e0f1660550e0b76401a0b7bac035e410a9d9951eb53e3e0243c3ab4bd",
     "pattern_identity.py": "12262eb39fb7b28707f992d16d980594988fbc3474c66df6b03c4074b425d540",
     "pattern_route_contract.py": "f59a30fd5b1ec026b4a9a3c6ce65a2853f6ae885c2ff5eadf79097f297eb1f67",
     "phase_topology.py": "7de75ef6018d457b0e65b94114ed069246807e9885458986296e69b797f0e759",
-    "refresh_pattern_naa_division_layout.py": "6ead2a013ab9bce0d57d765d7e74f36698ae2dd8f0e666dac5762da159deda39"
+    "refresh_pattern_naa_division_layout.py": "937aeabf735e0bd320da8c2e073b0a5d56f44fdf2b8445c37dc0afcb7c574bdb"
   },
   "geometries": [
     [
@@ -7620,7 +7620,7 @@
             "pin_profile": []
           }
         },
-        "Q-only adjacent P2 pair: phase-array boundary": {
+        "Q-only cohort join: phase-array construction": {
           "pattern": "TLP",
           "q": 2,
           "pp": 2,
@@ -7635,13 +7635,27 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tlp_q_only_phase_array_unsupported",
-            "reason": "TLP q-only cohort joins are admitted for one native phase set; mapped phase-set arrays remain unsupported-yet for this construction.",
+            "status": "enabled",
+            "admission": "supported",
+            "rule_id": "tlp_q_only_pair_join",
+            "reason": "All 2 layer-assigned three-phase sets preserve the selected route and pass local construction checks. Neutral construction passes coverage, edge, and identity gates.",
             "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": []
+            "pin_profile": [
+              "ALLP",
+              "CLLP"
+            ]
+          },
+          "production": {
+            "status": "retained-not-strong",
+            "reason": "multi_phase_emf_mismatch",
+            "layout_retained": true,
+            "electrically_valid": false,
+            "identity_status": "valid",
+            "errors": [
+              "multi_phase_emf_mismatch"
+            ],
+            "route_rule_id": "tlp_q_only_pair_join"
           }
         },
         "Q-only adjacent P2 pair: transposition boundary": {
