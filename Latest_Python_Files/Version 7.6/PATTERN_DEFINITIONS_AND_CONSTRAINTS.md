@@ -1,5 +1,134 @@
 # Pattern Definitions and Constraints
 
+## Integer closure geometry gates (2026-10-03)
+
+CP uses H=L_s/2 polarity pools: require H|Naa for even H, or even Naa
+for odd H, in its canonical integer-local insert grammar. This follows
+from full coverage, phase/polarity, adjacent-layer W and I span H; it adds
+no pin-type requirement. Valid L_s=4/6 raw P2 mothers keep their order;
+larger even-H layouts use public four-layer quartet mothers and equal cuts.
+
+TLP adds configured even-gcd Q-only and odd-q P2-mother cuts while preserving
+valid raw q/P2 default order and the D*P2<=pp boundary. TSP may retain one
+complete layer pass when B=L_s>=8; the existing B>=8 floor stays unchanged.
+
+SLP adds physical N-belt complementary pass partitioning for even or odd
+pp/D. Weld-side terminals use insertion-only cycle/gcd joins, followed by
+cuts that delete mother W. All retained W are adjacent-layer mother edges
+with their original pitch and direction. Long whole-branch closing rotations
+remain invalid. Configured parents and signed evidence cannot be replaced.
+See the [parameter rules](PATTERN_DIVIDER_FORMULA_SUPPORT.md#integer-closure-extensions-and-review-boundary-2026-10-03).
+
+The owner revoked UWP's historical same-layer series-weld exception on
+2026-10-03. For positive integer local q_s and Q|q_s, D=P2=1 is rejected
+before array deployment or public generation. This covers NoDivider and
+proper-Q series joins; full-Q with q_s>1 retains the existing BWP identity
+exclusion. PP/P2 adjacent-layer constructions remain available under their
+own gates. Matching historical bridge metadata cannot authorize a same-layer
+weld. This is an owner exclusion of the current construction, not physical
+impossibility. Historical exception wording below records earlier authorization
+and is superseded by this current rule.
+
+## Integer CP/TLP Q-parent partition (2026-10-03)
+
+For a successful public `(Q,1,1)` CP or TLP parent and D>1 dividing pp,
+cut each full parent into D consecutive children. The local width
+`B=2*(q_s/Q)*(pp/D)*L_s` is an even complete-pass/block count. Removing
+insertion seams introduces no edge and preserves all retained welding
+connections, their pitch/direction, phase, polarity and signed travel.
+Keep each Pattern's Q-only parent conditions, the required insert-side
+terminals, public source/target checks and existing route priority. Nonzero
+phase shifts apply after connection validation. Manual configuration is
+accepted only when the actual configured parent and target pass; there is
+no neutral-parent substitution. This extends a construction formula without
+changing the Pattern grammar or requiring strong symmetry.
+
+## Integer ZPP physical-endpoint/gcd partition (2026-10-03)
+
+Use complete configured public `(q_s,1,1)` parents, integer local q_s,
+positive even L_s, Q|q_s, D|pp and P2 in {1,2}. For A=Q*D*P2,
+g=gcd(q_s,A), permute the actual last insertion endpoints cyclically
+within each q_s/g physical-start-lane cohort and cut each cohort into A/g
+children of width 2*q_s*pp*L_s/A. Full endpoint bijections preserve coverage;
+all new welds join adjacent layers with pitch tau=m_s*q_s and one direction
+per actual pair. Retain complete signed travel, one-region checks, phase/sign,
+ordered ZPP, P2 N-to-S orientation and owner exclusions. Preserve successful
+older routes and distinguish fixed-global diagnostics from canonical array
+admission. See the [parameter proof](PATTERN_DIVIDER_FORMULA_SUPPORT.md#zpp-actual-lane-endpoint-cyclic-permutation-and-gcd-partition-2026-10-03).
+
+## TSP/TLP odd-Naa current-grammar exclusion (2026-10-03)
+
+For integer local q_s and positive even L_s, each branch's layer-zero nodes
+share a pole sign. Complete phase coverage requires Naa/2 branches per sign,
+from B/L_s=2*q_s*pp/Naa and the q_s*pp N/S pools. The owner excludes odd
+Naa for this grammar with legal integer factors; rotation/manual TP retaining
+the grammar does not change the count. Keep the TSP B>=8 floor. Other
+grammars, fractional local q and odd local layers are outside this proof.
+
+## Integer SLP proper-Q P2 lane regrouping (2026-10-03)
+
+SLP proper-Q P2 lane regrouping also permits D=1 when pp/D is even.
+Retain complete 2L_s parent blocks and alternating lane order. Added seams
+are insertion-side same-boundary-layer returns; all actual welds retain
+the full-Q P2 parent's adjacent layers, common pitch and direction.
+Keep proper Q|q_s, even local layers, the configured public parent/lane
+checks and N-to-S terminals. The even-pass restriction is unchanged.
+
+## Half-integer q integer-local formula reuse (2026-10-02, local)
+
+For q=h/2 (positive odd h), m=3k with even k, and L=k*L_s with positive
+even L_s, derive integer q_s=kh/2. Reuse each established local Pattern
+constructor with the same `(Q,D,P2)` factors and its existing admission;
+map set j by slot offset h*j and layer offset L_s*j. Full-array coverage,
+phase, electrical retention and connection gates remain required. The local
+constructor, rather than fractional global q or strong symmetry, defines
+the further factor/layer conditions. TLP q-only specifically requires 4|k;
+this is not a blanket restriction on SLP/SSP or other divider routes.
+
+Workbench now enumerates integral local factors for these half-q arrays;
+strict public generation still owns Validated. The SLP/SSP/TLP lift checks
+preserve adjacent-layer welding, insertion-only same-layer returns, uniform
+actual-pair direction and pitch. See the
+[parameter map and route conditions](PATTERN_DIVIDER_FORMULA_SUPPORT.md#half-integer-q-lift-of-integer-local-divider-formulas-2026-10-02-local).
+Native half-q support, pin types and post-connection behavior are unchanged.
+Radial relocation remains outside this exploration.
+
+The [two-layer UWP sector-parent specialization](PATTERN_DIVIDER_FORMULA_SUPPORT.md#half-integer-uwp-two-layer-sector-parent-specialization-candidate)
+is a separate Candidate: `(q,pp,2)`, L=2, one weld and zero insertion edges
+per branch. Its geometry/count formula passes local checks, but the existing
+owner-confirmed D*P2<=2 exclusion still applies. Owner judgment and existing
+public gates are required before admission; ordered two-layer overlap alone
+does not certify body pins or manufacturability.
+
+## Current rational lap weld-side variants (2026-10-02, local)
+
+`tlp_rational_half_belt_translation` constructs the entire stated native parameter
+family: reduced q=a/b>1, even a, odd b>2, b|(2m-1), P=2bR, even L>=4,
+and maximal `(Q,D,P2)=(q,pp,2)`. Native m means 3 or supported odd m not
+divisible by three. The [parameter proof and layer orders](PATTERN_DIVIDER_FORMULA_SUPPORT.md#rational-tlp-half-belt-complementary-translation-family-2026-10-02-local)
+give full coverage, equal L-conductor N-to-S branches and uniform weld
+pitch H=q(m-1/2). All welds join adjacent layers with ds*dl=-H; every
+connection crosses at most one pole boundary. Insertion-only boundary returns
+preserve the existing TLP grammar and pin vocabulary. Require the existing
+phase/retention gate as well as weld checks: a same-pitch weld can still join
+conductors from the wrong phase. Complex-EMF mismatch remains diagnostic.
+The fixed formula has no manual TP or inlet-adjustment implementation;
+the common post-connection shift contract below still applies. CHW radial
+relocation is outside this fractional-q exploration. Historical
+integer/half-q pass-cut limits do not define this new rational construction.
+Manufacturing tooling, clearance, native/package and broader acceptance remain
+unverified; software route admission is not release certification.
+
+`slp_rational_half_belt_translation` extends the same parameter formula at
+L=4 only. Replace each reciprocal epsilon-negative slot orbit by two
+four-conductor SLP paths with insertion-side boundary returns. Their actual
+weld pairs have `ds*dl=-H` at 0/1 and 1/2 and `+H` at 2/3; every weld
+is adjacent-layer with absolute pitch H. All forty welds in the q=4/3,
+m=5,P=6 example are adjacent. Same-layer returns must remain on the
+insertion side: weld-side terminals do not change the I-W-I edge roles.
+Use the [SLP proof and extension boundaries](PATTERN_DIVIDER_FORMULA_SUPPORT.md#four-layer-slp-extension-of-half-belt-complementary-translation).
+SLP L>=6 and other divider routes remain outside this admitted constructor.
+
 ## Current TLP q-only and ZPP Q+P2 boundaries (2026-10-02)
 
 Owner-approved native TLP `(Q,1,1)` extends the earlier full-Q pair join to
@@ -13,11 +142,22 @@ Owner-approved integer-global-q arrays use `m=3k`, `q_s=k*q`, and
 Each local public constructor and the full array must pass the existing gates.
 The earlier `k|Q` restriction is withdrawn: fixed global pole counts after
 rigid set rotation are coordinate diagnostics, not construction-stage failures.
-Fractional-global-q arrays for this route remain unsupported-yet. Public
-generation, layout retention, Auto completion and strong symmetry stay distinct.
+Half-integer arrays can reuse these local integer constructors under the
+extension below. Public generation, retention, Auto and strong symmetry stay distinct.
 The [current formula/domain](PATTERN_DIVIDER_FORMULA_SUPPORT.md#tlp-even-q-cohort-joins-owner-approved-2026-10-02)
 supersedes only the older proper-Q unsupported conclusion, not its historical
 evidence or the shared transposition/shift rules below.
+
+## Local half-integer TLP cohort extension (2026-10-02)
+
+For `q=h/2`, positive odd h, `m=3k`, the q-only `(Q,1,1)` route uses
+`q_s=kh/2` and `L_s=L/k`. Even Q divides even integer q_s, so k must be
+divisible by four; this follows from the local constructor, not symmetry.
+Require `pp>=2`, even `L_s>=2`, insert-side entry, and all existing local
+and aggregate gates. Set j translates by integer `h*j` slots and `L_s*j`
+layers. Thirteen public cases cover h=1/3/5/7, k=4/8/12, proper/full local
+Q and two pole/layer settings. EMF mismatch remains a retained diagnostic.
+Other rational denominators remain outside this construction's current topology.
 
 ZPP `(Q,1,2)` with `Q>1` is the owner's named-type exclusion:
 `q and p2 share same route`. Apply it before odd-effective-q reasoning and
@@ -38,6 +178,12 @@ layout with zero fundamental EMF remains an electrical failure. Inlet-side and
 manual inlet-adjustment requirements still belong to the connection stage.
 This section supersedes older route notes below that restrict phase/radial
 shift admission or require post-shift connection validation.
+
+Owner clarification, 2026-10-02: radial relocation is a CHW feature and is
+outside fractional-q construction exploration. Check the rational lap
+formula's welding sides and layer spans on its constructed connections;
+do not add radial-function checks or new post-relocation connection gates
+to this exploration. The established connection-identity contract remains.
 
 ## Manual transposition admission update (2026-09-29)
 

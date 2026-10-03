@@ -10,6 +10,10 @@ checks decide the case. Phase/radial layout shifts are applied after validated
 connections across all ten Pattern families; shifted endpoints are not a new
 connection-identity rejection. Unique occupancy, phase/pole sign and electrical
 retention still apply, so zero fundamental EMF can reject a particular shift.
+The current rational TLP/SLP half-belt translation constructors require
+adjacent-layer welds. Neutral four-layer SLP same-layer returns are insertion
+pins, never welds. Radial relocation belongs to CHW and is outside this
+fractional-q exploration; no additional radial rejection rule is introduced.
 Inlet restrictions remain. Fixed TSP sector/pass-partition
 formulas report that they have no transposition implementation; other explicit
 constructor limitations and actual generated geometry failures remain errors.
@@ -21,6 +25,38 @@ constructor limitations and actual generated geometry failures remain errors.
 - `Default` and `Validated`: successful generation under the applicable route checks, not manufacturing certification.
 
 Every rejected record must retain its exact reason. Show it in the catalog tooltip and in the editor's `Reject reason` text. Never replace a detailed generator exception with a generic unsupported message.
+
+## CP polarity-pool boundary (2026-10-03)
+
+For integer local q_s and positive even L_s, put H=L_s/2. CP's current
+canonical insert grammar requires Naa divisible by H when H is even,
+or by two when H is odd. Full equal polarity pools, adjacent-layer W and
+I span H give the count; no pin-type rule or EMF symmetry assumption is
+added. The resolver reports `cp_polarity_pool_rejected` with the actual
+q_s, L_s, H and Naa. Keep invalid-factor, no-divider and global/local
+layer gates distinct. Legal larger-layer cases use configured public
+quartet mothers rather than the old raw mother with duplicate/missing nodes.
+See the [proof](PATTERN_DIVIDER_FORMULA_SUPPORT.md#integer-closure-extensions-and-review-boundary-2026-10-03).
+
+SLP's long weld-inlet rotation is a method-negative result, superseded for
+the admitted P2 family by insertion-only cycle/gcd joins and W cuts.
+
+## UWP adjacent-layer weld requirement (2026-10-03)
+
+The owner cancelled the historical same-layer series-weld exception.
+For positive integer local q_s and Q|q_s, the current `(Q,1,1)` construction
+is `rejected` with `uwp_factor_rejected` before native/array generation,
+including implicit NoDivider and manual/shifted inputs. NoDivider and
+proper-Q require a same-layer series junction; no historical metadata can
+exempt that weld. Full-Q q_s>1 keeps the established BWP identity exclusion.
+The D*P2<=2 splitting gate and legal adjacent PP/P2 routes remain distinct.
+This rejects the registered construction by owner decision; it does not
+prove every possible physical UWP layout impossible. Earlier dated series
+authorization below is historical and superseded.
+
+The current TSP complete-pass rule also supersedes the dated two-pass method
+boundary below: one complete pass is allowed when B=L_s>=8, while B>=8,
+even Naa and the actual fixed-recipe configuration gates remain mandatory.
 
 ## TSP complete-pass closure (2026-09-29)
 
@@ -58,15 +94,21 @@ Source absence for BWP/SSP/SLP/ZLP/TSP/ZPP/CP leaves this P2=1 target
 `unsupported-yet`; do not copy their source P2 rejection onto the target.
 TLP now has one registered full-Q even-Q adjacent-pair route for `(Q,1,1)`;
 other TLP P2=1 targets still need their own admitted construction.
-For TLP, a target that violates `pp-divider * P2-divider <= pp` is an explicit
-factor rejection; targets within that bound still require a registered route.
+For legacy TLP integer/half-q pass cuts, a target that violates
+`pp-divider * P2-divider <= pp` is an explicit factor rejection. The separate
+b>2 maximal rational request `(q,pp,2)` is considered by the new
+`tlp_rational_half_belt_translation` parameter theorem instead; exempting its factor
+shape does not admit geometries outside that theorem. Other targets within
+the legacy bound still require a registered route.
 The registered TLP `(2,D,2)` route cuts public `(1,D,2)` parents for even
 integer q, `D>1`, `D|pp`, `2D<=pp`, and sufficient even local layers. A parent
 placement or short local-layer failure remains `unsupported-yet`; it is not a
 new blanket TLP rejection. Two distinct adjacent inlet lanes are permitted
 when the complete route passes independent checks.
-For every ZPP tuple with `P2=2`, an odd positive integer effective q is an
-explicit rejection because its registered construction requires `q=2*Q`.
+For every ZPP tuple with `P2=2`, an odd positive integer effective q remains
+an owner-approved explicit exclusion. Its original q=2*Q rationale described
+the older constructor; the new endpoint/gcd formula does not use Q*P2=q
+as a universal length condition. The owner explicitly retained this boundary.
 Phase-set routes apply this check to each set's local q; a fractional global q
 is not itself classified as odd.
 LPP's existing factor exclusion still applies. EMF asymmetry is not a transfer
@@ -77,7 +119,7 @@ rejection. The executable owner is `half_integer_q_pp_route_decision`.
 | BWP-P2 | BWP, P2=2, any q-divider or pp-divider | BWP does not support P2-divider=2. | User-confirmed reject, 2026-09-21. | `get_winding_pattern.py`: `pattern_rejects_divider_tuple`, `divider_exclusion_reason` |
 | SSP-P2 | SSP mixed P2=2 tuples other than `(1,1,2)` | SSP mixed P2-divider formulas remain excluded; only the distinct reflected P2-only `(1,1,2)` construction is registered. | Earlier blanket reject narrowed by the user's exact-equivalence review request, 2026-09-22. | Shared exclusion functions and route resolver |
 | SSP-P2-ODD-Q | SSP `(1,1,2)` with positive odd integer q | SSP `(1,1,2)` reflected construction requires two equal q-lane cohorts; odd integer q cannot be divided into those cohorts. This rejects the registered construction for this geometry, not every possible physical layout. | User requested an explicit reject reason for the current construction, 2026-09-23. | `get_winding_pattern.py`: `pattern_rejects_divider_tuple`, `divider_exclusion_reason` |
-| ZPP-P2-ODD-Q | Every ZPP `(Q,D,2)` tuple when effective q is a positive odd integer | ZPP P2=2 requires q=2*Q; an odd positive integer effective q has no integer Q. This rejects the registered construction for this geometry, not every possible physical layout. | User-directed construction boundary, 2026-09-29; phase-set checks use effective local q. | `get_winding_pattern.py`: `pattern_rejects_divider_tuple`, `divider_exclusion_reason`, `resolve_pattern_route` |
+| ZPP-P2-ODD-Q | Every ZPP `(Q,D,2)` tuple when effective q is a positive odd integer | ZPP P2=2 retains the owner-approved exclusion for odd positive integer effective q. This is an admission boundary, not a proof against every possible physical layout. | Original boundary 2026-09-29, explicitly retained with the endpoint/gcd family on 2026-10-03; phase-set checks use effective local q. | `get_winding_pattern.py`: `pattern_rejects_divider_tuple`, `divider_exclusion_reason`, `resolve_pattern_route` |
 | ZPP-Q-P2-SHARED | ZPP `q_and_p2`: `(Q,1,2)` with `Q>1` | q and p2 share same route | User-confirmed reject, 2026-10-02. This reason takes precedence for the named divider type. | `get_winding_pattern.py`: `pattern_rejects_divider_tuple`, `divider_exclusion_reason`, `resolve_pattern_route` |
 | ZLP-Q | ZLP, Q-divider greater than 1, with any PP/P2 factors | ZLP does not support Q-divider greater than 1. | User-confirmed general exclusion, 2026-09-23; route notes in `pattern_rule_drafts/route_notes.jsonl`. | Shared exclusion functions and route resolver |
 | CP-NO-DIVIDER | CP `(1,1,1)` | CP does not allow the no-divider (1,1,1) route. | User-confirmed general exclusion, 2026-09-23; route note in `pattern_rule_drafts/route_notes.jsonl`. | Shared exclusion functions and route resolver |
@@ -85,7 +127,8 @@ rejection. The executable owner is `half_integer_q_pp_route_decision`.
 | UWP-FULL-Q-ONLY | UWP `(q,1,1)`, q>1 | UWP q-only with q-divider=q is the same as BWP q-only with q-divider=q; use the BWP route. | User-confirmed reject, 2026-09-21. | Shared exclusion functions, with actual q supplied |
 | UWP-PP-P2 | UWP, pp-divider * P2 not in {1,2}, integer or fractional q | UWP pp-divider and P2-divider share the same splitting allowance; their product must be 1 or 2. | User-confirmed reject, 2026-09-21. | Same shared exclusion functions |
 | LPP-FACTORS | Every LPP tuple other than `(1,pp,1)`, where `pp=poles/2` | LPP admits only its full-PP loop construction. Smaller PP factors reverse weld travel inside a layer pair in the reviewed construction; Q/P2 factors are outside the approved loop rule. | User-confirmed rejection, 2026-09-24, after review of q=2, pp=4, L=4 paths. This is the Pattern construction rule, not a manufacturing impossibility claim. | `pattern_rejects_divider_tuple`, `resolve_pattern_route`, `_validate_branch_decomposition` |
-| TLP-PP-P2-SHARED | TLP when `pp-divider * P2-divider > pp` | TLP's pp-divider and P2-divider share the available pole-pair division; their product cannot exceed `pp=poles/2`. | User-confirmed route rejection note, 2026-09-24, for the `(1,4,2)` factor tuple at `pp=4`. | `pattern_rejects_divider_tuple`, `divider_exclusion_reason`, `resolve_pattern_route` |
+| TLP-PP-P2-SHARED | Legacy TLP when `pp-divider * P2-divider > pp`; excludes the separate b>2 maximal rational request `(q,pp,2)` from this factor veto | TLP's legacy pp-divider and P2-divider share the available pole-pair division; their product cannot exceed `pp=poles/2`. | User-confirmed route rejection note, 2026-09-24, for `(1,4,2)` at `pp=4`. The 2026-10-02 rational family uses its own closed constructor and resolver theorem; integer/half-q exclusions are unchanged. | `pattern_rejects_divider_tuple`, `divider_exclusion_reason`, `resolve_pattern_route` |
+| TSP-TLP-ODD-NAA | Current TSP/TLP grammar; integer local q_s>0, positive even L_s, legal Q|q_s, D|pp, P2=1 and odd Naa | Layer-zero N/S pools each have q_s*pp nodes; B/L_s=2*q_s*pp/Naa forces Naa/2 branches of each polarity. Odd Naa cannot cover both pools. | Owner-accepted parameter rule, 2026-10-03; other grammars, fractional local q and odd local layers are outside the proof. | `resolve_pattern_route`, public branch decomposition; retain the TSP B>=8 floor |
 
 These entries describe software rules, not proof of physical impossibility. Preserve the exact tuple and geometry with any report. Internal identifiers such as `unsupported_branch_decomposition` remain diagnostic API codes, not display statuses.
 
@@ -137,7 +180,11 @@ physical-impossibility claims.
 
 ## Reviewed non-exclusions
 
-ZPP PP-only `(1,D,1)` now has two parameterized constructors. The legacy
+ZPP PP-only `(1,D,1)` retains its two translation constructors and adds the
+owner-approved [actual-lane endpoint/gcd family](PATTERN_DIVIDER_FORMULA_SUPPORT.md#zpp-actual-lane-endpoint-cyclic-permutation-and-gcd-partition-2026-10-03).
+That family uses legal local factors and actual configured full-Q parents;
+it does not weaken signed-edge, weld, identity or existing owner exclusions.
+The legacy
 whole-path translation uses a public same-Naa `(D,1,1)` parent and keeps its
 direct domain `q=Naa=D`, `D|pp`, and stride `a` satisfying `gcd(a,D)=1` and
 `gcd(D,2*(pp/D)*a-1)=1`. A separate centered-entry constructor uses the public
@@ -148,8 +195,10 @@ constructors retain supported phase/topology, positive even layers, neutral
 Regular settings, weld-side inlet, and public parent/target generation checks.
 The centered route matched the retained q=2, pp=4, L=4 phase-A package exactly;
 additional strict public samples covered q=1, D=3, pp=6 and q=3, D=6, pp=12.
-Cases outside `q|D` or `D|pp` do not enter the centered route. Existing arrayed
-resolution and the separate ZPP `(Q,2,1)` weld-direction findings are unchanged.
+Cases outside `q|D` or `D|pp` do not enter the centered route. Those source-
+specific boundaries and earlier weld findings do not exclude a distinct admitted
+endpoint construction. Successful older routes retain priority; the new formula
+also supplies canonical local paths for formerly blocked integer-q stride arrays.
 
 The SLP `(1,2,2)` manual package for q=2, pp=4, L=4 previously carried a
 "should reject" note without an engineering reason. A PP+P2 sector constructor

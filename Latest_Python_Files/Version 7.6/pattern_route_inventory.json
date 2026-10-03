@@ -1,22 +1,22 @@
 {
   "schema": 1,
   "version": "7.6",
-  "generated_at_utc": "2026-10-02T11:26:53+00:00",
-  "source_sha256": "aeba57914a57395d4dddc71d3c373a4f458fffc3e564bfded4cd523094d837fe",
+  "generated_at_utc": "2026-10-03T11:53:09+00:00",
+  "source_sha256": "299e7094b107d283b24c9a4006a713e1f304ba1de37b004874dd20f2538b1457",
   "source_hash_format": "sha256-sorted-file-map-lf-v1",
   "source_hashes": {
     "automatic_transposition.py": "bdffe24aff864db11342a686668c4026f37158fe46282f5020a1d4e08427e17b",
     "cond_info_operation.py": "f36ff44a92e659a401c512012f43ff869a1ba94b749b48df4f31f13c5c9b6364",
     "csv_operation.py": "2184fe65ae49e0ebe053fb345d42a5867274c98b9694a18d08cc329476a7b40c",
-    "divider_connection_formulas.py": "d77e240f72d112f69c2fb95c4e2c9d27913a61631340f5a4c8a3c2735616b408",
+    "divider_connection_formulas.py": "6a16636e5853947ad27206975e386c09d7e11cd4443146b907eab78f0e5fbf98",
     "end_winding_calc.py": "38d939fb64ae82bff56a8856349ccf5928f2665421e490cedbb9f1560f7a2d3b",
     "explicit_connections.py": "d3a2499167a0e00298d446ab2872778c1d1c306889d09ffd54305deda554520d",
-    "get_winding_pattern.py": "c5e60426af7896db6dd7f0afd32037c67b225313d1fab01d347a33ae68a15e4d",
+    "get_winding_pattern.py": "df8dcce62332cbf2bc4f0d13f3a4bf9b6c356d23e163e1e842016291d5bd2a15",
     "half_integer_q_connection_formulas.py": "5bba2a1e3b6fbd4f1bf3d3e6ac70e271f127e01033d6b1776ecd0d517932e196",
     "layout_analysis.py": "cbc24c009497e31791c95969574970a981b69d4c632029c516ab31d5bc2e8df3",
     "manual_layout.py": "a1cc8d6e0f1660550e0b76401a0b7bac035e410a9d9951eb53e3e0243c3ab4bd",
-    "pattern_identity.py": "12262eb39fb7b28707f992d16d980594988fbc3474c66df6b03c4074b425d540",
-    "pattern_route_contract.py": "f59a30fd5b1ec026b4a9a3c6ce65a2853f6ae885c2ff5eadf79097f297eb1f67",
+    "pattern_identity.py": "d489d23c9936860ef467b4d7524398020e6676058e01fb9f8d45d64aa4c4ccb6",
+    "pattern_route_contract.py": "925e25417ffbd938796a76f89d8546c34fb532a2120e76dcbf3c4afa6b84226d",
     "phase_topology.py": "7de75ef6018d457b0e65b94114ed069246807e9885458986296e69b797f0e759",
     "refresh_pattern_naa_division_layout.py": "937aeabf735e0bd320da8c2e073b0a5d56f44fdf2b8445c37dc0afcb7c574bdb"
   },
@@ -380,10 +380,10 @@
       "pattern": "UWP",
       "formula": "no_divider",
       "counts": {
-        "supported": 6
+        "rejected": 6
       },
       "examples": {
-        "supported": {
+        "rejected": {
           "pattern": "UWP",
           "q": 2,
           "pp": 2,
@@ -398,24 +398,13 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "enabled",
-            "admission": "supported",
-            "rule_id": "uwp_default",
-            "reason": "uwp_default satisfies the symbolic construction and pin-profile contract.",
-            "is_default": true,
+            "status": "disabled",
+            "admission": "rejected",
+            "rule_id": "uwp_factor_rejected",
+            "reason": "UWP current (Q,1,1) construction is rejected by the owner: it requires a same-layer series junction and has no permitted same-layer weld exception. Actual welds must join adjacent layers. This excludes the registered construction, not every possible physical winding.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALWP"
-            ]
-          },
-          "production": {
-            "status": "Candidate",
-            "reason": "branch 1: edge 7: UWP ordered insert connection fails (layer step 0, slot choices (6,)).; branch 2: edge 7: UWP ordered insert connection fails (layer step 0, slot choices (6,)).; branch 3: edge 7: UWP ordered insert connection fails (layer step 0, slot choices (6,)).",
-            "layout_retained": true,
-            "electrically_valid": true,
-            "identity_status": "candidate",
-            "errors": [],
-            "route_rule_id": "uwp_default"
+            "pin_profile": []
           }
         }
       }
@@ -424,8 +413,7 @@
       "pattern": "UWP",
       "formula": "q_only",
       "counts": {
-        "rejected": 6,
-        "supported": 3
+        "rejected": 9
       },
       "examples": {
         "rejected": {
@@ -450,43 +438,6 @@
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
-          }
-        },
-        "supported": {
-          "pattern": "UWP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 2,
-          "dividers": [
-            2,
-            1,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "enabled",
-            "admission": "supported",
-            "rule_id": "uwp_q_only_series",
-            "reason": "uwp_q_only_series satisfies the symbolic construction and pin-profile contract.",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": [
-              "ALWP"
-            ]
-          },
-          "production": {
-            "status": "retained-not-strong",
-            "reason": "parallel_emf_mismatch",
-            "layout_retained": true,
-            "electrically_valid": false,
-            "identity_status": "valid",
-            "errors": [
-              "parallel_emf_mismatch"
-            ],
-            "route_rule_id": "uwp_q_only_series"
           }
         }
       }
@@ -1141,14 +1092,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tsp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TSP: branch 1 has 4 conductors; expected 16.",
-            "is_default": true,
+            "rule_id": "tsp_odd_naa_rejected",
+            "reason": "TSP current grammar requires even Naa: q_s=2, L_s=2, Naa=1, layer-zero N/S=4, B/L_s=8, Naa/2=1/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALWP",
-              "CLWP"
-            ]
+            "pin_profile": []
           }
         }
       }
@@ -1214,14 +1162,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tsp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TSP: branch 1 has 24 conductors; expected 96.",
-            "is_default": true,
+            "rule_id": "tsp_odd_naa_rejected",
+            "reason": "TSP current grammar requires even Naa: q_s=6, L_s=4, Naa=3, layer-zero N/S=36, B/L_s=24, Naa/2=3/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALWP",
-              "CLWP"
-            ]
+            "pin_profile": []
           }
         }
       }
@@ -1231,7 +1176,7 @@
       "formula": "pp_only",
       "counts": {
         "supported": 9,
-        "unsupported-yet": 1
+        "rejected": 1
       },
       "examples": {
         "supported": {
@@ -1270,7 +1215,7 @@
             "route_rule_id": "tsp_spiral_pass_partition"
           }
         },
-        "unsupported-yet": {
+        "rejected": {
           "pattern": "TSP",
           "q": 6,
           "pp": 6,
@@ -1286,9 +1231,9 @@
           "inlet": "insert",
           "preflight": {
             "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tsp_route_unsupported",
-            "reason": "TSP has no validated construction for divider tuple (1, 3, 1).",
+            "admission": "rejected",
+            "rule_id": "tsp_odd_naa_rejected",
+            "reason": "TSP current grammar requires even Naa: q_s=6, L_s=4, Naa=3, layer-zero N/S=36, B/L_s=24, Naa/2=3/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
@@ -1373,9 +1318,8 @@
       "pattern": "TSP",
       "formula": "q_and_pp",
       "counts": {
-        "rejected": 4,
-        "supported": 13,
-        "unsupported-yet": 1
+        "rejected": 2,
+        "supported": 16
       },
       "examples": {
         "rejected": {
@@ -1438,30 +1382,6 @@
               "parallel_emf_mismatch"
             ],
             "route_rule_id": "tsp_q_pp_two"
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "TSP",
-          "q": 6,
-          "pp": 6,
-          "layers": 4,
-          "phases": 5,
-          "naa": 9,
-          "dividers": [
-            3,
-            3,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tsp_route_unsupported",
-            "reason": "TSP has no validated construction for divider tuple (3, 3, 1).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
           }
         }
       }
@@ -1823,8 +1743,7 @@
       "pattern": "SLP",
       "formula": "p2_only",
       "counts": {
-        "supported": 4,
-        "Candidate": 2
+        "supported": 6
       },
       "examples": {
         "supported": {
@@ -1859,44 +1778,6 @@
             "layout_retained": true,
             "electrically_valid": false,
             "identity_status": "valid",
-            "errors": [
-              "parallel_emf_mismatch"
-            ],
-            "route_rule_id": "slp_p2_from_reference"
-          }
-        },
-        "Candidate": {
-          "pattern": "SLP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 2,
-          "dividers": [
-            1,
-            1,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "candidate",
-            "admission": "Candidate",
-            "rule_id": "slp_p2_from_reference",
-            "reason": "Workbench-only Pattern identity candidate: branch 2: edge 43: connection crosses multiple pole regions (88 to 51; 3 boundaries).; branch 3: edge 31: connection crosses multiple pole regions (5 to 42; 3 boundaries).; branch 4: edge 19: connection crosses multiple pole regions (55 to 92; 3 boundaries).; branch 6: edge 43: connection crosses multiple pole regions (96 to 59; 3 boundaries).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": [
-              "ALLP",
-              "SLPP"
-            ]
-          },
-          "production": {
-            "status": "Candidate",
-            "reason": "branch 2: edge 43: connection crosses multiple pole regions (88 to 51; 3 boundaries).; branch 3: edge 31: connection crosses multiple pole regions (5 to 42; 3 boundaries).; branch 4: edge 19: connection crosses multiple pole regions (55 to 92; 3 boundaries).; branch 6: edge 43: connection crosses multiple pole regions (96 to 59; 3 boundaries).",
-            "layout_retained": true,
-            "electrically_valid": false,
-            "identity_status": "candidate",
             "errors": [
               "parallel_emf_mismatch"
             ],
@@ -1956,8 +1837,7 @@
       "pattern": "SLP",
       "formula": "q_and_p2",
       "counts": {
-        "supported": 6,
-        "unsupported-yet": 3
+        "supported": 9
       },
       "examples": {
         "supported": {
@@ -1997,30 +1877,6 @@
             ],
             "route_rule_id": "slp_full_q_p2"
           }
-        },
-        "unsupported-yet": {
-          "pattern": "SLP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 4,
-          "dividers": [
-            2,
-            1,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "slp_route_unsupported",
-            "reason": "SLP has no validated construction for divider tuple (2, 1, 2).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
-          }
         }
       }
     },
@@ -2028,9 +1884,8 @@
       "pattern": "SLP",
       "formula": "pp_and_p2",
       "counts": {
-        "supported": 6,
-        "rejected": 1,
-        "unsupported-yet": 3
+        "supported": 9,
+        "rejected": 1
       },
       "examples": {
         "supported": {
@@ -2095,30 +1950,6 @@
               "SLPP"
             ]
           }
-        },
-        "unsupported-yet": {
-          "pattern": "SLP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 8,
-          "dividers": [
-            1,
-            4,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "slp_route_unsupported",
-            "reason": "SLP has no validated construction for divider tuple (1, 4, 2).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
-          }
         }
       }
     },
@@ -2126,9 +1957,8 @@
       "pattern": "SLP",
       "formula": "q_and_pp_and_p2",
       "counts": {
-        "supported": 12,
-        "rejected": 4,
-        "unsupported-yet": 2
+        "supported": 17,
+        "rejected": 1
       },
       "examples": {
         "supported": {
@@ -2148,9 +1978,9 @@
           "preflight": {
             "status": "enabled",
             "admission": "supported",
-            "rule_id": "slp_default",
-            "reason": "slp_default satisfies the symbolic construction and pin-profile contract.",
-            "is_default": true,
+            "rule_id": "slp_p2_belt_pass_partition",
+            "reason": "slp_p2_belt_pass_partition satisfies the symbolic construction and pin-profile contract.",
+            "is_default": false,
             "required_inlet": "insert",
             "pin_profile": [
               "ALLP",
@@ -2166,7 +1996,7 @@
             "errors": [
               "parallel_emf_mismatch"
             ],
-            "route_rule_id": "slp_default"
+            "route_rule_id": "slp_p2_belt_pass_partition"
           }
         },
         "rejected": {
@@ -2195,30 +2025,6 @@
               "SLPP"
             ]
           }
-        },
-        "unsupported-yet": {
-          "pattern": "SLP",
-          "q": 6,
-          "pp": 6,
-          "layers": 4,
-          "phases": 5,
-          "naa": 24,
-          "dividers": [
-            2,
-            6,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "slp_route_unsupported",
-            "reason": "SLP has no validated construction for divider tuple (2, 6, 2).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
-          }
         }
       }
     },
@@ -2246,14 +2052,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tlp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TLP: branch 1 has 4 conductors; expected 16.",
-            "is_default": true,
+            "rule_id": "tlp_odd_naa_rejected",
+            "reason": "TLP current grammar requires even Naa: q_s=2, L_s=2, Naa=1, layer-zero N/S=4, B/L_s=8, Naa/2=1/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALLP",
-              "CLLP"
-            ]
+            "pin_profile": []
           }
         }
       }
@@ -2319,14 +2122,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tlp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TLP: branch 1 has 24 conductors; expected 96.",
-            "is_default": true,
+            "rule_id": "tlp_odd_naa_rejected",
+            "reason": "TLP current grammar requires even Naa: q_s=6, L_s=4, Naa=3, layer-zero N/S=36, B/L_s=24, Naa/2=3/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALLP",
-              "CLLP"
-            ]
+            "pin_profile": []
           }
         }
       }
@@ -2335,11 +2135,11 @@
       "pattern": "TLP",
       "formula": "pp_only",
       "counts": {
-        "unsupported-yet": 4,
-        "supported": 6
+        "supported": 9,
+        "rejected": 1
       },
       "examples": {
-        "unsupported-yet": {
+        "supported": {
           "pattern": "TLP",
           "q": 2,
           "pp": 2,
@@ -2354,34 +2154,10 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tlp_route_unsupported",
-            "reason": "TLP has no validated construction for divider tuple (1, 2, 1).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
-          }
-        },
-        "supported": {
-          "pattern": "TLP",
-          "q": 2,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 2,
-          "dividers": [
-            1,
-            2,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
             "status": "enabled",
             "admission": "supported",
-            "rule_id": "tlp_pp_only_two",
-            "reason": "tlp_pp_only_two satisfies the symbolic construction and pin-profile contract.",
+            "rule_id": "tlp_even_gcd_parent_slices",
+            "reason": "tlp_even_gcd_parent_slices satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": [
@@ -2396,7 +2172,31 @@
             "electrically_valid": true,
             "identity_status": "valid",
             "errors": [],
-            "route_rule_id": "tlp_pp_only_two"
+            "route_rule_id": "tlp_even_gcd_parent_slices"
+          }
+        },
+        "rejected": {
+          "pattern": "TLP",
+          "q": 6,
+          "pp": 6,
+          "layers": 4,
+          "phases": 5,
+          "naa": 3,
+          "dividers": [
+            1,
+            3,
+            1
+          ],
+          "setting": "Regular",
+          "inlet": "insert",
+          "preflight": {
+            "status": "disabled",
+            "admission": "rejected",
+            "rule_id": "tlp_odd_naa_rejected",
+            "reason": "TLP current grammar requires even Naa: q_s=6, L_s=4, Naa=3, layer-zero N/S=36, B/L_s=24, Naa/2=3/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
+            "required_inlet": "insert",
+            "pin_profile": []
           }
         }
       }
@@ -2450,9 +2250,8 @@
       "pattern": "TLP",
       "formula": "q_and_pp",
       "counts": {
-        "supported": 9,
-        "rejected": 3,
-        "unsupported-yet": 6
+        "supported": 17,
+        "rejected": 1
       },
       "examples": {
         "supported": {
@@ -2495,14 +2294,14 @@
         },
         "rejected": {
           "pattern": "TLP",
-          "q": 4,
-          "pp": 4,
+          "q": 6,
+          "pp": 6,
           "layers": 4,
-          "phases": 3,
-          "naa": 4,
+          "phases": 5,
+          "naa": 9,
           "dividers": [
-            2,
-            2,
+            3,
+            3,
             1
           ],
           "setting": "Regular",
@@ -2510,35 +2309,8 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tlp_q_pp_two",
-            "reason": "Known structural construction failure: q/P2 reference unavailable: Known structural construction failure: [generated_layout_sequence] TLP: branch 1 has 16 conductors; expected 32.",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": [
-              "ALLP",
-              "CLLP"
-            ]
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "TLP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 8,
-          "dividers": [
-            2,
-            4,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tlp_route_unsupported",
-            "reason": "TLP has no validated construction for divider tuple (2, 4, 1).",
+            "rule_id": "tlp_odd_naa_rejected",
+            "reason": "TLP current grammar requires even Naa: q_s=6, L_s=4, Naa=9, layer-zero N/S=36, B/L_s=8, Naa/2=9/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
@@ -2550,8 +2322,7 @@
       "pattern": "TLP",
       "formula": "q_and_p2",
       "counts": {
-        "supported": 6,
-        "rejected": 3
+        "supported": 9
       },
       "examples": {
         "supported": {
@@ -2590,33 +2361,6 @@
               "parallel_emf_mismatch"
             ],
             "route_rule_id": "tlp_default"
-          }
-        },
-        "rejected": {
-          "pattern": "TLP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 4,
-          "dividers": [
-            2,
-            1,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
-            "rule_id": "tlp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TLP: branch 1 has 16 conductors; expected 32.",
-            "is_default": true,
-            "required_inlet": "insert",
-            "pin_profile": [
-              "ALLP",
-              "CLLP"
-            ]
           }
         }
       }
@@ -2698,8 +2442,7 @@
       "formula": "q_and_pp_and_p2",
       "counts": {
         "rejected": 9,
-        "supported": 4,
-        "unsupported-yet": 5
+        "supported": 9
       },
       "examples": {
         "rejected": {
@@ -2762,30 +2505,6 @@
               "parallel_emf_mismatch"
             ],
             "route_rule_id": "tlp_q_pp_p2_parent_slices"
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "TLP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 16,
-          "dividers": [
-            4,
-            2,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tlp_route_unsupported",
-            "reason": "TLP has no validated construction for divider tuple (4, 2, 2).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
           }
         }
       }
@@ -3134,10 +2853,10 @@
       "pattern": "ZPP",
       "formula": "no_divider",
       "counts": {
-        "rejected": 6
+        "supported": 6
       },
       "examples": {
-        "rejected": {
+        "supported": {
           "pattern": "ZPP",
           "q": 2,
           "pp": 2,
@@ -3152,15 +2871,24 @@
           "setting": "Regular",
           "inlet": "weld",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
-            "rule_id": "zpp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] ZPP: branch 1 has 8 conductors; expected 16.",
-            "is_default": true,
+            "status": "enabled",
+            "admission": "supported",
+            "rule_id": "zpp_actual_lane_endpoint_gcd_partition",
+            "reason": "zpp_actual_lane_endpoint_gcd_partition satisfies the symbolic construction and pin-profile contract.",
+            "is_default": false,
             "required_inlet": "weld",
             "pin_profile": [
               "SLPP"
             ]
+          },
+          "production": {
+            "status": "Validated",
+            "reason": "Public layout generated; coverage, identity and electrical checks passed.",
+            "layout_retained": true,
+            "electrically_valid": true,
+            "identity_status": "valid",
+            "errors": [],
+            "route_rule_id": "zpp_actual_lane_endpoint_gcd_partition"
           }
         }
       }
@@ -3169,8 +2897,7 @@
       "pattern": "ZPP",
       "formula": "q_only",
       "counts": {
-        "supported": 6,
-        "rejected": 3
+        "supported": 9
       },
       "examples": {
         "supported": {
@@ -3207,32 +2934,6 @@
             "errors": [],
             "route_rule_id": "zpp_default"
           }
-        },
-        "rejected": {
-          "pattern": "ZPP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 2,
-          "dividers": [
-            2,
-            1,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "weld",
-          "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
-            "rule_id": "zpp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] ZPP: branch 1 has 32 conductors; expected 64.",
-            "is_default": true,
-            "required_inlet": "weld",
-            "pin_profile": [
-              "SLPP"
-            ]
-          }
         }
       }
     },
@@ -3240,8 +2941,7 @@
       "pattern": "ZPP",
       "formula": "pp_only",
       "counts": {
-        "supported": 7,
-        "unsupported-yet": 3
+        "supported": 10
       },
       "examples": {
         "supported": {
@@ -3278,30 +2978,6 @@
             "errors": [],
             "route_rule_id": "zpp_pp_only_half_turn"
           }
-        },
-        "unsupported-yet": {
-          "pattern": "ZPP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 2,
-          "dividers": [
-            1,
-            2,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "zpp_route_unsupported",
-            "reason": "ZPP has no validated construction for divider tuple (1, 2, 1).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
-          }
         }
       }
     },
@@ -3309,8 +2985,7 @@
       "pattern": "ZPP",
       "formula": "p2_only",
       "counts": {
-        "supported": 4,
-        "unsupported-yet": 2
+        "supported": 6
       },
       "examples": {
         "supported": {
@@ -3347,30 +3022,6 @@
             "errors": [],
             "route_rule_id": "zpp_q_pp_p2"
           }
-        },
-        "unsupported-yet": {
-          "pattern": "ZPP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 2,
-          "dividers": [
-            1,
-            1,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "zpp_route_unsupported",
-            "reason": "ZPP has no validated construction for divider tuple (1, 1, 2).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
-          }
         }
       }
     },
@@ -3378,9 +3029,7 @@
       "pattern": "ZPP",
       "formula": "q_and_pp",
       "counts": {
-        "supported": 10,
-        "rejected": 4,
-        "unsupported-yet": 4
+        "supported": 18
       },
       "examples": {
         "supported": {
@@ -3416,56 +3065,6 @@
             "identity_status": "valid",
             "errors": [],
             "route_rule_id": "zpp_default"
-          }
-        },
-        "rejected": {
-          "pattern": "ZPP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 4,
-          "dividers": [
-            2,
-            2,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "weld",
-          "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
-            "rule_id": "zpp_q_pp_two",
-            "reason": "Known structural construction failure: q/P2 reference unavailable: q and p2 share same route",
-            "is_default": false,
-            "required_inlet": "weld",
-            "pin_profile": [
-              "SLPP"
-            ]
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "ZPP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 8,
-          "dividers": [
-            2,
-            4,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "zpp_route_unsupported",
-            "reason": "ZPP has no validated construction for divider tuple (2, 4, 1).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
           }
         }
       }
@@ -3507,8 +3106,7 @@
       "pattern": "ZPP",
       "formula": "pp_and_p2",
       "counts": {
-        "supported": 5,
-        "unsupported-yet": 5
+        "supported": 10
       },
       "examples": {
         "supported": {
@@ -3544,30 +3142,6 @@
             "identity_status": "valid",
             "errors": [],
             "route_rule_id": "zpp_q_pp_p2"
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "ZPP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 4,
-          "dividers": [
-            1,
-            2,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "zpp_route_unsupported",
-            "reason": "ZPP has no validated construction for divider tuple (1, 2, 2).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
           }
         }
       }
@@ -3576,12 +3150,10 @@
       "pattern": "ZPP",
       "formula": "q_and_pp_and_p2",
       "counts": {
-        "rejected": 8,
-        "unsupported-yet": 5,
-        "supported": 5
+        "supported": 18
       },
       "examples": {
-        "rejected": {
+        "supported": {
           "pattern": "ZPP",
           "q": 2,
           "pp": 2,
@@ -3596,60 +3168,10 @@
           "setting": "Regular",
           "inlet": "weld",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
-            "rule_id": "zpp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] ZPP: branch 1 has 4 conductors; expected 2.",
-            "is_default": true,
-            "required_inlet": "weld",
-            "pin_profile": [
-              "SLPP"
-            ]
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "ZPP",
-          "q": 2,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 8,
-          "dividers": [
-            2,
-            2,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "zpp_route_unsupported",
-            "reason": "ZPP has no validated construction for divider tuple (2, 2, 2).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
-          }
-        },
-        "supported": {
-          "pattern": "ZPP",
-          "q": 4,
-          "pp": 4,
-          "layers": 4,
-          "phases": 3,
-          "naa": 8,
-          "dividers": [
-            2,
-            2,
-            2
-          ],
-          "setting": "Regular",
-          "inlet": "weld",
-          "preflight": {
             "status": "enabled",
             "admission": "supported",
-            "rule_id": "zpp_q_pp_p2",
-            "reason": "zpp_q_pp_p2 satisfies the symbolic construction and pin-profile contract.",
+            "rule_id": "zpp_actual_lane_endpoint_gcd_partition",
+            "reason": "zpp_actual_lane_endpoint_gcd_partition satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "weld",
             "pin_profile": [
@@ -3663,7 +3185,7 @@
             "electrically_valid": true,
             "identity_status": "valid",
             "errors": [],
-            "route_rule_id": "zpp_q_pp_p2"
+            "route_rule_id": "zpp_actual_lane_endpoint_gcd_partition"
           }
         }
       }
@@ -3774,9 +3296,8 @@
       "pattern": "CP",
       "formula": "pp_only",
       "counts": {
-        "rejected": 2,
-        "supported": 4,
-        "unsupported-yet": 4
+        "rejected": 3,
+        "supported": 7
       },
       "examples": {
         "rejected": {
@@ -3836,30 +3357,6 @@
             "identity_status": "valid",
             "errors": [],
             "route_rule_id": "cp_pp_four_pass_weave"
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "CP",
-          "q": 2,
-          "pp": 2,
-          "layers": 4,
-          "phases": 3,
-          "naa": 2,
-          "dividers": [
-            1,
-            2,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "cp_route_unsupported",
-            "reason": "CP has no validated construction for divider tuple (1, 2, 1).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
           }
         }
       }
@@ -3938,8 +3435,7 @@
       "formula": "q_and_pp",
       "counts": {
         "rejected": 10,
-        "supported": 6,
-        "unsupported-yet": 2
+        "supported": 8
       },
       "examples": {
         "rejected": {
@@ -4001,30 +3497,6 @@
               "parallel_emf_mismatch"
             ],
             "route_rule_id": "cp_q_pp_full_parent_slices"
-          }
-        },
-        "unsupported-yet": {
-          "pattern": "CP",
-          "q": 6,
-          "pp": 6,
-          "layers": 4,
-          "phases": 5,
-          "naa": 6,
-          "dividers": [
-            2,
-            3,
-            1
-          ],
-          "setting": "Regular",
-          "inlet": "insert",
-          "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "cp_route_unsupported",
-            "reason": "CP has no validated construction for divider tuple (2, 3, 1).",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
           }
         }
       }
@@ -5623,14 +5095,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tsp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TSP: branch 1 has 8 conductors; expected 32.",
-            "is_default": true,
+            "rule_id": "tsp_odd_naa_rejected",
+            "reason": "TSP current grammar requires even Naa: q_s=6, L_s=4, Naa=3, layer-zero N/S=12, B/L_s=8, Naa/2=3/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALWP",
-              "CLWP"
-            ]
+            "pin_profile": []
           }
         },
         "Q-only adjacent P2 pair: pp=1 boundary": {
@@ -6788,13 +6257,16 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "slp_route_unsupported",
-            "reason": "SLP has no validated construction for divider tuple (2, 8, 2).",
+            "status": "enabled",
+            "admission": "supported",
+            "rule_id": "slp_p2_belt_pass_partition",
+            "reason": "slp_p2_belt_pass_partition satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": []
+            "pin_profile": [
+              "ALLP",
+              "SLPP"
+            ]
           }
         },
         "Proper-Q+PP+P2 nondivisor D boundary": {
@@ -7559,14 +7031,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tlp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TLP: branch 1 has 8 conductors; expected 16.",
-            "is_default": true,
+            "rule_id": "tlp_odd_naa_rejected",
+            "reason": "TLP current grammar requires even Naa: q_s=3, L_s=4, Naa=3, layer-zero N/S=6, B/L_s=4, Naa/2=3/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALLP",
-              "CLLP"
-            ]
+            "pin_profile": []
           }
         },
         "Q-only adjacent P2 pair: retained odd-Q rejection": {
@@ -7586,14 +7055,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "tlp_default",
-            "reason": "Known structural construction failure: [generated_layout_sequence] TLP: branch 1 has 24 conductors; expected 96.",
-            "is_default": true,
+            "rule_id": "tlp_odd_naa_rejected",
+            "reason": "TLP current grammar requires even Naa: q_s=6, L_s=4, Naa=3, layer-zero N/S=36, B/L_s=24, Naa/2=3/2. Each branch has one layer-zero polarity; equal full coverage requires an integer Naa/2 branches of each sign.",
+            "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "ALLP",
-              "CLLP"
-            ]
+            "pin_profile": []
           }
         },
         "Q-only adjacent P2 pair: pp=1 boundary": {
@@ -7984,10 +7450,10 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
+            "status": "enabled",
+            "admission": "supported",
             "rule_id": "tlp_q_pp_p2_parent_slices",
-            "reason": "Known structural construction failure: [pattern_specific_infeasible] TLP: Known structural construction failure: TLP PP+P2 short-unit deployment has no legal sector placement: [generated_layout_sequence] TLP: layout has 96 duplicate slot/layer references and misses 96 conductors.; TLP PP+P2 children must occupy distinct PP sectors of their parent cohort.",
+            "reason": "tlp_q_pp_p2_parent_slices satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": [
@@ -8011,13 +7477,16 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tlp_q_pp_p2_local_layers_unsupported",
-            "reason": "The current TLP (2,D,2) parent-slice constructor requires at least four even layers in each local three-phase set. Short local sets remain a construction boundary, not a physical impossibility result.",
-            "is_default": false,
+            "status": "enabled",
+            "admission": "supported",
+            "rule_id": "tlp_even_gcd_parent_slices",
+            "reason": "All 4 layer-assigned three-phase sets preserve the selected route and pass local construction checks. Neutral construction passes coverage, edge, and identity gates.",
+            "is_default": true,
             "required_inlet": "insert",
-            "pin_profile": []
+            "pin_profile": [
+              "ALLP",
+              "CLLP"
+            ]
           }
         },
         "Q+PP+P2 parent slices: phase-shift boundary": {
@@ -8396,13 +7865,16 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "tlp_route_unsupported",
-            "reason": "TLP has no validated construction for divider tuple (2, 4, 1).",
+            "status": "enabled",
+            "admission": "supported",
+            "rule_id": "tlp_q_pp_q_parent_slices",
+            "reason": "tlp_q_pp_q_parent_slices satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": []
+            "pin_profile": [
+              "ALLP",
+              "CLLP"
+            ]
           }
         },
         "PP-only even-divider odd local-D boundary": {
@@ -8423,7 +7895,7 @@
             "status": "disabled",
             "admission": "unsupported-yet",
             "rule_id": "tlp_pp_only_even_array_unsupported",
-            "reason": "The full-Q TLP divider triple must map to an even local PP divider of at least four and at least four local layers.",
+            "reason": "The full-Q TLP divider triple must map to an even local PP divider of at least four with at least four local layers, or an admitted same-factor local Q-parent partition.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
@@ -8447,7 +7919,7 @@
             "status": "disabled",
             "admission": "unsupported-yet",
             "rule_id": "tlp_pp_only_even_array_unsupported",
-            "reason": "The full-Q TLP divider triple must map to an even local PP divider of at least four and at least four local layers.",
+            "reason": "The full-Q TLP divider triple must map to an even local PP divider of at least four with at least four local layers, or an admitted same-factor local Q-parent partition.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
@@ -8823,7 +8295,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "zpp_factor_rejected",
-            "reason": "ZPP P2=2 requires q=2*Q; an odd positive integer effective q has no integer Q. This rejects the registered construction for this geometry, not every possible physical layout.",
+            "reason": "ZPP P2=2 retains the owner-approved exclusion for odd positive integer effective q. This is an admission boundary, not a proof against every possible physical layout.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
@@ -8847,7 +8319,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "zpp_factor_rejected",
-            "reason": "ZPP P2=2 requires q=2*Q; an odd positive integer effective q has no integer Q. This rejects the registered construction for this geometry, not every possible physical layout.",
+            "reason": "ZPP P2=2 retains the owner-approved exclusion for odd positive integer effective q. This is an admission boundary, not a proof against every possible physical layout.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
@@ -8895,7 +8367,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "zpp_factor_rejected",
-            "reason": "ZPP P2=2 requires q=2*Q; an odd positive integer effective q has no integer Q. This rejects the registered construction for this geometry, not every possible physical layout.",
+            "reason": "ZPP P2=2 retains the owner-approved exclusion for odd positive integer effective q. This is an admission boundary, not a proof against every possible physical layout.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": []
@@ -8969,7 +8441,7 @@
             "status": "disabled",
             "admission": "rejected",
             "rule_id": "phase_set_route_mismatch",
-            "reason": "Phase set 1 rejects the selected construction: ZPP P2=2 requires q=2*Q; an odd positive integer effective q has no integer Q. This rejects the registered construction for this geometry, not every possible physical layout.",
+            "reason": "Phase set 1 rejects the selected construction: ZPP P2=2 retains the owner-approved exclusion for odd positive integer effective q. This is an admission boundary, not a proof against every possible physical layout.",
             "is_default": false,
             "required_inlet": "weld",
             "pin_profile": [
@@ -9167,15 +8639,28 @@
             1
           ],
           "setting": "Regular",
-          "inlet": "insert",
+          "inlet": "weld",
           "preflight": {
-            "status": "disabled",
-            "admission": "unsupported-yet",
-            "rule_id": "zpp_array_stride_unvalidated",
-            "reason": "Variable-stride ZPP is not admitted for arrayed phase sets until mapped global signed edges pass the one-pole-region check.",
-            "is_default": false,
-            "required_inlet": "insert",
-            "pin_profile": []
+            "status": "enabled",
+            "admission": "supported",
+            "rule_id": "zpp_actual_lane_endpoint_gcd_partition",
+            "reason": "All 3 layer-assigned three-phase sets preserve the selected route and pass local construction checks. Neutral construction passes coverage, edge, and identity gates.",
+            "is_default": true,
+            "required_inlet": "weld",
+            "pin_profile": [
+              "SLPP"
+            ]
+          },
+          "production": {
+            "status": "retained-not-strong",
+            "reason": "multi_phase_emf_mismatch",
+            "layout_retained": true,
+            "electrically_valid": false,
+            "identity_status": "valid",
+            "errors": [
+              "multi_phase_emf_mismatch"
+            ],
+            "route_rule_id": "zpp_actual_lane_endpoint_gcd_partition"
           }
         }
       }
@@ -9426,13 +8911,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "cp_q_pp_full_parent_slices",
-            "reason": "Known structural construction failure: [pattern_specific_infeasible] CP: Known structural construction failure: [generated_layout_sequence] CP: layout has 270 duplicate slot/layer references and misses 270 conductors.",
+            "rule_id": "cp_polarity_pool_rejected",
+            "reason": "CP current insert-inlet grammar requires Naa divisible by 4: q_s=2, L_s=8, H=4, Naa=6. Complete equal polarity pools require Naa/H branches per quartet pool when H is even, or Naa/2 per invariant pool when H is odd. This rule preserves strict phase/polarity, adjacent welds and insertion span H.",
             "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "CLWP"
-            ]
+            "pin_profile": []
           }
         },
         "Q=1 PP-only direct parent-slice sample": {
@@ -9557,15 +9040,24 @@
           "setting": "Regular",
           "inlet": "insert",
           "preflight": {
-            "status": "disabled",
-            "admission": "rejected",
-            "rule_id": "cp_q_pp_full_parent_slices",
-            "reason": "Known structural construction failure: [pattern_specific_infeasible] CP: Known structural construction failure: [generated_layout_sequence] CP: layout has 270 duplicate slot/layer references and misses 270 conductors.",
+            "status": "enabled",
+            "admission": "supported",
+            "rule_id": "cp_gcd_quartet_parent_slices",
+            "reason": "cp_gcd_quartet_parent_slices satisfies the symbolic construction and pin-profile contract.",
             "is_default": false,
             "required_inlet": "insert",
             "pin_profile": [
               "CLWP"
             ]
+          },
+          "production": {
+            "status": "Validated",
+            "reason": "Public layout generated; coverage, identity and electrical checks passed.",
+            "layout_retained": true,
+            "electrically_valid": true,
+            "identity_status": "valid",
+            "errors": [],
+            "route_rule_id": "cp_gcd_quartet_parent_slices"
           }
         },
         "Q=1 PP-only arrayed local-q control": {
@@ -10021,13 +9513,11 @@
           "preflight": {
             "status": "disabled",
             "admission": "rejected",
-            "rule_id": "cp_q_pp_full_parent_slices",
-            "reason": "Known structural construction failure: [pattern_specific_infeasible] CP: Known structural construction failure: [generated_layout_sequence] CP: layout has 126 duplicate slot/layer references and misses 126 conductors.",
+            "rule_id": "cp_polarity_pool_rejected",
+            "reason": "CP current insert-inlet grammar requires Naa divisible by 4: q_s=1, L_s=8, H=4, Naa=6. Complete equal polarity pools require Naa/H branches per quartet pool when H is even, or Naa/2 per invariant pool when H is odd. This rule preserves strict phase/polarity, adjacent welds and insertion span H.",
             "is_default": false,
             "required_inlet": "insert",
-            "pin_profile": [
-              "CLWP"
-            ]
+            "pin_profile": []
           }
         }
       }

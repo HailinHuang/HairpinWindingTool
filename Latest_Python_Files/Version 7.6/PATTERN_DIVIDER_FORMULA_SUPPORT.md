@@ -2,6 +2,580 @@
 
 ## Version 7.6 current status
 
+### Integer closure extensions and review boundary (2026-10-03)
+
+Let A=Q*D*P2 and B=2*q_s*pp*L_s/A. All formulas below require integer
+local q_s, positive even L_s, Q|q_s, D|pp, existing Pattern exclusions,
+configured public parents where used, and every public target gate.
+They are construction rules; neutral evidence does not certify arbitrary TP.
+
+**TLP even-gcd parent cuts:** for even q_s and even A, set g=gcd(q_s,A)
+and c=A/g. The public `(g,1,1)` mother has g branches per phase, each
+split into c consecutive children. The retained D*P2<=pp rule gives
+B>=2*L_s, and B is an even multiple of L_s. No connection is added.
+For odd q_s and even A, use the configured public `(1,1,2)` mother and
+A/2 cuts instead. Complete full-Q and P2-only raw mothers with D=1 retain
+their exact old order and are not recursive cuts. A raw proper-Q q/P2
+mother omits lanes; Q-parent/gcd/P2-parent cuts replace that source.
+Successful older specific routes and array factor mappings remain first.
+Full-global-Q arrays also accept the already admitted odd-local-q P2-parent
+cut when the older layer/PP mapping is unavailable. In the selected domain,
+this covers m=9, global q in {3,5}, global L in {6,12}, Q=q, P2=1 and
+even D>2 dividing pp, including positive even local L_s=2 and 4.
+The old PP+P2 rotated-sector deployment is retained only when its existing
+neutral structural oracle passes. A failed deployment selects the even-gcd
+or odd-q P2-parent formula before configured generation. This repairs its
+D=4 source boundary; an existing Q+PP+P2 child route may then remain valid
+on that complete parent. Actual configured failure still propagates without
+retrying a neutral parent.
+
+**TSP complete-pass boundary:** B>=8 remains mandatory. A child may contain
+one complete L_s pass when B=L_s>=8; a return is optional in that short
+identity, rather than a required new connection. The spiral/gcd construction
+also replaces proper-Q D=2 raw q/P2 sources that omit lanes. Full-Q valid
+second-sector routes retain precedence. Fixed-path formulas have no TP
+implementation and reject effective non-neutral transposition before dispatch.
+
+**CP polarity pools and quartet cuts:** put H=L_s/2. Under canonical
+phase/polarity, adjacent-layer W, insertion span H, insert terminals and
+equal even branch width, H odd preserves sign*(-1)^layer, giving two
+equal pools and requiring 2|A. For H even, legal factors give 4|B.
+Layer-zero occupancy exhausts its layer-one polarity partner; induction
+forces W layer pairs (0,1),(2,3),... . These commute with I translations
+by H and form H/2 disjoint quartets. A branch visits every quartet layer
+B/4 times with fixed polarity. Each of its two pools has 4*q_s*pp nodes,
+so A/H branches are required per pool: H|A is necessary.
+This is a geometry/coverage proof, not an added pin-type rule.
+
+For H even let n=A/H; for H odd let n=A/2. Set g=gcd(q_s,n), c=n/g;
+c|pp follows from Q|q_s and the legal divider factors. Use the strict
+configured `(g,1,2)` public mother, splitting each of its 2g paths into
+c children. For H even, its four source layers lift to
+`(2j,2j+1,H+2j,H+2j+1)`, j=0..H/2-1. Thus each phase has
+(H/2)*2g*c=A branches. For odd H use the same local-layer mother;
+2g*c=A. All signed edges are inherited and P2 reversal negates their
+steps. Local two-layer CP may retain an actual public TLP path under
+CP's overlapping grammar; the existing maximal-P2 raw route stays first.
+Keep global L divisible by four and positive even local L_s distinct.
+
+Valid raw CP P2 mothers retain priority at local L_s=4 and 6; local L_s=2
+retains its D=pp specialization. Their layer/pole-pair walks cover all
+legal neutral Q/D factors. Raw H even>2 misses layers and uses the quartet
+formula. Neither failed configured parents nor malformed signed records
+permit neutral substitution. Actual W pitch and direction are checked.
+
+**SLP N-belt pass partition:** for P2=2 let r=q_s/Q and T=pp/D.
+A strict configured public `(q_s,1,1)` insert mother supplies complete
+N-to-S up/down L_s passes, indexed by physical phase, N-belt and lane.
+Each T-belt sector gives two r-lane children of width B=r*T*L_s.
+For T=2h, each child takes h complete 2L_s blocks from one side of the
+sector; for T=2h+1, complementary up/down passes cover the middle belt,
+alternating their direction across lanes. New seams are boundary-layer I;
+all mother W are retained with pitch tau=m_s*q_s and direction.
+Successful older P2 routes preserve their order. The paired-lane reference
+ordering is retained only at local m_s=3, including three-phase arrays.
+Native odd m>3 uses physical N-belt passes instead; this is an old-method
+boundary, not an engineering exclusion.
+
+**SLP weld-side cycle/gcd partition:** use that same configured INSERT
+mother, restore each missing boundary I to close its actual cycle, and
+choose one common physical I key with bijective start/end lane maps.
+Set g=gcd(q_s,A), r=q_s/g, c=A/g, M=2*pp*L_s. Cyclically exchange
+I successors within each r-lane group, forming g cycles of r*M nodes.
+Open at a mother W and cut every B=r*M/c nodes. Since B is even, these
+c cuts delete W only, giving g*c=A equal weld-terminal children per phase.
+Every retained W is an original mother W: no same-layer W is introduced.
+New I steps are ±tau plus a within-belt lane difference and cross one
+pole boundary. P2 reversal changes ds and dl together, preserving every
+actual layer-pair direction. A missing configured cycle/key is a method
+capability failure, not a physical exclusion. Whole-branch rotation can
+have a three-region closing I and is retained as a negative control.
+
+Manual capability classes remain explicit: fixed TSP recipes accept effective
+neutral Regular only; configured-parent transforms pass through all Regular,
+Times, Interval and pole-group fields and require their actual parent and
+child gates. Required inlet and effective adjustment restrictions still apply.
+Post-connection phase shifts conjugate both nodes and the phase map and are
+validated separately from the unshifted connection formula. The affected
+TLP catalog Auto source now uses a complete Q-parent and passes its focused
+check; universal Auto coverage remains separate. No radial-function audit
+is added.
+
+| Current integer configuration class | Implemented capability and mandatory limit |
+| --- | --- |
+| Configured-parent TLP/CP/SLP/ZPP partitions | Forward the exact Regular `uni_tp/pltp_fl/pltp_ll/jltp`, Times, Interval and group payload to public mothers; mother and target must actually pass. The transform never substitutes neutral TP. A failed pass/cycle/quartet structure is a method-capability failure, not physical impossibility. |
+| General non-wave payload validation | Offsets are integers; Times/Interval counts are 1..B-1. Independent non-neutral PoleN/PoleS payloads are not implemented outside UWP; effective-zero Regular groups remain equivalent. Nontrivial inlet adjustment is limited to constructors that consume it, including SLP PP-only; other selected routes retain their required inlet and zero effective adjustment. |
+| Fixed TSP sector/pass recipes and UWP short P2 | No transposition operation: require effective neutral Regular (offsets zero modulo q_s, zero Times/Interval counts and effective-neutral groups). Post-connection phase shifts retain their separate contract. |
+| UWP PP-only / complementary Q+PP | Regular Uniform and Jump, including PoleN/PoleS overrides; forward jumper direction. Times/Interval and nonzero parallel-layer offsets are rejected by `validate_uwp_pp_settings`. Actual wave permutations, occupancy and geometry still decide the result. |
+| BWP Q+PP | Run the requested configuration through its actual BWP constructor and connection/identity checks; integer layer shifts are separate. Inlet adjustments remain unsupported on this selected route. |
+| Other raw/established routes | Retain each constructor's actual field operations and public output gates. Acceptance of a payload is an attempt, not proof that every offset/schedule is constructible. UWP integer-local `(Q,1,1)` is excluded independently of manual fields. |
+
+**UWP current-construction exclusion:** the owner cancelled the same-layer
+series-weld exception on 2026-10-03. Positive integer local q_s, Q|q_s and
+D=P2=1 are now rejected before generation, for explicit/implicit dividers
+and native/array requests. Full-Q q_s>1 preserves its BWP identity reason;
+NoDivider/proper-Q reports the forbidden same-layer series junction. PP/P2
+adjacent-layer routes retain their gates. This closes the six earlier UWP
+Candidate/public failures by accepted exclusion, not by a new construction
+or an impossibility proof. Historical series-acceptance sections below are
+superseded. The selected domain is closed at parameterized construction,
+explicit-exclusion and manual-capability level; public mother/target gates
+still decide each configured request. Auto and strong symmetry stay separate.
+
+### First integer-q closure domain and Q-parent cuts (2026-10-03)
+
+The owner selected q=1..6, even global poles 4..16, even global layers
+4..12, and phases {3,5,6,7,9,11,12,13}. For m=3k arrays, include only
+positive even L_s=L/k, retaining the local two-layer identity qualification.
+Native sets use q_s=q, L_s=L; arrayed sets use q_s=kq. Enumerate the union
+of global and local Q factors, D|pp and P2 in {1,2}, without weakening
+existing route exclusions. This is a closure target, not a completed scan.
+It contains 1,302 geometry tuples: 1,050 native tuples and 252 array tuples.
+Phase shifts use parameter proofs and boundary/counterexample checks; all
+manual TP fields and inlet/outlet adjustments require route-specific
+capability classification. Auto and strong symmetry are separate.
+
+`tlp_q_pp_q_parent_slices` and `cp_q_pp_q_parent_slices` extend the existing
+parent-partition operation. Generate a complete public `(Q,1,1)` parent,
+then partition each branch into D equal consecutive children at
+`B=2*(q_s/Q)*(pp/D)*L_s`. Since Q|q_s and D|pp, B is an even multiple of
+L_s. Only insertion seams are removed; every retained weld and its signed
+travel is inherited. CP uses piece-major order within each phase; TLP uses
+source-major order. Parent and target occupancy, phase, polarity, identity,
+one-region travel and electrical retention checks remain mandatory.
+
+TLP retains its even-Q q-only parent domain: even q_s, even Q>=2,
+Q|q_s, pp>=2 and positive even L_s>=2. CP requires Q>1, Q|q_s,
+its existing global-four-layer/local-even-layer contract, and a successful
+public Q-only parent. Both targets require D>1, D|pp and P2=1. Existing
+specialized routes and successful CP defaults keep priority. Missing or
+failed parents are not replaced by private construction. Configured parents
+must actually generate; arbitrary manual TP is not certified by the neutral
+parameter proof. Post-connection phase shifts retain their shared contract.
+Legacy Q-only parents without a signed-travel attribute may derive their unique
+short arcs, which must pass endpoint and one-region checks. An explicit null or
+malformed record is rejected. Target Q-parent slices require complete signed
+records before phase-set projection; incomplete arrays cannot fall back to
+short-arc inference.
+
+For global full-Q TLP arrays, retain a valid established `(kQ,D/k,1)`
+local mapping first. If that mapping is unavailable, the same `(Q,D,1)`
+factors may instead use this admitted Q-only parent partition at `q_s=kq`
+and even `L_s=L/k`. This is a choice between two established local
+constructions, not a bypass of parent generation or full-array gates.
+
+The existing `slp_q_pp_p2_parent_cut` / `slp_q_pp_p2_lane_regroup` formula
+also covers D=1. Its domain is integer q_s>1, proper 1<Q<q_s with Q|q_s,
+D>=1 dividing pp, even T=pp/D, P2=2 and positive even L_s>=2. Generate
+complete public `(q_s,1,2)` parents in their two fixed-lane cohorts. Each
+child takes R=q_s/Q lanes and T passes per lane, with width B=R*T*L_s;
+group intact 2L_s blocks in sector-major order, reversing lane order in
+successive blocks. D=1 is simply one sector. Every block is used once,
+and all new seams are insertion connections; actual welds are inherited.
+Within-block lane seams have signed step `eta*tau +/- 1`, where eta is
+the cohort direction and tau=m_s*q_s. Alternating block order retains
+the original same-lane seam between blocks. The lane change remains
+inside its q_s-wide phase belt, so these seams cross one pole boundary.
+The even-T condition, public parent/lane-order checks, N-to-S orientation,
+ordered SLP identity and existing configuration restrictions remain.
+This extension introduces neither a new pin type nor a radial-shift rule.
+
+### ZPP actual-lane endpoint cyclic permutation and gcd partition (2026-10-03)
+
+The owner approved this construction and retained the existing `q_and_p2`
+and odd-positive-integer effective-q P2 exclusions. Native sets require
+integer q_s>0 and positive even L_s>=2; arrays derive q_s=kq and L_s=L/k
+from the canonical phase topology. Require pp>=2, Q|q_s, D|pp,
+P2 in {1,2}, A=Naa=Q*D*P2, and successful public `(q_s,1,1)` parents.
+Each phase has q_s complete parents of width 2*pp*L_s.
+
+For each actual layer pair, each parent supplies a complete 4*pp segment.
+Index its first slot and last slot separately modulo q_s. Both physical
+lane maps must be bijective. Let g=gcd(q_s,A), r=q_s/g, c=A/g. Divide the
+start lanes into g contiguous r-lane cohorts and define sigma as cyclic
+successor within each cohort. Copy each segment except its last node,
+then append the last endpoint whose **actual** lane is sigma(start lane).
+Parent IDs and third-column lane tags are not endpoint lookup keys:
+neutral parent terminal lanes advance by 2*pp modulo q_s.
+
+This is a bijective endpoint permutation, so it preserves complete unique
+occupancy. Concatenate the r segments in lane order, then the next actual
+layer pair in the same cohort. Each cohort has 2*r*pp*L_s nodes. Cut it
+into c equal consecutive children of width B=2*q_s*pp*L_s/A. Since
+c divides 2*r*pp and L_s is even, B is even. Every phase has g*c=A
+equal children; cuts remove weld seams and retain weld-side terminals.
+
+In the neutral parent, with tau=m_s*q_s, the replacement last insertion
+step is tau plus a lane difference in [-(q_s-1),q_s-1]. It stays positive
+and joins the opposite pole sign across one boundary. Each new same-pair
+weld has (ds,dl)=(-tau,-1); each bridge to the next pair has (-tau,+1).
+Thus all welds join adjacent layers, have pitch tau and share normalized
+direction within each actual layer pair. All other edges inherit their
+parent travel. P2 children use the existing N-to-S reversal, including
+reversed/negated signed travel. Same-layer edges are insertion connections;
+no new pin-type or radial-shift rule is introduced.
+
+Actual configured parents must generate and retain these physical lane and
+segment properties. Invalid Times/Interval/Regular payloads or a failed
+parent are not replaced by neutral parents. Complete source evidence is
+checked; legacy parents without a travel attribute may use unique short
+arcs. Explicit null/malformed records are rejected. New children require
+complete signed records before array projection, plus the existing coverage,
+phase/polarity, retention, ordered ZPP, one-region and P2 gates and an
+explicit actual weld pitch/direction check. Phase-only shifts follow the
+shared post-connection contract. Local two-layer/short-child structural
+overlaps retain their identity qualification.
+
+Previously successful raw, centered and indexed ZPP routes keep priority.
+Proper-Q/PP gaps use `zpp_actual_lane_endpoint_gcd_partition`. Integer-global-q
+arrays formerly stopped by the variable-stride guard may use this local
+endpoint construction with full-array validation; fractional-global-q
+arrays retain their existing indexed-route priority. The direct aggregate
+analyzer's fixed-global-boundary diagnostic is distinct from the canonical
+phase-set connection gates. Neutral parameter proofs do not certify every
+manual payload, strong symmetry or release acceptance.
+
+### TSP/TLP current-grammar odd-Naa exclusion (2026-10-03)
+
+The owner accepted a parameterized exclusion for integer local q_s>0,
+positive even L_s and legal Q|q_s, D|pp, P2=1: current strict TSP/TLP
+grammar requires even Naa. In any branch, all layer-zero nodes have one
+pole sign. Each phase's layer-zero N and S pools each contain q_s*pp
+nodes; each branch contains B/L_s=2*q_s*pp/Naa such nodes. Therefore
+each sign needs Naa/2 branches, which cannot be integral for odd Naa.
+Entry rotation or manual transposition preserving this grammar cannot
+change the count. Keep the existing TSP B>=8 floor and invalid-factor
+precedence. This does not exclude fractional local q, odd local layers
+or a new grammar. EMF asymmetry is not the basis of this rejection.
+
+### Fractional-q exploration workflow and lessons (2026-10-02)
+
+Extend the currently established formula across Patterns and divider-route
+classes before exploring a new formula. Keep unresolved extensions visible;
+an untested route does not count as completed. Within that formula, use one
+bounded construction question per pass. Reduced `q=a/b`, phase
+topology, physical connections and divider factors must agree; integral slot
+or branch counts alone do not establish support. This workflow uses existing
+V7.6 source, Workbench previews and engineering documents. The V7.5 workflow
+CLI/state files are historical and are not a second V7.6 admission authority.
+
+1. Define the parameter domain and the requested `(Q,D,P2)`. Derive
+   `pp=P/2`, `S=mqP`, `Naa=Q*D*P2`, `B=SL/(m*Naa)` and `tau=mq`
+   using exact rational arithmetic. Require integral physical/count inputs.
+   For phase arrays, derive the local q, local layer count and integral
+   rotation offsets before reusing a native constructor.
+2. State a falsifiable construction hypothesis from the existing ordered
+   Pattern grammar, connection sides and permitted layer returns. Derive
+   slot maps, layer walks, pitch, direction and terminal orientation from
+   parameters. Examples check the formula; they never become its whitelist.
+3. Build complete paths and prove exact coverage, a bijective occupancy map
+   and equal phase/branch counts. A pairing, two-layer sketch, or successful
+   finite graph search does not prove a multilayer family. Preserve failed
+   methods and use a discriminating counterexample before widening a search.
+4. Independently check every physical insertion, weld and return: canonical
+   phase/polarity, N-to-S terminals for P2=2, ordered identity, integer signed
+   travel and at most one pole-boundary crossing. Check actual welds for the
+   required common pitch and direction in each actual adjacent layer pair.
+   Same-layer returns belong to the insertion side; welding connections must
+   join adjacent layers in the construction paths. Radial relocation is a
+   CHW feature and is outside this exploration's checks.
+   Preserve existing pin types and required electrical validation; EMF
+   asymmetry is a `not strong symmetry layout` diagnostic, not a pruning rule.
+5. Show a typical complete connection when a new engineering choice is
+   needed. An accepted representative permits its proven parameterized
+   method, not unrelated variants. Unresolved geometry stays Candidate;
+   failure of one method stays `unsupported-yet` for other constructions.
+6. After the rule and required gates are established, integrate the smallest
+   constructor/resolver change with a failing reproducer first. Synchronize
+   shared admission, strict public generation, Workbench and support records.
+   Only successful public generation earns Validated; manual paths remain
+   exploratory. Reuse valid unchanged evidence and bind new checks to the
+   source actually used; do not rerun a full audit for each rule group.
+
+The exploration so far gives these reusable lessons:
+
+- Global half-integer q can become integral local q in a phase array.
+  For `q=h/2`, odd h and `m=3k`, even k gives integer `q_s=kh/2`.
+  Each existing local constructor supplies its further conditions. The TLP
+  q-only cohort specifically needs even local q, hence `4|k`, and even
+  `Q|q_s`. Do not apply that special condition to every Pattern or route.
+- Count crossings in the construction's canonical frame. The earlier
+  rigidly rotated array seams were misclassified against fixed slot-zero
+  boundaries; that does not supply a `k|Q` rule. Established post-connection
+  relocation preserves the certified connection identity separately from
+  relocated drawing diagnostics.
+- The three rational four-layer graph witnesses covered every conductor,
+  but used mixed weld pitches. They justified exploration, not the later
+  same-pitch requirement. A validator passing direction alone is insufficient
+  when the requested constructor also promises uniform pitch.
+- The admitted rational TLP formula below solves coverage through a slot
+  bijection and weld direction through oriented layer walks. Its domain
+  conditions, including even a and `b|(2m-1)`, have arithmetic origins.
+  Outside that domain, a failed formula is not a physical impossibility proof.
+- Independent corruption controls matter: unique occupancy and uniform
+  welds can survive a wrong-phase swap. Keep the existing phase/electrical
+  gate independent of occupancy, identity and weld checks.
+- Keep construction rules separate from post-connection options. Check
+  insertion/weld sides and layer spans on the constructed paths. Radial
+  relocation belongs to CHW and is outside fractional-q exploration;
+  phase-only compatibility retains the established pre-shift reference.
+- Source receipts are snapshots. Production edits invalidate prior source
+  bindings, while unchanged scoped tests may remain useful compatibility
+  evidence. Formula/software checks do not certify clean installation,
+  native/package behavior or manufacturing acceptance.
+
+### Half-integer q lift of integer-local divider formulas (2026-10-02, local)
+
+This pass extends existing formulas, with half-integer q as the owner's
+priority. It changes Workbench enumeration only; the shared resolver and
+public constructors already execute the integer-local routes. Use:
+
+```text
+q = h/2, h a positive odd integer
+m = 3k, k a positive even integer; q_s = kh/2 is integer
+P = 2pp; L = k*L_s, L_s positive and even
+S = mqP = 6*q_s*pp; tau = mq = 3*q_s
+Q divides q_s; D divides pp; P2 in {1,2}; Naa = Q*D*P2
+B = 2*q_s*pp*L_s/Naa = 2*q*pp*L/Naa
+set j: (s,l) -> ((s+h*j) mod S, l+L_s*j), 0 <= j < k
+```
+
+Admit only a route supplied by the existing integer-local constructor at
+`(q_s,pp,L_s,m_local=3;Q,D,P2)`, with its inlet/configuration and physical
+gates, followed by the full-array gates. Arithmetic enumeration is not
+admission. The sets occupy disjoint layer intervals. Within each interval,
+the slot rotation is a bijection and the layer translation preserves every
+ordered connection, side, signed travel, weld pitch and actual-pair direction.
+Undo the set's `h*j` rotation when counting construction-stage pole boundaries.
+Each phase keeps Naa equal B-conductor branches; there is no `k|Q` requirement.
+Nonzero branch EMF is still required; complex equality remains a separate
+strong-symmetry gate.
+
+The established formula conditions become local conditions without changing
+the factors:
+
+| Existing formula | Conditions in addition to the lift above |
+| --- | --- |
+| SLP proper-Q + PP + P2 parent regroup | `1<Q<q_s`, `D>1`, even `pp/D`, `P2=2`; neutral Regular, insert-side terminals; passing public parent and target |
+| SSP proper-Q + PP parent cut / SLP stable lane regroup | `1<Q<q_s`, `D>1`, `P2=1`; each child contains `q_s/Q` lanes with `pp/D` complete blocks per lane; retain the existing source-order and public gates |
+| TLP `(2,D,2)` parent slices | even q_s, `D>1`, `2D<=pp`, even `L_s>=4`, and complete-pass count `(q_s/2)*(pp/D)>=2`; passing public parent and target |
+| TLP q-only `(Q,1,1)` cohort joins | even `Q|q_s`, `pp>=2`; local even q_s gives `4|k`; existing two-layer overlap qualification remains |
+
+These conditions describe the reused methods, not a promise for every
+enumerated tuple. Classifier-default dispatch and existing rejections retain
+their own behavior. Two-layer local results keep their structural overlap
+qualification; phase-set topology alone never supplies Pattern certification.
+
+Workbench now adds all integral local-factor tuples for half-q arrays with
+integral q_s, deduplicating the original fractional tuples. Every row still
+uses `resolve_pattern_route()`; unsupported rows never run the public probe.
+At q=3/2, m=12, pp=4 and L=16 there are 28 unique rows per Pattern: four
+existing fractional tuples plus 24 integer-local tuples. Native half-q and
+odd-k/nonintegral-local-q catalogs retain their earlier scope.
+
+For the same geometry, k=4 gives q_s=6, L_s=4, S=144 and tau=18.
+SLP/TLP `(2,2,2)` each have Naa=8 and B=24; SSP `(2,2,1)` has Naa=4
+and B=48. Each complete winding covers `144*16=2304` unique positions.
+Actual welds have pitch 18, join adjacent layers and keep one direction per
+actual pair; all same-layer returns are insertion-side. Eleven public
+parameter cases, four new tests and 28 unchanged compatibility tests pass;
+details are in [VALIDATION.md](../../docs/VALIDATION.md).
+These local-array results supersede older overview rows limited to six-phase
+samples. They do not add a direct native half-q SLP/SSP/TLP constructor,
+strong-symmetry certification or release acceptance.
+
+### Half-integer UWP two-layer sector-parent specialization (Candidate)
+
+The unchanged sector-parent template has a narrow complete specialization:
+native `m=3`, or odd `m>=5` not divisible by three; `q=h/2` with positive
+odd h; `P=2pp`, `pp>=2`; `L=2`; `(Q,D,P2)=(q,pp,2)`. Derive
+`T=2mq=hm`, `S=T*pp`, `tau=T/2`, `u=(T-1)/2`, `Naa=h*pp` and B=2.
+At `K=pp/D=1`, the existing template has just one connection. Pair every
+slot s in layer zero with `(s+u) mod S` in layer one, then reverse the
+path if necessary for N-to-S orientation. The two layer maps are bijective,
+so all `2S` positions are covered once.
+
+The odd-layer belt offset is `c=ceil(tau)=u+1`: `u+c=T=2mq` advances
+exactly 2m belts, preserving phase and giving opposite layer polarity.
+Every actual weld has `ds*dl=+u`, pitch u and adjacent layers. Since
+`0<u<tau`, every signed connection crosses at most one pole boundary.
+The fundamental magnitude is `2*cos(pi/(2hm))>0`; equal complex branch EMF
+is not required. The same derivation includes h=1; it is not a tuple exception.
+
+**Candidate only:** insert-side inlet and outlet leave one W edge and zero
+insertion connections in each branch. Ordered recognition has the existing
+two-layer overlap qualification; this geometry proof does not establish body
+pin realization or manufacturing acceptance. The existing owner-confirmed
+`D*P2<=2` exclusion rejects this target, and the registered native formula
+binds only `(q,1,2)` / `(q,2,1)`. No exclusion, pin type, resolver or public
+admission was changed. Owner judgment is pending before any exception.
+The complete q=3/2,m=3,P=8 example covers 72 positions with 12 branches
+per phase and u=4; six independently checked parameter cells are local
+Candidate evidence, never Validated.
+
+The unchanged whole-wave transfer does not extend from `(q,d,2)` to
+`(q,2d,1)` for d>1: distinct sectors repeat the same local start residue
+modulo T. Its current opposite-half translation sends those repeated starts
+to the same `S/2+residue` anchor, causing duplicate occupancy. At
+q=3/2,m=3,P=8,L=4, T=9 and S=36, reversed starts `(0,3)` and `(18,3)`
+both become `(18,3)` under that translation. This is a failure of the
+existing transfer method, not proof that every UWP construction is impossible.
+Other Pattern/divider extensions and the existing rejection registry remain
+open or unchanged; no unrelated repair follows from this observation.
+
+### Rational TLP half-belt complementary translation family (2026-10-02, local)
+
+The owner accepted the weld-side-inlet candidate variant. The registered
+`tlp_rational_half_belt_translation` route now uses a closed parameter construction,
+not finite graph-search witnesses. Let reduced `q=a/b` satisfy:
+
+```text
+q > 1; a even; b odd and b > 2
+m = 3, or odd m >= 5 with m not divisible by 3 (native phase model)
+b divides (2m - 1)
+P = 2bR, R a positive integer; pp = P/2
+L even and L >= 4
+(Q,D,P2) = (q,pp,2); Naa = qP = 2aR
+S = mqP; tau = mq; branch conductor count = qPL/Naa = L
+H = q(m - 1/2) = a(2m - 1)/(2b), an integer
+r = ceil(q/2); c = ceil(mq) = H + r
+```
+
+For each zero-based even-layer slot `s`, put `n=floor(s/q)` and
+`xi=s-q*n`. Choose `epsilon=-1` when `xi<q-r`, otherwise `epsilon=+1`,
+and pair it with odd-layer slot `F(s)=(s+epsilon*H) mod S`.
+The equality boundary belongs to the positive case. The canonical odd-layer
+belt index is n or n+2m, and its polarity is opposite the even-layer polarity.
+Its residue is `(xi+r) mod q`. Wrapping by S changes the belt by even mP,
+preserving phase and sign.
+
+This pairing is bijective: `(2m-1)/b` is odd, so `H mod a = a/2`.
+The sign choice is constant within each residue class modulo a; both signed
+translations map that class to the same distinct target class. Since
+`S=2maR` is divisible by a, each class is translated bijectively around the
+circle. Also `gcd(b,m)=1`; over b belts of each phase all residues occur,
+giving exactly `2aR=qP` branches per phase.
+
+With `sigma=(-1)^n`, select the following one-based layer order. Use slot s
+on even zero-based layers and F(s) on odd zero-based layers.
+
+| sigma | epsilon | Layer order |
+| --- | --- | --- |
+| +1 | +1 | `1,2,...,L` |
+| +1 | -1 | `1,L,L-1,...,2` |
+| -1 | +1 | `L,L-1,...,1` |
+| -1 | -1 | `2,3,...,L,1` |
+
+Every branch starts N, ends S, has roles `I,W,I,...`, and visits each layer
+once. Returns occur only on insertion edges between boundary layers.
+All welds span adjacent layers with `ds*dl=-H` and `abs(ds)=H`, hence one
+geometric direction and one pitch across all phases and actual layer pairs.
+Every edge has pitch H; `H=tau-q/2<tau`, proving the existing at-most-one
+pole-boundary connection rule. Coverage follows from the per-layer bijection.
+The pin vocabulary and TLP ordered grammar are unchanged. The uniform-pitch
+check is this constructor's proof obligation, not a numeric Pattern-identity
+whitelist or a new pin-type rule.
+
+For `q=4/3,m=5,P=6,L=4`, `S=40,Naa=8,H=6,tau=20/3,r=1,c=7`.
+Here F(s)=s-6 for s divisible by 4 and s+6 otherwise, modulo 40.
+Public generation covers 160 positions with 40 four-conductor branches and
+every weld has pitch 6. The earlier three graph witnesses used mixed pitches
+and are insufficient evidence for this requirement. In particular q=5/3
+(odd a) and q=6/5 at m=7 fail this formula's domain; they remain
+unsupported-yet for this route rather than physically impossible.
+
+The neutral complex branch EMF is
+`E_s=L*cos(pi/(4m))*sigma*exp(i*pi*s/tau-i*epsilon*pi/(4m))`.
+Its magnitude is nonzero, but same-phase complex equality fails. Retain
+`not strong symmetry layout` and electrical diagnostics. Required occupancy,
+phase/polarity, signed-edge, identity and weld gates still run.
+
+Use neutral Regular TP, no inlet adjustments and weld-side terminals.
+Established post-connection layout shifts remain available: certify these
+connections before relocation and preserve that identity; displayed relocated
+pitches are separate diagnostics. Radial relocation belongs to CHW and is
+outside this fractional-q exploration; no new radial validation is added.
+The legacy integer/half-q `D*P2<=pp`
+pass-cut exclusion is unchanged; it does not reject this separate b>2
+maximal request before its resolver theorem is considered. Workbench uses
+the required inlet and only marks successful strict public generation Validated.
+Finite checks, source changes and broader acceptance limits are recorded in
+[VALIDATION.md](../../docs/VALIDATION.md).
+
+### Four-layer SLP extension of half-belt complementary translation
+
+The owner accepted this SLP replacement with weld-side terminals, then
+clarified that same-layer welding is prohibited. The admitted
+`slp_rational_half_belt_translation` route uses the same q/m/P/H domain,
+maximal `(q,pp,2)` divider and slot map F above, with `L=4` only. Uniform
+welding is a common engineering requirement, not the formula's name.
+
+For each epsilon-negative slot s, put `t=F(s)=s-H (mod S)`. Its canonical
+residue is `xi(t)=xi(s)+q/2`. Thus epsilon(t) is positive and F(t)=s:
+these are disjoint reciprocal two-slot orbits. The two slots have the same
+phase and opposite polarities; within each slot, all four layers have the
+same polarity. Remove the two TLP parents indexed by s and t and replace
+them with these zero-based conductor walks:
+
+```text
+(s,2) -> (t,1) -> (s,0) -> (t,0)
+(s,1) -> (t,2) -> (s,3) -> (t,3)
+```
+
+Reverse both paths when the even-layer polarity at s is negative. Their
+roles remain `I,W,I`, with N inlets and S outlets on the welding end.
+The same-layer returns are exclusively insertion edges on layers 0 or 3.
+The first weld occupies actual pair 0/1 with `ds*dl=-H`; the second
+occupies pair 2/3 with `ds*dl=+H`. The remaining, nonremoved positive
+epsilon slots use an ordinary up/down four-layer lap, whose weld lies
+in pair 1/2 with `ds*dl=-H`. Each actual layer pair therefore has one
+direction across all phases, and every weld has absolute pitch H.
+
+The replacements cover all eight positions of their two removed parents
+once and keep their phase and branch counts. Reciprocal orbits are
+disjoint and F-invariant; the remaining per-layer F bijection cannot overlap
+them. Each branch still has four conductors, magnitude
+`4*cos(pi/(4m))` of its nonzero fundamental EMF, and signed steps of H,
+which remains below tau. Existing ALLP/SLPP types and ordered SLP grammar
+apply. Complex-EMF mismatch remains `not strong symmetry layout`.
+The analogous longer-layer replacement mixes weld direction within pair
+2/3; L>=6 remains unsupported-yet for this constructor, not impossible.
+
+At `q=4/3,m=5,P=6,L=4`, both lap constructions cover 160 positions in
+40 equal branches, eight per phase, with H=6. SLP has 40 adjacent-layer
+welds and zero same-layer welds. Full coverage, phase, electrical, ordered
+identity, insertion-side return and weld gates run through public generation.
+Wrong inlet or actual same-layer welding rejects; safe phase-only shifts
+retain their pre-shift certificate. These welding checks apply to the
+constructed connections. CHW radial relocation is outside this exploration.
+
+### Extension progress for this formula (2026-10-02, local)
+
+| Pattern/route class | Result for the same formula | Remaining boundary |
+| --- | --- | --- |
+| TLP, maximal `(q,pp,2)` | Closed constructor and public admission for even L>=4 | Stated native parameter domain only |
+| SLP, maximal `(q,pp,2)` | Closed reciprocal-orbit replacement and public admission for L=4 | Other layer counts need a construction |
+| BWP, UWP, SSP, TSP, ZLP, ZPP, CP, LPP, maximal split | No phase-zero cover at q=4/3,m=5,P=6,L=4 using H=6, existing grammars, both inlet sides and all eight actual-pair direction assignments per side; finite searches uncapped | This is a method-negative finite example, not family-wide impossibility or completed route closure |
+| Smaller Naa from intact TLP parents | The same H supplies no foreign-parent weld seam | Reopening/repartitioning parents and SLP extensions remain open |
+| Other proper-Q/PP/P2/default constructions | Not closed by the two maximal constructors | Continue extensions of this formula before any new formula |
+
+For intact TLP joins, let `N0=qP=2aR` and a proposed join group size
+`g=N0/Naa>1` be integral. At each even-layer slot s, the unique same-phase,
+opposite-polarity odd-layer target at either signed pitch H is F(s).
+With `k=floor((xi+r)/q)`, the odd belt at s-H is `n+k` and that at s+H
+is `n+2m-1+k`; exactly one has the required phase/polarity. Bijectivity
+keeps each legal H weld within its original slot-pair orbit. Hence intact
+maximal parents cannot be joined by a foreign-parent welding seam. For
+q=4/3 the arithmetic-valid `(q,pp,1)` and `(1,1,2)` targets would require
+g=2 and g=4, respectively; this intact-parent method supplies neither.
+This proof does not exclude another assembly using the same formula.
+
+The finite ten-Pattern exploration is a saved local snapshot; later source
+edits do not turn its negative examples into current public certifications.
+No new formula exploration resumes while the extension boundaries above
+remain open. In particular, the separate odd-numerator q=5/3 exploration
+is paused, rather than treated as the next priority.
+
 ZPP `q_and_p2`, `(Q,1,2)` with `Q>1`, is explicitly rejected with
 `q and p2 share same route` (user decision, 2026-10-02). See the
 [rejection registry](PATTERN_REJECTION_REASONS.md).
@@ -48,7 +622,8 @@ be even and Q need not divide global q; each local public route must pass.
 Join `g=2q_s/Q` whole `(q_s,1,2)` parents per cohort, then apply the
 canonical `2*q*j` slot and `L_s*j` layer offsets. The global branch length
 is `2q*pp*L/Q`, with Q branches per phase and `Q/2` per outer-layer cohort.
-No `k|Q` condition applies. Fractional-global-q arrays remain unsupported-yet.
+No `k|Q` condition applies. The local half-integer extension below supersedes
+the earlier fractional-global-q scope exclusion for this cohort construction.
 Insert-side entry and the existing TP/post-connection-shift contracts remain.
 
 A separate pre-admission mapped-edge exploration for `m=3k`,
@@ -74,6 +649,23 @@ diagnostics. Source changes make the earlier private hash receipt historical;
 the current public tests and refreshed finite-status receipt bind this admission.
 This remains finite validation, not universal or release certification. See
 [current validation](../../docs/VALIDATION.md).
+
+### Local half-integer TLP q-only cohorts (2026-10-02)
+
+For reduced `q=h/2` with positive odd h and `m=3k`, the same public local
+integer constructor requires even `q_s=kh/2`. Thus `4|k`, even `Q|q_s`,
+`2<=Q<=q_s`, `pp>=2`, and even `L_s=L/k>=2`; Naa=Q and insert-side entry.
+The mapping uses integer offset `2q*j=h*j` and the unchanged whole-parent
+join `g=2q_s/Q`. Every branch has `2q*pp*L/Q` nodes. The k condition follows
+from local-q integrality/parity, not global strong symmetry. There is no `k|Q`.
+
+Thirteen strict public examples cover h=1/3/5/7, k=4/8/12 and proper/full
+local Q, checked by an independent complete-node, phase/polarity, signed-edge,
+coverage and complex-EMF formula. Seam corruption and wrong inlet remain
+rejected; k=2/3/6 examples do not fit the local domain. Workbench enumerates
+local q-only factors for integral local q and preserves Auto/electrical
+diagnostics. This extension is local and unpublished pending connection review;
+successful generation does not imply strong symmetry or manufacturing approval.
 
 ### Post-connection phase/radial shifts (2026-09-29)
 
@@ -1218,7 +1810,8 @@ EMF mismatch and remain `not strong symmetry layout`, not certified strong
 symmetry. These insertion-side audit cases do not prove every odd `m`,
 nonzero shift or transposition setting; the weld-side route has its own scope.
 
-The default UWP P2-only exact audit (local research excluded)
+The recorded UWP P2-only exact audit (before the 2026-10-02 inlet repair;
+local research excluded)
 replays all 1,080 `(1,1,2)` tuples at integer `q=1..6`, `pp=1..10`,
 even `L=2..12` and sampled `m=3/5/7` under neutral Regular, zero-shift,
 insertion-side settings. Independent all-branch topology, signed phase,
@@ -1237,6 +1830,36 @@ phase-count exception. No verified P2-only case
 reports parallel EMF mismatch, which is still not a general strong-symmetry
 or manufacturing certification. The result does not prove nonzero shifts,
 transposition settings, or all odd phase counts.
+
+### UWP P2-only phase-local inlet anchors (2026-10-02)
+
+For `(Q,D,P2)=(1,1,2)`, the native integer-q wave now seeds both
+cohorts from the same phase-local positive belt. Let `n_p` be the first
+positive-polarity slot for phase `p` on layer zero in the construction phase
+map, and `tau=m*q` the default pole pitch. The raw first-layer seeds are
+`n_p` and `(n_p+tau) mod num_slots`. The existing N-to-S terminal rule
+reverses the second cohort, including its signed travel, into last-layer
+entry. Branch IDs order the first-layer cohort before the last-layer cohort.
+Public layer shifts are applied after neutral construction; phase-set arrays
+reuse the local wave and map its slots/layers through `PhaseSetSpec`.
+
+At zero shift, with `h=L/2` two-layer wave blocks, the ordered inlets are
+`(n_p,0)` and `(n_p+(h mod q),L-1)`. Native odd-phase belts give
+`n_p=q*(p+m*(p mod 2))`, with zero-based `p`. Thus `q=2,pp=4,L=6,m=3`
+has B1 at Slot 9/Layer 1 and B2 at Slot 10/Layer 6. These numbers derive
+from the phase map and wave progression; they are not tuple exceptions.
+Connection vectors, transposition settings and production admission are
+unchanged. Naa=1 and the separate Q/PP constructors retain their own paths.
+
+The repair passed 72 neutral native cases (`q=1..4`, `pp=2/4`,
+`L=4/6/8`, `m=3/5/7`), three integer-q phase-set examples at `m=6/9/12`,
+and one `q_global=1/2,m=6` local-integer example. A 54-case comparison with
+the previous source preserves each branch's conductor-position set: first-layer
+paths are identical, and odd-indexed phase tails move only by `2*tau`.
+The 144 insertion/weld-side comparisons keep the same generation/failure
+classification. A shifted example and existing manual-transposition tests
+also pass. This bounded repair evidence does not refresh the earlier 1,080-case
+audit receipt or establish all configuration variants or manufacturing acceptance.
 
 The short UWP P2 weld-terminal construction (local research excluded)
 derives both branches per phase and q lane directly from the shifted phase
@@ -2182,8 +2805,8 @@ specific pole/layer/shift/inlet geometry.
 | SLP | `(1,pp-divider,1)` implemented by pole-pair block selection and exact `slots/pp-divider` branch translation | P2-only `(1,1,2)`, PP+P2 `(1,D,2)` when `pp/D` is even, full-Q `(q,D,2)` when `pp/D` is even, paired-lane full-PP `(q/2,pp,2)` when q/2 is integral, and proper-Q+PP+P2 `(Q,D,2)` when `1<Q<q`, `Q|q`, `D>1`, `D|pp`, and `pp/D` is even; each actual path remains subject to public generation and the one-region gate. The separate `pp=8,D=2` whole-sector method still fails its current 108-case replay | Proper `(Q,D,1)` uses registered stable q-lane regrouping of complete PP-parent blocks; proper `(Q,D,2)` uses full-Q P2 parent regrouping over the same q-lane and PP-sector factors | Unsupported | Even local layers, integer q, odd `m>=3`; the new P2 route also requires proper Q, `Q|q`, `D>1`, `D|pp`, and even `pp/D`. It uses neutral Regular settings and an insert-side inlet, then public source/target generation checks coverage, phase, SLP edges, weld direction, N-to-S terminals, identity and one-region travel. Nine direct samples cover q=4..12, even `pp/D` values 2/4/6 and an odd q-lane group width of 3; six- and nine-phase arrays also pass local-set identity and mapped generation. In the refreshed 18-request `q_and_pp_and_p2` scan cell, support changes from 9 to 12, `unsupported-yet` from 5 to 2, and 4 rejected requests stay unchanged. The three promoted requests are `(q,pp,L,m;Q,D,P2)=(4,4,4,3;2,2,2),(6,6,4,5;2,3,2),(6,6,4,5;3,3,2)`. These samples add a bounded `(Q,D,2)` subset; odd `pp/D` remains outside this formula, while D=1 and full-Q requests retain separate constructors. Weld-side inlets remain closed for this new route. Existing defaults and registered P2 constructors retain their own admission. EMF-only mismatch is retained as `not strong symmetry layout`. Older selected matrices predate the one-region rule and require replay. |
 | ZLP | Q=1 PP tuples retain per-case admission | Distinct P2-only `(1,1,2)` via a phase-local layer/slot mirror; selected PP+P2 `(1,D,2)` cuts complete P2 parents when they generate | All Q-divider>1 tuples are explicitly rejected, including mixed formulas | Finite six-phase phase-set samples only: `q=h/2`, `h=3/5/7`, poles=`2h`, `m=6`, `L=8`, target `(1,h,2)`; `h=1` is a separate mirrored boundary with ambiguous half-circle travel | Integer q, even layers and odd `m>=3`; ALLP+SLPP identity with `(m-1)q+1` paired edge in unshifted coordinates. A failed P2 parent leaves the selected PP+P2 case pending; older ZLP Q scans predate the explicit exclusion. EMF-only mismatch is reported, not rejected. |
 | CP | `(1,2,1)` uses the registered four-pass slice weave when the `(1,2,2)` source has four `Nlayer`-sized passes per branch; `(1,4,1)` uses four calculated parent-half translations for even integer q when `4|pp`; `(1,D,1)` with `D>4`, `4|D`, `D|pp` cuts the public four-sector paths into `D/4` equal pieces; the `Q=1`, even `D>=4`, `D|pp`, `(q odd or D≡2 (mod 4))` family slices public `(1,1,2)` parents into `D/2` pieces when its public source passes preflight | `(1,pp-divider,2)` implemented | `(Q,1,1)` joins adjacent same-phase `(Q,1,2)` parents; `(Q,2,1)` uses common second-sector deployment; full-Q/full-PP `(q,pp,1)` slices the public `(q,1,2)` parent when `q>1` and even `pp>=4` | Finite six-phase phase-set samples only: `q=h/2`, `h∈{3,5,7}`, `m=6`, four poles, `L=8`, target `(h,1,2)`; `h=1` `(1,2,1)` is route-disabled; no direct half-q constructor | Every CP route requires positive `Nlayer` divisible by 4, supported phase count, insert-side inlet and CLWP-only body. The `(1,4,1)` route selects the public `(1,1,2)` parent with first signed step `+mq`, takes its second half, and applies offsets `[mq-δ, mq-1, 2mq-δ, 2mq-1]`; q=2, poles=8, L=4, m=3 reproduces the saved Phase-A conductor groups after inlet rotations/reversals and reorder. The higher-D sector slicing preserves source conductor order and introduces no new edge. The q=1 `D≡2 (mod 4)` family passed direct L=4 and arrayed local-layer samples; q=1 direct L=8/12 cases with invalid P2 sources remain disabled by preflight. Odd q remains outside half-translation and four-sector-slice constructors; this PP-only parent-slice formula covers odd-q even-D cases when public preflight passes. Each retained source and target passes coverage, phase/direction, identity, edges, and one-region preflight. The neutral result can be `not strong symmetry layout` and Auto Configure may report pending separately while Workbench keeps the generated route status; EMF asymmetry alone does not reject. Full-Q/full-PP slicing uses `pp/2` equal `2L` pieces and is separately checked; the former intact-parent matcher remains withdrawn. No-divider `(1,1,1)` remains explicitly rejected. |
-| ZPP | (1,D,1) uses indexed whole-branch translations of the same-Naa (D,1,1) q-parent. Direct domains use q=Naa=D; arrays resolve per local set with q_local=Naa_local=D, q_global=D/s. | (q-divider,pp-divider,P2) implemented when q-divider*P2=q; every P2=2 tuple is rejected for positive odd integer effective q because q=2*Q has no integer Q | (Q,2,1) uses the common deployment for proper Q; full Q retains the existing ZPP route | Unsupported | Direct domains require D|pp and the least positive a with gcd(a,D)=1 and gcd(D,2*(pp/D)*a-1)=1; D=2 preserves its half-turn. Previously admitted direct routes remain a=1. Arrayed a>1 remains unsupported-yet after mapped global edges crossed two pole boundaries; one legacy a=1 array also has 12 such edges under an independent aggregate audit. The former direct D=3, pp=6 boundary is now Validated with a=2; all 36 previously disabled requests in the bounded direct sweep generated successfully. Supported phase/topology, positive even direct layers, neutral Regular settings, weld-side inlet and generated-parent checks remain. Phase-set rejection uses the effective local q, so a fractional global q is not treated as odd by itself. The bounded Q+PP weld-direction findings are unchanged. |
-| TSP | Existing full-local-q identity transfer `(1,2q_s,1)` retains precedence; other PP-only tuples may use `tsp_spiral_pass_partition` | Existing defaults and fixed-lane `(1,D,2)` sectors retain precedence; complete-pass partition adds other eligible P2 tuples | Existing adjacent-parent q-only and second-sector routes retain precedence; complete-pass partition closes even-Naa gaps across Q, PP and P2 factors | No new fractional-global-q admission; existing fractional routes unchanged | New fallback: integer global q, even local layers, Q divides local q, D divides pp, P2 in {1,2}, even Naa, and at least two complete local-layer passes per branch. Neutral Regular/unshifted insert-side only. See the current closure section for gcd orbit coverage, cohort/lane/cut lineage, native odd-phase and phase-set array checks. At the saved q=2/pp=4/L=4 geometry all five formerly unsupported manual routes generate; asymmetric results remain not strong symmetry layouts. Equal-D-sector inlets remain a contract of the separate fixed-lane constructor. |
+| ZPP | Successful indexed/centered public-parent routes retain priority; other legal integer-local factors use actual-lane endpoint cyclic permutation and gcd partition. | Q|q_s, D|pp and P2 in {1,2}; retain odd-positive-integer effective-q P2 and q_and_p2 owner exclusions. Q*P2=q_s remains a condition of the older raw constructor, not the new formula. | For A=Q*D*P2, g=gcd(q_s,A), assemble q_s/g actual lanes and cut into A/g equal children per cohort. | Integer-local-q phase arrays may reuse their admitted local constructors; native fractional q has no new construction here. | Require positive even local layers, weld-side terminals, configured public full-Q parents, physical lane bijections, complete signed evidence, canonical phase-set/global coverage, ordered identity and actual adjacent-layer weld pitch/direction. Integer-global-q arrays previously blocked by variable stride may use the new endpoint construction; half-integer arrays retain successful indexed priority. Fixed-global aggregate boundary counts are coordinate diagnostics, distinct from canonical admission. Neutral proofs do not certify arbitrary manual TP, strong symmetry or release acceptance. |
+| TSP | Existing full-local-q identity transfer `(1,2q_s,1)` retains precedence; other PP-only tuples may use `tsp_spiral_pass_partition` | Existing defaults and fixed-lane `(1,D,2)` sectors retain precedence; complete-pass partition adds other eligible P2 tuples | Existing adjacent-parent q-only and second-sector routes retain precedence; complete-pass partition closes even-Naa gaps across Q, PP and P2 factors | No new fractional-global-q admission; existing fractional routes unchanged | New fallback: integer global q, even local layers, Q divides local q, D divides pp, P2 in {1,2}, even Naa, and at least one complete local-layer pass per branch with B>=8. Neutral Regular/unshifted insert-side only. See the current closure section for gcd orbit coverage, cohort/lane/cut lineage, native odd-phase and phase-set array checks. At the saved q=2/pp=4/L=4 geometry all five formerly unsupported manual routes generate; asymmetric results remain not strong symmetry layouts. Equal-D-sector inlets remain a contract of the separate fixed-lane constructor. |
 | TLP | `(1,2,1)` uses layer-and-pole-reflected deployment; legacy `(1,D,1)` for even `D>2`, `D|pp`, `q<=2` cuts complete passes; direct full-Q `(q,D,1)` cuts public `(q,2,1)` parents when `q>1`, even `D>=4`, `D|pp`, and even `L>=4` | `(1,D,2)` cuts public `(1,1,2)` into phase-preserving PP-sector short units. `(2,D,2)` cuts each public `(1,D,2)` parent into two complete-pass children when q is even, `D>1`, `D|pp`, `2D<=pp`, even `L>=4`, and `B=(q/2)(pp/D)>=2`; each selected positive sector has two distinct inlet lanes per outer layer. Other P2 routes keep their separate guards. | `(Q,2,1)` uses common second-sector deployment, subject to `2<=pp` | Finite six-phase phase-set samples only: `q=h/2`, `h∈{1,3,5,7}`, `m=6`, four poles, `L=8`, target `(h,2,1)`; no general odd-`h` family | Odd native `m>=3`, neutral Regular, insert-side inlet and zero shifts/TP for the new parent-slice route; each admitted phase-set local view needs even `L_local>=4`. Preserve signed ALLP+CLLP, untransposed welds with one lower-to-higher direction per layer pair, and returns oriented with layer traversal. All TLP routes require `D*P2<=pp`. The saved q=2, pp=4, L=4 `(2,2,2)` draft is reproduced by public generation, while the draft remains exploratory. The q=4/6 route permits distinct adjacent inlet lanes when full coverage, identity, edges, weld and electrical checks pass; q/2 lane spacing is diagnostic. Source placement or short local-layer failures remain `unsupported-yet`. D=2 PP-only keeps separate Auto; the half-integer PhaseSetSpec samples remain their own bounded family. Other PP tuples remain unsupported where no constructor is registered. |
 | LPP | Only full PP `(1,pp,1)` is admitted, subject to case validation | All other Q/PP/P2 tuples are rejected by the confirmed LPP construction rule | Unsupported | Finite six-phase phase-set samples only: `q=h/2`, `h∈{1,3,5,7}`, `m=6`, four poles, `L=8`, target `(1,2,1)`; no direct half-integer formula | Odd `m>=3`, even layers, weld-side inlet; SLPP-only opposite-direction layer-pair loop. The q=2, pp=4, L=4 lower-D examples reverse weld travel and remain rejected despite earlier route notes. A full-PP tuple can still fail its own case validation. |
 

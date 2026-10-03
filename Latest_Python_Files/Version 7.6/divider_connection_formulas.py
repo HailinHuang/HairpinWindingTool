@@ -8,12 +8,76 @@ Divider triples are always interpreted as ``(q-divider, pp-divider, P2)``.
 from dataclasses import dataclass
 from fractions import Fraction
 from functools import lru_cache
-from math import gcd, prod
+from math import ceil, gcd, prod
 from collections import Counter
 from typing import Literal, Mapping, Sequence
+from pattern_route_contract import rational_half_belt_translation_pitch
 
 
 DividerTuple = tuple[int | Fraction, int | Fraction, int | Fraction]
+
+
+def _half_belt_slot_pairs(q, phases, poles, pitch):
+    slots, r = int(q * phases * poles), ceil(q / 2)
+    for slot in range(slots):
+        belt = slot // q
+        epsilon = -1 if slot - q * belt < q - r else 1
+        yield slot, (slot + epsilon * pitch) % slots, int(belt), epsilon
+
+
+def tlp_rational_half_belt_translation_paths(q, phases, poles, layers):
+    """Partition every layer through a canonical phase-preserving slot bijection.
+
+    H=q*(m-1/2), r=ceil(q/2), xi=s-q*floor(s/q). Map even-layer
+    slot s to F(s)=s-H when xi<q-r, otherwise s+H (mod S).
+    Odd-layer belt residue is (xi+r) mod q. Four oriented layer walks
+    give N-to-S branches and sign(ds*dl)=-1 for every actual weld.
+    """
+    q = Fraction(str(q))
+    pitch = rational_half_belt_translation_pitch(q, poles, layers, phases)
+    if pitch is None:
+        raise ValueError('Rational TLP half-belt translation formula is outside its domain.')
+    groups = [[] for _ in range(phases)]
+    for slot, target, belt, epsilon in _half_belt_slot_pairs(q, phases, poles, pitch):
+        if belt % 2 == 0:
+            order = (range(layers) if epsilon == 1 else
+                     [0, *range(layers - 1, 0, -1)])
+        else:
+            order = (range(layers - 1, -1, -1) if epsilon == 1 else
+                     [*range(1, layers), 0])
+        groups[int(belt % phases)].append([
+            (target if layer % 2 else slot, layer, slot) for layer in order])
+    return groups
+
+
+def slp_rational_half_belt_translation_paths(q, phases, poles, layers):
+    """Replace reciprocal slot orbits by four-layer insertion-boundary returns.
+
+    Only insertion edges may remain in one layer. Actual weld pairs 0/1 and
+    1/2 retain -H; pair 2/3 retains +H. All conductors are covered once.
+    """
+    q = Fraction(str(q))
+    pitch = rational_half_belt_translation_pitch(q, poles, layers, phases, pattern='SLP')
+    if pitch is None:
+        raise ValueError('SLP half-belt translation requires its four-layer domain.')
+    pairs = list(_half_belt_slot_pairs(q, phases, poles, pitch))
+    groups, removed = [[] for _ in range(phases)], set()
+    for slot, target, belt, epsilon in pairs:
+        if epsilon != -1:
+            continue
+        removed.update((slot, target))
+        for path in ([(slot, 2, slot), (target, 1, slot), (slot, 0, slot), (target, 0, slot)],
+                     [(slot, 1, slot), (target, 2, slot), (slot, 3, slot), (target, 3, slot)]):
+            groups[belt % phases].append(path if belt % 2 == 0 else list(reversed(path)))
+    for slot, target, belt, epsilon in pairs:
+        if slot in removed:
+            continue
+        order = range(layers) if belt % 2 == 0 else range(layers - 1, -1, -1)
+        groups[belt % phases].append([
+            (target if layer % 2 else slot, layer, slot) for layer in order])
+    return groups
+
+
 FormulaOperation = Literal[
     "identity", "partition", "grouped_partition", "join", "indexed_translation",
     "zpp_centered_entry_translation"]
@@ -381,6 +445,10 @@ ROUTE_FORMULA_BINDINGS = {
         "grouped_partition", (None, 1, None), "piece"),
     "cp_q_pp_full_parent_slices": RouteFormulaBinding(
         "partition", (None, 1, 2), "piece"),
+    "cp_q_pp_q_parent_slices": RouteFormulaBinding(
+        "partition", (None, 1, 1), "piece"),
+    "tlp_q_pp_q_parent_slices": RouteFormulaBinding(
+        "partition", (None, 1, 1), "source"),
     "cp_q_pp_p2_parent_slices": RouteFormulaBinding(
         "partition", (None, 1, None), "source"),
     "cp_pp_sector_slices": RouteFormulaBinding(
@@ -400,6 +468,8 @@ ROUTE_FORMULA_FAMILIES = {
     for route_id, binding in ROUTE_FORMULA_BINDINGS.items()
 }
 ROUTE_FORMULA_FAMILIES.update({
+    "tlp_even_gcd_parent_slices": "divider_even_gcd_parent_partition",
+    "tlp_p2_parent_slices": "divider_p2_parent_partition",
     "zpp_pp_only_half_turn": "divider_indexed_sector_translation",
     "zpp_pp_only_indexed_translation": "divider_indexed_sector_translation",
     "zpp_pp_only_centered_entry_translation":
@@ -429,9 +499,9 @@ def tsp_spiral_pass_partition_dimensions(q, pp, dividers, layers):
             'TSP pass partition requires Q|q, D|pp, P2 in {1,2}, '
             'even Naa and positive even local layers.')
     cohort_size = naa // 2
-    if q * pp % cohort_size or q * pp // cohort_size < 2:
+    if q * pp % cohort_size or q * pp // cohort_size < 1:
         raise DividerFormulaError(
-            'TSP pass partition requires at least two complete local-layer passes '
+            'TSP pass partition requires at least one complete local-layer pass '
             'per branch.')
     return (cohort_size, gcd(q, cohort_size), gcd(layers // 2, pp),
             q * pp // cohort_size)
@@ -1003,6 +1073,396 @@ def spiral_q_pp_parent_cut(
     return children
 
 
+def zpp_actual_lane_endpoint_gcd_partition(
+    parent_branches: Sequence[tuple[int, Sequence]],
+    *, dividers: DividerTuple, q: int, pp: int, layer_count: int,
+    num_slots: int,
+) -> list[FormulaBranch]:
+    """Permute physical ZPP endpoint lanes and cut gcd-derived cohorts.
+
+    A=Q*D*P2, g=gcd(q,A), r=q/g and c=A/g. For each actual layer
+    pair, cyclically permute its q last insertion endpoints within g
+    contiguous r-lane cohorts. Concatenate each cohort across layer pairs,
+    then cut it into c even children of width 2*q*pp*L/A. Endpoint lookup
+    uses physical slot modulo q, independently of parent IDs or lane tags.
+    """
+    factors = tuple(dividers)
+    if (len(factors) != 3
+            or any(type(value) is not int or value <= 0 for value in factors)
+            or type(q) is not int or q <= 0
+            or type(pp) is not int or pp <= 0
+            or type(layer_count) is not int or layer_count < 2
+            or layer_count % 2 or type(num_slots) is not int
+            or num_slots <= 0 or num_slots % (2 * pp)):
+        raise DividerFormulaError('ZPP endpoint partition requires integer geometry and factors.')
+    Q, D, P2 = factors
+    if q % Q or pp % D or P2 not in (1, 2):
+        raise DividerFormulaError('ZPP endpoint partition requires Q|q, D|pp and P2 in {1,2}.')
+    A = Q * D * P2
+    g = gcd(q, A)
+    r, cuts = q // g, A // g
+    total = 2 * q * pp * layer_count
+    if total % A or (total // A) % 2:
+        raise DividerFormulaError('ZPP endpoint partition requires even integral child width.')
+    width, tau = total // A, num_slots // (2 * pp)
+    if len(parent_branches) != q:
+        raise DividerFormulaError('ZPP endpoint partition requires q complete parents per phase.')
+    if any(len(path) != 2 * pp * layer_count for _, path in parent_branches):
+        raise DividerFormulaError('ZPP full-Q parent has the wrong complete length.')
+
+    cohorts = [[] for _ in range(g)]
+    source_ids = [set() for _ in range(g)]
+    for pair in range(layer_count // 2):
+        starts, ends = {}, {}
+        for branch_id, path in parent_branches:
+            segment = list(path[pair * 4 * pp:(pair + 1) * 4 * pp])
+            if (segment[0][1] != 2 * pair or segment[-1][1] != 2 * pair + 1
+                    or any(node[1] not in (2 * pair, 2 * pair + 1)
+                           for node in segment)):
+                raise DividerFormulaError('ZPP parent must contain complete ordered layer-pair segments.')
+            start_lane, end_lane = segment[0][0] % q, segment[-1][0] % q
+            if start_lane in starts or end_lane in ends:
+                raise DividerFormulaError('ZPP physical start/end lane maps must be bijective.')
+            starts[start_lane] = (branch_id, segment)
+            ends[end_lane] = (branch_id, segment[-1])
+        if set(starts) != set(range(q)) or set(ends) != set(range(q)):
+            raise DividerFormulaError('ZPP physical start/end lanes must cover all q lanes.')
+        start_bases = {(segment[0][0] - lane) % num_slots
+                       for lane, (_, segment) in starts.items()}
+        end_bases = {(node[0] - lane - tau) % num_slots
+                     for lane, (_, node) in ends.items()}
+        if len(start_bases) != 1 or start_bases != end_bases:
+            raise DividerFormulaError('ZPP actual endpoint bases must differ by one pole pitch.')
+        for cohort in range(g):
+            lanes = range(cohort * r, (cohort + 1) * r)
+            for index, lane in enumerate(lanes):
+                next_lane = cohort * r + (index + 1) % r
+                branch_id, segment = starts[lane]
+                endpoint_id, endpoint = ends[next_lane]
+                cohorts[cohort].extend(segment[:-1])
+                cohorts[cohort].append(endpoint)
+                source_ids[cohort].update((branch_id, endpoint_id))
+    return [FormulaBranch(tuple(sorted(source_ids[cohort])), cut,
+                          path[cut * width:(cut + 1) * width])
+            for cohort, path in enumerate(cohorts) for cut in range(cuts)]
+
+
+def slp_p2_belt_pass_partition(
+    parent_branches: Sequence[tuple[int, Sequence]],
+    *,
+    dividers: DividerTuple,
+    q: int,
+    pp: int,
+    layer_count: int,
+    phase_count: int,
+    num_slots: int,
+) -> tuple[list[FormulaBranch], dict[int, tuple[int, ...]]]:
+    """Partition physical N-belt passes from a complete public full-Q parent.
+
+    The caller supplies its configured ``(q,1,1)`` parent in unshifted local
+    coordinates, with insert-side terminals and positive even local layers.
+    This pure transform never generates or substitutes a parent. It preserves
+    all node fields and uses physical inlet lanes rather than lane tags.
+
+    Let r=q/Q and T=pp/D. Each T-belt sector produces two children per
+    r-lane cohort. The two children take complete 2L blocks from opposite
+    sides of that sector. For odd T, they share the middle belt's complementary
+    L passes, alternating up/down across its lanes. Thus each child has r*T*L
+    conductors. Only same-layer insertion returns are introduced; body welds
+    retain pitch tau=m*q and their normalized travel direction.
+
+    Return child formulas and complete signed steps keyed by consecutive
+    one-based child IDs. Explicit parent evidence must be complete; only a
+    genuinely absent signed_travel attribute permits unique short-arc inference.
+    """
+    factors = tuple(dividers)
+    if (len(factors) != 3
+            or any(type(value) is not int or value <= 0 for value in factors)
+            or type(q) is not int or q <= 0
+            or type(pp) is not int or pp < 2
+            or type(layer_count) is not int or layer_count < 2 or layer_count % 2
+            or type(phase_count) is not int or phase_count < 3 or phase_count % 2 == 0
+            or type(num_slots) is not int
+            or num_slots != 2 * q * pp * phase_count):
+        raise DividerFormulaError('SLP belt-pass partition requires integer local geometry and factors.')
+    Q, D, P2 = factors
+    if q % Q or pp % D or P2 != 2:
+        raise DividerFormulaError('SLP belt-pass partition requires Q|q, D|pp and P2=2.')
+    L, m, S = layer_count, phase_count, num_slots
+    tau, T, r = m * q, pp // D, q // Q
+    half = T // 2
+    parent_ids = [branch_id for branch_id, _path in parent_branches]
+    if len(parent_ids) != q * m or len(set(parent_ids)) != len(parent_ids):
+        raise DividerFormulaError('SLP full-Q parent requires q unique branches per phase.')
+    absent = object()
+    recorded = getattr(parent_branches, 'signed_travel', absent)
+    if recorded is not absent and (
+            not isinstance(recorded, Mapping) or set(recorded) != set(parent_ids)):
+        raise DividerFormulaError('SLP full-Q parent requires complete signed-travel evidence.')
+
+    def short_step(start, end):
+        step = (end[0] - start[0]) % S
+        if not step or 2 * step == S:
+            raise DividerFormulaError('SLP connection requires a unique nonzero short arc.')
+        return step if 2 * step < S else step - S
+
+    def check_step(start, end, step):
+        if (type(step) is not int or not step
+                or (start[0] + step) % S != end[0]
+                or abs((start[0] + step) // tau - start[0] // tau) > 1):
+            raise DividerFormulaError('SLP signed connection is inconsistent or crosses multiple pole regions.')
+
+    passes, weld_directions = {}, set()
+    for branch_id, source in parent_branches:
+        if len(source) != 2 * pp * L:
+            raise DividerFormulaError('SLP full-Q parent has the wrong complete length.')
+        evidence = None if recorded is absent else recorded[branch_id]
+        if recorded is not absent and (
+                not isinstance(evidence, (tuple, list)) or len(evidence) != len(source) - 1):
+            raise DividerFormulaError('SLP full-Q signed branch evidence has the wrong shape.')
+        source_steps = []
+        for index, (start, end) in enumerate(zip(source, source[1:])):
+            step = short_step(start, end) if recorded is absent else evidence[index]
+            check_step(start, end, step)
+            source_steps.append(step)
+        for offset in range(0, len(source), L):
+            path = list(source[offset:offset + L])
+            steps = tuple(source_steps[offset:offset + L - 1])
+            if (-1) ** (path[0][0] // q) < 0:
+                path.reverse()
+                steps = tuple(-step for step in reversed(steps))
+            delta = 1 if path[0][1] == 0 else -1
+            order = (list(range(L)) if delta == 1 else list(range(L - 1, -1, -1)))
+            if [node[1] for node in path] != order:
+                raise DividerFormulaError('SLP mother must contain complete ordinary layer passes.')
+            phase = path[0][0] // q % m
+            if any(node[0] // q % m != phase
+                   or (-1) ** (node[0] // q) != (-1) ** index
+                   for index, node in enumerate(path)):
+                raise DividerFormulaError('SLP N-to-S pass has inconsistent phase or polarity.')
+            for index, step in enumerate(steps):
+                if index and step * steps[index - 1] >= 0:
+                    raise DividerFormulaError('SLP ordinary pass travel must alternate.')
+                if index % 2 == 0:
+                    if abs(step) != tau:
+                        raise DividerFormulaError('SLP mother welds must have pitch tau.')
+                    weld_directions.add(1 if step * delta > 0 else -1)
+            lane = path[0][0] % q
+            belt = path[0][0] - lane
+            key = (phase, belt, lane, delta)
+            if key in passes:
+                raise DividerFormulaError('SLP physical N-pass lookup must be bijective.')
+            passes[key] = (branch_id, path, steps)
+    if len(weld_directions) != 1:
+        raise DividerFormulaError('SLP mother weld directions must agree within each actual layer pair.')
+    omega = weld_directions.pop()
+    expected_keys, anchors_by_phase = set(), {}
+    for phase in range(m):
+        origin = q * (phase if phase % 2 == 0 else phase + m)
+        anchors = [(origin + 2 * index * tau) % S for index in range(pp)]
+        anchors_by_phase[phase] = anchors
+        expected_keys.update((phase, belt, lane, delta) for belt in anchors
+                             for lane in range(q) for delta in (-1, 1))
+    if set(passes) != expected_keys:
+        raise DividerFormulaError('SLP mother must cover every physical N-belt pass.')
+
+    children, travel = [], {}
+    for phase in range(m):
+        anchors = anchors_by_phase[phase]
+        for sector in range(D):
+            belts = anchors[sector * T:(sector + 1) * T]
+            for cohort in range(Q):
+                lanes = list(range(cohort * r, (cohort + 1) * r))
+                for alpha in (1, -1):
+                    delta = alpha * omega
+                    outer = (list(reversed(belts[half + T % 2:]))
+                             if alpha == 1 else belts[:half])
+                    sequence = []
+                    for block, belt in enumerate(outer):
+                        for lane in lanes if block % 2 == 0 else reversed(lanes):
+                            sequence.extend(((belt, lane, delta), (belt, lane, -delta)))
+                    if T % 2:
+                        middle_lanes = lanes if half % 2 == 0 else list(reversed(lanes))
+                        sequence.extend((belts[half], lane, delta * (-1) ** index)
+                                        for index, lane in enumerate(middle_lanes))
+                    path, steps, source_ids = [], [], set()
+                    for belt, lane, direction in sequence:
+                        source_id, part, part_steps = passes[(phase, belt, lane, direction)]
+                        if path:
+                            if (path[-1][1] != part[0][1]
+                                    or path[-1][1] not in (0, L - 1)):
+                                raise DividerFormulaError('SLP new insertion return must share a boundary layer.')
+                            seam = short_step(path[-1], part[0])
+                            check_step(path[-1], part[0], seam)
+                            steps.append(seam)
+                        source_ids.add(source_id)
+                        path.extend(part)
+                        steps.extend(part_steps)
+                    if len(path) != r * T * L or len(steps) != len(path) - 1:
+                        raise DividerFormulaError('SLP belt-pass child has the wrong complete width.')
+                    child_id = len(children) + 1
+                    children.append(FormulaBranch(tuple(sorted(source_ids)), child_id - 1, path))
+                    travel[child_id] = tuple(steps)
+    return children, travel
+
+
+def slp_weld_cycle_gcd_partition(
+    parent_branches: Sequence[tuple[int, Sequence]], *, dividers: DividerTuple,
+    q: int, pp: int, layer_count: int, phase_count: int, num_slots: int,
+) -> tuple[list[FormulaBranch], dict[int, tuple[int, ...]]]:
+    """Join configured insert-side full-Q cycles through insertion edges only.
+
+    For A=Q*D*P2, g=gcd(q,A), join r=q/g actual mother cycles, then remove
+    c=A/g weld edges at equal even intervals B=2*q*pp*L/A. Every retained W
+    is an original mother W, including its signed step and actual layer pair.
+    This transform neither generates a mother nor substitutes its TP payload.
+    """
+    Q, D, P2 = tuple(dividers)
+    L, m, S = layer_count, phase_count, num_slots
+    if (any(type(v) is not int or v <= 0 for v in (Q, D, P2, q, pp, L, m, S))
+            or P2 not in (1, 2) or q % Q or pp % D or pp < 2
+            or L < 2 or L % 2 or m < 3 or m % 2 == 0 or S != 2*q*pp*m):
+        raise DividerFormulaError('SLP weld partition requires integer local factors and even layers.')
+    A, M = Q*D*P2, 2*pp*L
+    g = gcd(q, A)
+    r, c = q//g, A//g
+    if 2*q*pp*L % A:
+        raise DividerFormulaError('SLP target branch width is not integral.')
+    B = 2*q*pp*L//A
+    if B % 2 or B*c != r*M:
+        raise DividerFormulaError('SLP weld cuts require an equal even width.')
+    tau = m*q
+    ids = [bid for bid, _ in parent_branches]
+    absent = object()
+    recorded = getattr(parent_branches, 'signed_travel', absent)
+    if len(ids) != q*m or len(set(ids)) != len(ids):
+        raise DividerFormulaError('SLP full-Q parent IDs are not complete.')
+    if recorded is not absent and (
+            not isinstance(recorded, Mapping) or set(recorded) != set(ids)):
+        raise DividerFormulaError('SLP mother requires complete signed-travel evidence.')
+
+    def short_step(a, b):
+        step = (b[0]-a[0]) % S
+        if not step or 2*step == S:
+            raise DividerFormulaError('SLP connection needs a unique nonzero short arc.')
+        return step if 2*step < S else step-S
+
+    def check_step(a, b, step):
+        if (type(step) is not int or not step or (a[0]+step) % S != b[0]
+                or abs((a[0]+step)//tau-a[0]//tau) > 1):
+            raise DividerFormulaError('SLP actual signed edge is inconsistent or crosses multiple pole regions.')
+
+    successors, nodes, provenance, sides, directions = {}, {}, {}, {}, {}
+    phases = {phase: [] for phase in range(m)}
+    for bid, path in parent_branches:
+        if len(path) != M:
+            raise DividerFormulaError('SLP full-Q mother has an incomplete branch.')
+        evidence = None if recorded is absent else recorded[bid]
+        if recorded is not absent and (
+                not isinstance(evidence, (tuple, list)) or len(evidence) != M-1):
+            raise DividerFormulaError('SLP signed branch evidence is incomplete.')
+        phase = path[0][0]//q % m
+        if any(n[0]//q % m != phase for n in path):
+            raise DividerFormulaError('SLP mother branch changes phase.')
+        keys = []
+        for node in path:
+            key = tuple(node[:2])
+            if key in nodes or not (0 <= key[0] < S and 0 <= key[1] < L):
+                raise DividerFormulaError('SLP mother occupancy is not unique.')
+            nodes[key], provenance[key] = node, bid
+            keys.append(key)
+        for i, (a, b) in enumerate(zip(path, path[1:])):
+            step = short_step(a, b) if recorded is absent else evidence[i]
+            check_step(a, b, step)
+            if (-1)**(a[0]//q) == (-1)**(b[0]//q):
+                raise DividerFormulaError('SLP mother changes no polarity at an edge.')
+            ak, bk = keys[i:i+2]
+            successors[ak], sides[ak] = (bk, step), 'W' if i % 2 == 0 else 'I'
+            if i % 2 == 0:
+                dl = b[1]-a[1]
+                if abs(dl) != 1 or abs(step) != tau:
+                    raise DividerFormulaError('SLP mother weld must be adjacent and have pitch tau.')
+                pair = tuple(sorted((a[1], b[1])))
+                direction = 1 if step*dl > 0 else -1
+                if pair in directions and directions[pair] != direction:
+                    raise DividerFormulaError('SLP mother weld direction varies within an actual layer pair.')
+                directions[pair] = direction
+        # The missing cycle edge is an insertion return, never a new weld.
+        a, b = path[-1], path[0]
+        if a[1] != b[1] or a[1] not in (0, L-1):
+            raise DividerFormulaError('Configured SLP mother has no same-boundary insertion closure.')
+        step = short_step(a, b)
+        check_step(a, b, step)
+        successors[keys[-1]], sides[keys[-1]] = (keys[0], step), 'I'
+        available = {}
+        for ak in keys:
+            bk, step = successors[ak]
+            a, b = nodes[ak], nodes[bk]
+            if sides[ak] != 'I' or a[1] != b[1] or a[1] not in (0, L-1):
+                continue
+            base_step = step-(b[0] % q-a[0] % q)
+            if abs(base_step) != tau:
+                continue
+            key = (a[1], a[0]-a[0] % q, b[0]-b[0] % q,
+                   1 if base_step > 0 else -1)
+            available.setdefault(key, []).append((ak, bk))
+        phases[phase].append((bid, keys, available))
+    if len(nodes) != S*L:
+        raise DividerFormulaError('SLP full-Q mother does not cover all conductors.')
+
+    children, travel = [], {}
+    for phase, sources in phases.items():
+        if len(sources) != q:
+            raise DividerFormulaError('SLP full-Q mother count differs by phase.')
+        common = set(sources[0][2])
+        for _, _, available in sources[1:]:
+            common.intersection_update(available)
+        selected = None
+        for key in sorted(common):
+            if any(len(available[key]) != 1 for _, _, available in sources):
+                continue
+            cuts = [available[key][0] for _, _, available in sources]
+            if ({nodes[ak][0] % q for ak, _ in cuts} == set(range(q))
+                    and {nodes[bk][0] % q for _, bk in cuts} == set(range(q))):
+                selected = cuts
+                break
+        if selected is None:
+            raise DividerFormulaError('Configured SLP cycles have no common bijective physical insertion cut.')
+        selected.sort(key=lambda edge: nodes[edge[1]][0] % q)
+        for cohort in range(g):
+            group = selected[cohort*r:(cohort+1)*r]
+            for j, (ak, _) in enumerate(group):
+                target = group[(j+1) % r][1]
+                step = short_step(nodes[ak], nodes[target])
+                check_step(nodes[ak], nodes[target], step)
+                successors[ak] = (target, step)
+            members = {provenance[ak] for ak, _ in group}
+            weld_tail = min(ak for ak in nodes if provenance[ak] in members and sides[ak] == 'W')
+            start = successors[weld_tail][0]
+            at, seen, cycle, cycle_steps = start, set(), [], []
+            while at not in seen:
+                seen.add(at)
+                cycle.append(nodes[at])
+                nxt, step = successors[at]
+                if sides[at] != ('I' if len(cycle) % 2 else 'W'):
+                    raise DividerFormulaError('SLP cyclic connection sides do not alternate.')
+                cycle_steps.append(step)
+                at = nxt
+            if at != start or len(cycle) != r*M:
+                raise DividerFormulaError('SLP lane permutation did not form one complete cohort cycle.')
+            for part in range(c):
+                path = cycle[part*B:(part+1)*B]
+                steps = tuple(cycle_steps[part*B:(part+1)*B-1])
+                if P2 == 2 and (-1)**(path[0][0]//q) < 0:
+                    path = list(reversed(path))
+                    steps = tuple(-step for step in reversed(steps))
+                bid = len(children)+1
+                source_ids = tuple(sorted({provenance[tuple(n[:2])] for n in path}))
+                children.append(FormulaBranch(source_ids, bid-1, path))
+                travel[bid] = steps
+    return children, travel
+
+
 def slp_q_pp_p2_lane_regroup(
     parent_branches: Sequence[tuple[int, Sequence]],
     *,
@@ -1031,7 +1491,7 @@ def slp_q_pp_p2_lane_regroup(
     q_divider, pp_divider, p2_divider = factors
     if (type(q) is not int or q <= 1
             or not 1 < q_divider < q or q % q_divider
-            or pp_divider <= 1 or type(pp) is not int or pp <= 0
+            or pp_divider < 1 or type(pp) is not int or pp <= 0
             or pp % pp_divider or p2_divider != 2):
         raise DividerFormulaError(
             "SLP Q+PP+P2 requires proper Q, D|pp, and P2=2.")

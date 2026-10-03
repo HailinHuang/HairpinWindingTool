@@ -24,6 +24,70 @@ from divider_connection_formulas import (
 )
 
 
+def _assert_cp_quartet_oracle(test, winding, tp, layout):
+    """Compare the new L>=8 paths with configured public four-layer mothers."""
+    from copy import deepcopy
+    H = winding.num_layers//2
+    n = winding.ab//H
+    g = math.gcd(winding.q, n)
+    width = winding.num_slots*winding.num_layers//(winding.num_phases*winding.ab)
+    expected = []
+    for quartet in range(H//2):
+        layer_map = (2*quartet, 2*quartet+1, H+2*quartet, H+2*quartet+1)
+        parent = deepcopy(winding)
+        parent.num_layers, parent.ab, parent.branch_dividers = 4, 2*g, (g, 1, 2)
+        parent_layout = deepcopy(layout)
+        parent_layout.phase_shift_list = [layout.phase_shift_list[l] for l in layer_map]
+        _, source = gw.get_winding_layout('CP', tp, parent, parent_layout)
+        expected.extend([(s, layer_map[l], *rest) for s, l, *rest in path[offset:offset+width]]
+                        for _, path in source for offset in range(0, len(path), width))
+    _, database = gw.get_winding_layout('CP', tp, winding, layout)
+    test.assertCountEqual([path for _, path in database], expected)
+    test.assertEqual(Counter(tuple(node[:2]) for _, path in database for node in path),
+                     Counter({(s, l): 1 for s in range(winding.num_slots)
+                              for l in range(winding.num_layers)}))
+    test.assertTrue(database.layout_report['layout_retained'])
+    test.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
+    return database
+
+
+def _assert_slp_mother_welds(test, winding, tp, layout):
+    """Check coverage and actual weld inheritance from the configured full-Q mother."""
+    from copy import deepcopy
+    _, database = gw.get_winding_layout('SLP', tp, winding, layout)
+    test.assertEqual(Counter(tuple(n[:2]) for _, path in database for n in path),
+                     Counter({(s, l): 1 for s in range(winding.num_slots)
+                              for l in range(winding.num_layers)}))
+    test.assertEqual(len(database), winding.ab*winding.num_phases)
+    test.assertEqual({len(path) for _, path in database},
+                     {winding.num_slots*winding.num_layers//len(database)})
+    views = (gw._three_phase_set_views(database, winding, layout)
+             if winding.num_phases > 3 and winding.num_phases % 3 == 0
+             else ((database, winding, layout),))
+    for local, local_winding, local_layout in views:
+        parent = deepcopy(local_winding)
+        parent.ab, parent.branch_dividers = parent.q, (parent.q, 1, 1)
+        source_layout = deepcopy(local_layout)
+        source_layout.inlet_from_weld_side = 0
+        _, source = gw.get_winding_layout('SLP', tp, parent, source_layout)
+        mother = Counter(frozenset((tuple(a[:2]), tuple(b[:2])))
+                         for _, path in source
+                         for i, (a, b) in enumerate(zip(path, path[1:])) if i % 2 == 0)
+        actual = Counter(frozenset((tuple(a[:2]), tuple(b[:2])))
+                         for _, path in local
+                         for i, (a, b) in enumerate(zip(path, path[1:]))
+                         if i % 2 == bool(local_layout.inlet_from_weld_side))
+        if local_layout.inlet_from_weld_side:
+            test.assertFalse(actual-mother)
+            test.assertEqual(sum(mother.values())-sum(actual.values()),
+                             local_winding.ab*local_winding.num_phases)
+        else:
+            test.assertEqual(actual, mother)
+    test.assertTrue(database.layout_report['layout_retained'])
+    test.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
+    return database
+
+
 class DividerConnectionFormulaTests(unittest.TestCase):
     def test_zpp_centered_entry_route_family_is_registered(self):
         self.assertEqual(
@@ -354,23 +418,27 @@ class SlpProperQMixedP2Tests(unittest.TestCase):
                             min(lane_counts) // lane_width,
                             max(lane_counts) // lane_width)
 
-    def test_mixed_q_pp_p2_keeps_non_formula_boundaries_closed(self):
+    def test_mixed_q_pp_p2_odd_sectors_use_physical_mother_passes(self):
         from pattern_rule_workbench import _base_inputs
 
         cases = (
-            (8, 8, 2, 8, 4, 'unsupported-yet'),  # odd pp/D=1; no formula
-            (6, 6, 2, 2, 4, 'rejected'),  # existing classifier-default failure
-            (6, 6, 2, 4, 4, 'unsupported-yet'),  # D does not divide pp
+            (8, 8, 2, 8, 4),
+            (6, 6, 2, 2, 4),
         )
-        for q, pp, q_divider, pp_divider, layers, admission in cases:
+        for q, pp, q_divider, pp_divider, layers in cases:
             factors = (q_divider, pp_divider, 2)
             with self.subTest(q=q, pp=pp, factors=factors):
                 winding, tp, layout = _base_inputs(
                     'SLP', q, 2 * pp, layers, math.prod(factors), factors, 3)
                 decision = gw.resolve_pattern_route(
                     'SLP', winding, factors, tp, layout)
-                self.assertEqual(decision.status, 'disabled')
-                self.assertEqual(decision.admission, admission)
+                self.assertEqual(decision.status, 'enabled', decision.reason)
+                self.assertEqual(decision.route_name, 'slp_p2_belt_pass_partition')
+                _assert_slp_mother_welds(self, winding, tp, layout)
+        factors = (2, 4, 2)  # D does not divide pp=6.
+        winding, tp, layout = _base_inputs('SLP', 6, 12, 4, 16, factors, 3)
+        self.assertEqual(gw.resolve_pattern_route(
+            'SLP', winding, factors, tp, layout).status, 'disabled')
 
     def test_mixed_q_pp_p2_keeps_insert_guard_and_checks_manual_tp_output(self):
         from pattern_rule_workbench import _base_inputs
@@ -1255,6 +1323,111 @@ class BwpOddPhaseMixedDividerTests(unittest.TestCase):
                                 (phases + 1) * 4)
 
 
+class UwpP2InletAnchorTests(unittest.TestCase):
+    def test_p2_only_phase_b_uses_the_selected_n_belt_and_outer_layer_order(self):
+        from pattern_rule_workbench import _base_inputs
+
+        for factors in (None, (1, 1, 2)):
+            with self.subTest(factors=factors):
+                winding, tp, layout = _base_inputs('UWP', 2, 8, 6, 2, factors)
+                starts, database = gw.get_winding_layout('UWP', tp, winding, layout)
+                records = {(s, l): (p, sign) for s, l, p, sign in
+                           phase_map(48, 8, 6, [0] * 6, 3)}
+                by_phase = {phase: [] for phase in range(3)}
+                for _, path in database:
+                    by_phase[records[path[0][:2]][0]].append(path[0][:2])
+                self.assertEqual(by_phase, {
+                    0: [(0, 0), (1, 5)],
+                    1: [(8, 0), (9, 5)],
+                    2: [(4, 0), (5, 5)],
+                })
+                self.assertEqual(starts, [path[0] for _, path in database])
+
+    def test_p2_only_inlet_rule_is_parameterized_across_native_phase_belts(self):
+        from pattern_rule_workbench import _base_inputs
+
+        for q in (1, 2, 3, 4):
+            for pp in (2, 4):
+                for layers in (4, 6, 8):
+                    for phases in (3, 5, 7):
+                        with self.subTest(q=q, pp=pp, layers=layers, phases=phases):
+                            winding, tp, layout = _base_inputs(
+                                'UWP', q, 2 * pp, layers, 2, (1, 1, 2), phases)
+                            _, database = gw.get_winding_layout(
+                                'UWP', tp, winding, layout)
+                            records = {(s, l): (p, sign) for s, l, p, sign in
+                                       phase_map(winding.num_slots, 2 * pp,
+                                                 layers, [0] * layers, phases)}
+                            occupied = [node[:2] for _, path in database for node in path]
+                            self.assertEqual(len(occupied), winding.num_slots * layers)
+                            self.assertEqual(len(set(occupied)), len(occupied))
+                            for phase in range(phases):
+                                paths = [path for _, path in database
+                                         if records[path[0][:2]][0] == phase]
+                                # Odd-indexed native phase belts start with S polarity.
+                                anchor = q * (phase + phases * (phase % 2))
+                                self.assertEqual([path[0][:2] for path in paths], [
+                                    (anchor, 0),
+                                    (anchor + (layers // 2) % q, layers - 1),
+                                ])
+                                for branch_index, path in enumerate(paths):
+                                    self.assertEqual(len(path), pp * q * layers)
+                                    self.assertEqual({records[node[:2]][0]
+                                                      for node in path}, {phase})
+                                    self.assertEqual((records[path[0][:2]][1],
+                                                      records[path[-1][:2]][1]), (1, -1))
+                                    branch_id = next(bid for bid, nodes in database
+                                                     if nodes is path)
+                                    travel = database.signed_travel[branch_id]
+                                    self.assertEqual(len(travel), len(path) - 1)
+                                    direction = 1 if branch_index == 0 else -1
+                                    for step, start, end in zip(travel, path, path[1:]):
+                                        self.assertGreater(direction * step, 0)
+                                        self.assertEqual((start[0] + step - end[0])
+                                                         % winding.num_slots, 0)
+                                        self.assertEqual(abs(end[1] - start[1]), 1)
+                            self.assertEqual(database.layout_report['pattern_identity']['status'],
+                                             'valid')
+                            self.assertTrue(database.layout_report['layout_retained'])
+                            self.assertTrue(database.layout_report['electrically_valid'])
+
+    def test_p2_only_inlet_anchors_follow_post_connection_layer_shifts(self):
+        from pattern_rule_workbench import _base_inputs
+
+        winding, tp, layout = _base_inputs('UWP', 2, 8, 6, 2, (1, 1, 2))
+        _, neutral = gw.get_winding_layout('UWP', tp, winding, layout)
+        layout.phase_shift_list = [1, 0, 2, -1, 0, 3]
+        _, shifted = gw.get_winding_layout('UWP', tp, winding, layout)
+        for (_, original), (_, actual) in zip(neutral, shifted):
+            self.assertEqual(actual, [
+                ((slot + layout.phase_shift_list[layer]) % 48, layer, lane)
+                for slot, layer, lane in original])
+
+    def test_p2_only_phase_arrays_reuse_local_n_belt_inlets(self):
+        from pattern_rule_workbench import _base_inputs
+        from phase_topology import build_winding_phase_topology
+
+        for q, phases, layers in ((2, 6, 12), (2, 9, 12), (2, 12, 8),
+                                  (Fraction(1, 2), 6, 8)):
+            with self.subTest(q=q, phases=phases, layers=layers):
+                winding, tp, layout = _base_inputs(
+                    'UWP', q, 8, layers, 2, (1, 1, 2), phases)
+                _, database = gw.get_winding_layout('UWP', tp, winding, layout)
+                topology = build_winding_phase_topology(winding, layout.phase_shift_list)
+                for spec in topology.phase_sets:
+                    local_q = int(spec.local_q)
+                    for local_phase, phase in enumerate(spec.phases):
+                        paths = [path for _, path in database
+                                 if topology.phase_of(*path[0][:2]) == phase]
+                        anchor = local_q * (local_phase + 3 * (local_phase % 2))
+                        self.assertEqual([path[0][:2] for path in paths], [
+                            spec.to_global(anchor, 0),
+                            spec.to_global(anchor + (spec.layer_count // 2) % local_q,
+                                           spec.layer_count - 1),
+                        ])
+                self.assertTrue(database.layout_report['layout_retained'])
+
+
 class UwpManualTranspositionTests(unittest.TestCase):
     def test_regular_uniform_keeps_each_full_wave_in_its_q_lane(self):
         from pattern_rule_workbench import _base_inputs
@@ -1345,6 +1518,11 @@ class UwpOddPhaseQppTests(unittest.TestCase):
                     'UWP', 2, 2, 4, 2, (1, 1, 2), phases)
                 decision = gw.resolve_pattern_route(
                     'UWP', winding, (1, 1, 2), tp, layout)
+                if phases == 9:
+                    # Three layer-assigned phase sets cannot use four layers.
+                    self.assertEqual(decision.status, 'disabled')
+                    self.assertIn('layers divisible by 3', decision.reason)
+                    continue
                 self.assertEqual(decision.status, 'enabled', decision.reason)
                 _, database = gw.get_winding_layout('UWP', tp, winding, layout)
                 travel = getattr(database, 'signed_travel', None)
@@ -1363,8 +1541,8 @@ class UwpOddPhaseQppTests(unittest.TestCase):
                 expected = (pitch, pitch + 1, pitch, pitch,
                             pitch, pitch - 1, pitch)
                 self.assertEqual(travel[1], expected)
-                self.assertEqual(travel[2],
-                                 tuple(-step for step in reversed(expected)))
+                self.assertEqual(travel[phases + 1],
+                                  tuple(-step for step in reversed(expected)))
 
     def test_short_p2_weld_terminal_route_uses_physical_alwp_pins(self):
         from layout_analysis import analyze_pattern_identity
@@ -1926,7 +2104,7 @@ class SlpOtherWeldInletTests(unittest.TestCase):
 
         cases = (
             (2, 4, 4, 3, (1, 1, 1), None),
-            (4, 8, 6, 5, (2, 4, 2), 'slp_pair_lane_p2'),
+            (4, 8, 6, 5, (2, 4, 2), 'slp_p2_belt_pass_partition'),
             (2, 8, 4, 3, (1, 2, 2), 'slp_pp_p2_sector'),
         )
         for q, poles, layers, phases, factors, route in cases:
@@ -1944,7 +2122,9 @@ class SlpOtherWeldInletTests(unittest.TestCase):
                 self.assertEqual(la.analyze_pattern_identity(
                     'SLP', database, winding, layout)['status'], 'valid')
                 gw.validate_slp_factor_route(database, winding, layout)
-                if route is not None:
+                if route == 'slp_p2_belt_pass_partition':
+                    _assert_slp_mother_welds(self, winding, tp, layout)
+                elif route is not None:
                     layout.inlet_from_weld_side = 0
                     _, insert_database = gw.get_winding_layout(
                         'SLP', tp, winding, layout)
@@ -1975,7 +2155,7 @@ class SlpOtherWeldInletTests(unittest.TestCase):
                     'SLP', winding, factors, tp, layout)
                 self.assertEqual(decision.status, 'disabled')
 
-    def test_added_p2_weld_routes_reject_non_neutral_configuration(self):
+    def test_added_p2_weld_routes_validate_configured_mothers_and_phase_shifts(self):
         from pattern_rule_workbench import _base_inputs
 
         for q, poles, layers, phases, factors in (
@@ -1992,13 +2172,8 @@ class SlpOtherWeldInletTests(unittest.TestCase):
                         layout.phase_shift_list = [1] * layers
                     decision = gw.resolve_pattern_route(
                         'SLP', winding, factors, tp, layout)
-                    if change == 'phase_shift' or factors == (2, 4, 2):
-                        self.assertEqual(decision.status, 'disabled')
-                        with self.assertRaises(gw.PatternConfigurationError):
-                            gw.get_winding_layout('SLP', tp, winding, layout)
-                    else:
-                        self.assertEqual(decision.status, 'enabled')
-                        gw.get_winding_layout('SLP', tp, winding, layout)
+                    self.assertEqual(decision.status, 'enabled', decision.reason)
+                    _assert_slp_mother_welds(self, winding, tp, layout)
 
 
 class SlpPpP2EvenSectorTests(unittest.TestCase):
@@ -2057,15 +2232,17 @@ class SlpPpP2EvenSectorTests(unittest.TestCase):
                     {branch_id: {node[:2] for node in path}
                      for branch_id, path in inserted})
 
-    def test_odd_sector_count_remains_a_method_gap(self):
+    def test_odd_sector_count_uses_complementary_middle_belt_passes(self):
         from pattern_rule_workbench import _base_inputs
 
         factors = (1, 2, 2)
         winding, tp, layout = _base_inputs('SLP', 2, 12, 4, 4, factors, 5)
         decision = gw.resolve_pattern_route(
             'SLP', winding, factors, tp, layout)
-        self.assertEqual(decision.status, 'disabled')
+        self.assertEqual(decision.status, 'enabled', decision.reason)
+        self.assertEqual(decision.route_name, 'slp_p2_belt_pass_partition')
         self.assertFalse(gw.pattern_rejects_divider_tuple('SLP', factors))
+        _assert_slp_mother_welds(self, winding, tp, layout)
 
 
 class SlpLearnedPpDividerTests(unittest.TestCase):
@@ -2300,7 +2477,7 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
                     'valid')
                 self.assertTrue(database.layout_report['layout_retained'])
 
-    def test_tlp_q_pp_p2_short_local_phase_set_is_unresolved(self):
+    def test_tlp_q_pp_p2_local_two_layer_gcd_cuts_generate(self):
         from pattern_rule_workbench import _base_inputs
 
         for phases, layers in ((6, 4), (9, 6), (12, 8)):
@@ -2309,8 +2486,13 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
                     'TLP', 2, 8, layers, 8, (2, 2, 2), phases)
                 decision = gw.resolve_pattern_route(
                     'TLP', winding, winding.branch_dividers, tp, layout)
-                self.assertEqual(decision.status, 'disabled')
-                self.assertEqual(decision.admission, 'unsupported-yet')
+                self.assertEqual(decision.route_name, 'tlp_even_gcd_parent_slices')
+                _, database = gw.get_winding_layout('TLP', tp, winding, layout)
+                self.assertEqual(Counter(tuple(node[:2]) for _, path in database for node in path),
+                                 Counter({(s, l): 1 for s in range(winding.num_slots)
+                                          for l in range(layers)}))
+                self.assertTrue(database.layout_report['layout_retained'])
+                self.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
 
     def test_tlp_q_pp_p2_parent_slices_extend_pp_factor(self):
         from pattern_rule_workbench import _base_inputs
@@ -2434,9 +2616,7 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
                                 (divider, 2, 1), phases)
                             if 1 < divider < q:
                                 decision = gw.resolve_pattern_route('TLP', w, w.branch_dividers, tp, layout)
-                                self.assertEqual(decision.status, 'disabled')
-                                self.assertIn('reference unavailable', decision.reason)
-                                continue
+                                self.assertEqual(decision.route_name, 'tlp_q_pp_q_parent_slices')
                             starts, database = gw.get_winding_layout('TLP', tp, w, layout)
                             occupied = [node[:2] for _, path in database for node in path]
                             self.assertEqual(len(occupied), len(set(occupied)))
@@ -2580,8 +2760,15 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
                 gw.validate_tlp_pp_only_two_returns(database, winding)
         winding, tp, layout = _base_inputs(
             'TLP', 3, 8, 4, 4, (1, 4, 1), 3)
-        self.assertEqual(gw.resolve_pattern_route(
-            'TLP', winding, (1, 4, 1), tp, layout).status, 'disabled')
+        self.assertFalse(gw.supports_tlp_pp_only_even(winding, (1, 4, 1)))
+        decision = gw.resolve_pattern_route('TLP', winding, (1, 4, 1), tp, layout)
+        self.assertEqual(decision.route_name, 'tlp_p2_parent_slices')
+        _, database = gw.get_winding_layout('TLP', tp, winding, layout)
+        parent, _, _ = _base_inputs('TLP', 3, 8, 4, 2, (1, 1, 2), 3)
+        _, mother = gw.get_winding_layout('TLP', tp, parent, layout)
+        width = 2*3*4*4//4
+        self.assertCountEqual([path for _, path in database],
+                         [path[i:i+width] for _, path in mother for i in range(0, len(path), width)])
         winding, _, _ = _base_inputs(
             'TLP', 1, 9, 4, 4, (1, 4, 1), 3)
         self.assertFalse(gw.supports_tlp_pp_only_even(
@@ -2688,7 +2875,22 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
             'TLP', 4, 16, 4, 8, (2, 4, 1), 3)
         decision = gw.resolve_pattern_route(
             'TLP', winding, (2, 4, 1), tp, layout)
-        self.assertEqual(decision.admission, 'unsupported-yet')
+        self.assertEqual(decision.status, 'enabled', decision.reason)
+        self.assertEqual(decision.route_name, 'tlp_q_pp_q_parent_slices')
+        parent, _, _ = _base_inputs('TLP', 4, 16, 4, 2, (2, 1, 1), 3)
+        _, source = gw.get_winding_layout('TLP', tp, parent, layout)
+        starts, database = gw.get_winding_layout('TLP', tp, winding, layout)
+        width = 2 * (winding.q // 2) * (8 // 4) * winding.num_layers
+        expected = [path[part * width:(part + 1) * width]
+                    for _, path in source for part in range(4)]
+        self.assertEqual([path for _, path in database], expected)
+        self.assertEqual(starts, [path[0] for path in expected])
+        self.assertEqual(Counter(node[:2] for path in expected for node in path),
+                         Counter((slot, layer)
+                                 for slot in range(winding.num_slots)
+                                 for layer in range(winding.num_layers)))
+        self.assertTrue(database.layout_report['layout_retained'])
+        self.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
 
     def test_tlp_short_pass_identity_uses_ordered_lap_edges_without_return(self):
         from layout_analysis import analyze_pattern_identity
@@ -2780,6 +2982,12 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
                         pattern, factors, q))
                     decision = gw.resolve_pattern_route(
                         pattern, winding, factors, tp, layout)
+                    if naa % 2:
+                        self.assertEqual(decision.rule_id, f'{pattern.lower()}_odd_naa_rejected')
+                        self.assertEqual(decision.admission, 'rejected')
+                        with self.assertRaisesRegex(ValueError, 'current grammar requires even Naa'):
+                            gw.get_winding_layout(pattern, tp, winding, layout)
+                        continue
                     if pattern == 'TSP' and naa % 2 == 0:
                         self.assertEqual(decision.admission, 'supported')
                         self.assertEqual(decision.rule_id, 'tsp_spiral_pass_partition')
@@ -2826,13 +3034,11 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
         for pattern in ('TSP', 'TLP'):
             missing = next(r for r in default_rows
                            if r.pattern == pattern and r.dividers == (1, 3, 1))
-            self.assertEqual(missing.status, 'unsupported-yet')
-            self.assertIn('no validated construction', missing.reason)
+            self.assertEqual(missing.status, 'rejected')
+            self.assertIn('current grammar requires even Naa', missing.reason)
             failed = next(r for r in failed_rows
                           if r.pattern == pattern and r.dividers == (2, 2, 1))
-            self.assertEqual(failed.status, 'rejected')
-            self.assertIn('q/P2 reference unavailable', failed.reason)
-            self.assertIn('conductors', failed.reason)
+            self.assertIn(failed.status, ('Validated', 'not strong symmetry layout'))
             fractional = [r for r in fractional_rows if r.pattern == pattern]
             self.assertTrue(fractional)
             for row in fractional:
@@ -2843,6 +3049,120 @@ class TspTlpAdmissionReviewTests(unittest.TestCase):
                                   row.reason)
                 else:
                     self.assertEqual(row.status, 'unsupported-yet')
+
+
+class TspTlpOddNaaRuleTests(unittest.TestCase):
+    def setUp(self):
+        gw._cached_neutral_non_wave_preflight.cache_clear()
+
+    def tearDown(self):
+        gw._cached_neutral_non_wave_preflight.cache_clear()
+
+    def test_integer_local_odd_naa_rejects_with_exact_polarity_counts(self):
+        from pattern_rule_workbench import _base_inputs
+
+        cases = (
+            (2, 2, 4, 3, (1, 1, 1)),
+            (6, 6, 4, 5, (1, 3, 1)),
+            (6, 6, 4, 5, (3, 3, 1)),
+            (1, 6, 6, 9, (1, 3, 1)),
+        )
+        for pattern in ('TSP', 'TLP'):
+            for q, pp, layers, phases, factors in cases:
+                with self.subTest(pattern=pattern, q=q, phases=phases,
+                                  layers=layers, factors=factors):
+                    naa = math.prod(factors)
+                    sets = phases // 3 if phases % 3 == 0 else 1
+                    local_q, local_layers = sets * q, layers // sets
+                    polarity_pool = local_q * pp
+                    layer_zero_per_branch = 2 * polarity_pool // naa
+                    self.assertEqual(local_q % factors[0], 0)
+                    self.assertEqual(pp % factors[1], 0)
+                    self.assertEqual(2 * polarity_pool % naa, 0)
+                    winding, tp, layout = _base_inputs(
+                        pattern, q, 2 * pp, layers, naa, factors, phases)
+                    decision = gw.resolve_pattern_route(
+                        pattern, winding, factors, tp, layout)
+                    self.assertEqual(decision.status, 'disabled', decision.reason)
+                    self.assertEqual(decision.admission, 'rejected', decision.reason)
+                    self.assertEqual(decision.rule_id,
+                                     f'{pattern.lower()}_odd_naa_rejected')
+                    for token in (f'q_s={local_q}', f'L_s={local_layers}',
+                                  f'Naa={naa}', f'N/S={polarity_pool}',
+                                  f'B/L_s={layer_zero_per_branch}',
+                                  f'Naa/2={Fraction(naa, 2)}'):
+                        self.assertIn(token, decision.reason)
+                    with patch.object(gw, '_dispatch_winding_pattern') as dispatch:
+                        with self.assertRaisesRegex(ValueError, 'Naa'):
+                            gw.get_winding_layout(pattern, tp, winding, layout)
+                        dispatch.assert_not_called()
+
+    def test_workbench_uses_the_same_odd_naa_rejection_without_auto(self):
+        import pattern_rule_workbench as wb
+
+        wb.build_divider_route_catalog.cache_clear()
+        try:
+            with patch.object(wb, 'PATTERNS', ('TSP', 'TLP')), \
+                    patch.object(wb, '_divisors', return_value=(1,)), \
+                    patch.object(wb, '_probe_route', return_value=(
+                        True, 'Probe outside this admission-only test.')) as probe, \
+                    patch.object(wb, '_probe_tsp_pp_p2_sector', return_value=(
+                        True, 'Probe outside this admission-only test.')) as tsp_probe, \
+                    patch.object(gw, 'get_auto_configured_layout') as auto:
+                records = wb.build_divider_route_catalog('2', 2, 4)
+                auto.assert_not_called()
+                self.assertTrue(all(call.args[4] % 2 == 0
+                                    for call in probe.call_args_list))
+                self.assertTrue(all(call.args[3] % 2 == 0
+                                    for call in tsp_probe.call_args_list))
+            for pattern in ('TSP', 'TLP'):
+                with self.subTest(pattern=pattern):
+                    winding, tp, layout = wb._base_inputs(
+                        pattern, 2, 4, 4, 1, (1, 1, 1))
+                    decision = gw.resolve_pattern_route(
+                        pattern, winding, winding.branch_dividers, tp, layout)
+                    row = next(record for record in records
+                               if record.pattern == pattern
+                               and record.dividers == (1, 1, 1))
+                    self.assertEqual(row.status, 'rejected')
+                    self.assertEqual(row.reason, decision.reason)
+                    self.assertEqual(decision.rule_id,
+                                     f'{pattern.lower()}_odd_naa_rejected')
+        finally:
+            wb.build_divider_route_catalog.cache_clear()
+
+    def test_even_naa_constructions_and_out_of_proof_domains_are_preserved(self):
+        from pattern_rule_workbench import _base_inputs
+
+        for pattern, route in (('TSP', 'tsp_spiral_pass_partition'),
+                               ('TLP', 'tlp_pp_only_two')):
+            with self.subTest(pattern=pattern, boundary='even Naa'):
+                winding, tp, layout = _base_inputs(
+                    pattern, 2, 8, 4, 2, (1, 2, 1))
+                decision = gw.resolve_pattern_route(
+                    pattern, winding, winding.branch_dividers, tp, layout)
+                self.assertEqual(decision.status, 'enabled', decision.reason)
+                self.assertEqual(decision.route_name, route)
+                _, database = gw.get_winding_layout(pattern, tp, winding, layout)
+                self.assertTrue(database.layout_report['layout_retained'])
+                self.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
+            for q, pp, layers, naa, factors, phases in (
+                    (Fraction(3, 2), 4, 4, 3, (Fraction(3, 2), 2, 1), 3),
+                    (Fraction(5, 4), 2, 4, 5, (Fraction(5, 4), 2, 2), 5),
+                    (2, 2, 3, 1, (1, 1, 1), 3)):
+                with self.subTest(pattern=pattern, q=q, layers=layers, factors=factors):
+                    winding, tp, layout = _base_inputs(
+                        pattern, q, 2 * pp, layers, naa, factors, phases)
+                    decision = gw.resolve_pattern_route(
+                        pattern, winding, factors, tp, layout)
+                    self.assertNotEqual(decision.rule_id,
+                                        f'{pattern.lower()}_odd_naa_rejected')
+            with self.subTest(pattern=pattern, boundary='divider product precedence'):
+                winding, tp, layout = _base_inputs(
+                    pattern, 2, 8, 4, 3, (1, 2, 1))
+                decision = gw.resolve_pattern_route(
+                    pattern, winding, winding.branch_dividers, tp, layout)
+                self.assertEqual(decision.rule_id, 'divider_product_mismatch')
 
 
 class TspPpOnlyIdentityRouteTests(unittest.TestCase):
@@ -3525,8 +3845,6 @@ class TspPpP2SectorRouteTests(unittest.TestCase):
 
         samples = (
             # q, pp, D, layers, phases
-            (1, 4, 4, 2, 3),
-            (2, 2, 2, 2, 3),
             (2, 4, 4, 4, 3),
             (2, 12, 4, 4, 3),
             (3, 6, 6, 4, 5),
@@ -3616,6 +3934,12 @@ class TspPpP2SectorRouteTests(unittest.TestCase):
                     'TSP', winding, winding.branch_dividers, tp, layout)
                 self.assertFalse(gw.supports_integer_tsp_pp_p2_sector(
                     winding, winding.branch_dividers))
+                if q*pp*layers//divider < 8:
+                    self.assertEqual(decision.admission, 'rejected')
+                    self.assertIn('requires at least 8', decision.reason)
+                    with self.assertRaisesRegex(ValueError, 'requires at least 8'):
+                        gw.get_winding_layout('TSP', tp, winding, layout)
+                    continue
                 self.assertEqual(decision.admission, 'supported', decision.reason)
                 self.assertEqual(decision.rule_id, 'tsp_spiral_pass_partition')
 
@@ -3712,6 +4036,130 @@ class HalfIntegerQPPTransferTests(unittest.TestCase):
         edges = lambda db: {frozenset((a[:2], b[:2])) for _, path in db
                             for a, b in zip(path, path[1:])}
         self.assertNotEqual(edges(source), edges(target))
+
+
+class HalfIntegerLocalDividerTests(unittest.TestCase):
+    """Lift existing integer-local formulas without treating counts as admission."""
+
+    def setUp(self):
+        from pattern_rule_workbench import build_divider_route_catalog
+        build_divider_route_catalog.cache_clear()
+
+    def tearDown(self):
+        from pattern_rule_workbench import build_divider_route_catalog
+        build_divider_route_catalog.cache_clear()
+
+    @patch('pattern_rule_workbench.PATTERNS', ('SLP', 'SSP', 'TLP'))
+    def test_catalog_exposes_existing_local_formula_routes(self):
+        from pattern_rule_workbench import build_divider_route_catalog, generate_route_drafts
+        records = {(r.pattern, r.dividers): r for r in
+                   build_divider_route_catalog('3/2', 4, 16, phases=12)}
+        for pattern, factors in (('SLP', (2, 2, 2)), ('SSP', (2, 2, 1)),
+                                 ('TLP', (2, 2, 2))):
+            with self.subTest(pattern=pattern):
+                self.assertIn((pattern, factors), records)
+                record = records[pattern, factors]
+                self.assertEqual(record.status, 'Validated')
+                self.assertIn('not strong symmetry layout', record.reason)
+        rejected = records['SSP', (2, 2, 2)]
+        self.assertEqual(rejected.status, 'rejected')
+        drafts = generate_route_drafts(records['SLP', (2, 2, 2)])
+        self.assertEqual(len(drafts), 8)
+        self.assertEqual({len(d.path) for d in drafts}, {24})
+        self.assertEqual(len({n for d in drafts for n in d.path}), 192)
+        self.assertTrue(all(d.first_side == 'weld' for d in drafts))
+        self.assertTrue(all(abs(e.end[1]-e.start[1]) == 1
+                            for d in drafts for e in d.steps if e.side == 'weld'))
+
+    def test_parameter_lift_preserves_coverage_phase_and_actual_welds(self):
+        from pattern_rule_workbench import _base_inputs
+        cases = (
+            ('SLP', 3, 4, 4, 4, 2, 2, 2),
+            ('SLP', 5, 4, 6, 4, 2, 3, 2),
+            ('SLP', 9, 2, 4, 4, 3, 2, 2),
+            ('SLP', 15, 2, 6, 4, 3, 3, 2),
+            ('SLP', 1, 12, 4, 2, 2, 2, 2),
+            ('SLP', 3, 4, 8, 6, 3, 2, 2),
+            ('SLP', 3, 4, 4, 4, 2, 2, 1),
+            ('SSP', 3, 4, 4, 4, 2, 2, 1),
+            ('SSP', 5, 4, 6, 4, 2, 3, 1),
+            ('TLP', 3, 4, 4, 4, 2, 2, 2),
+            ('TLP', 5, 4, 6, 4, 2, 3, 2),
+        )
+        for pattern, h, k, pp, Ls, Q, D, P2 in cases:
+            with self.subTest(pattern=pattern, h=h, sets=k, pp=pp,
+                              local_layers=Ls, factors=(Q, D, P2)):
+                q, qs, naa = Fraction(h, 2), h*k//2, Q*D*P2
+                S, tau, B = 6*qs*pp, 3*qs, 2*qs*pp*Ls//naa
+                winding, tp, layout = _base_inputs(
+                    pattern, q, 2*pp, k*Ls, naa, (Q, D, P2), 3*k)
+                _, database = gw.get_winding_layout(pattern, tp, winding, layout)
+                positions = [tuple(n[:2]) for _, p in database for n in p]
+                self.assertEqual(len(positions), S*k*Ls)
+                self.assertEqual(set(positions), {(s, l) for s in range(S)
+                                                  for l in range(k*Ls)})
+                phase_counts, welds = Counter(), {}
+                for _, path in database:
+                    self.assertEqual(len(path), B)
+                    j = path[0][1]//Ls
+                    local = [((n[0]-h*j) % S, n[1]-j*Ls) for n in path]
+                    self.assertTrue(all(0 <= layer < Ls for _, layer in local))
+                    belts = [s//qs for s, _ in local]
+                    self.assertEqual(len({n % 3 for n in belts}), 1)
+                    phase_counts[3*j+belts[0] % 3] += 1
+                    signs = [(-1)**n for n in belts]
+                    self.assertEqual(signs, [signs[0]*(-1)**i for i in range(B)])
+                    if P2 == 2:
+                        self.assertEqual((signs[0], signs[-1]), (1, -1))
+                    emf = sum(sign*complex(math.cos(math.pi*s/tau),
+                                           math.sin(math.pi*s/tau))
+                              for sign, (s, _) in zip(signs, local))
+                    self.assertGreater(abs(emf), 1e-9)
+                    for i, (left, right) in enumerate(zip(local, local[1:])):
+                        ds = (right[0]-left[0]) % S
+                        ds = ds if 2*ds < S else ds-S
+                        self.assertLessEqual(abs((left[0]+ds)//tau-left[0]//tau), 1)
+                        dl = right[1]-left[1]
+                        if i % 2 == 0:  # Insert-side terminals: W-I-W edges.
+                            self.assertEqual(abs(dl), 1)
+                            self.assertEqual(abs(ds), tau)
+                            welds.setdefault((j, min(left[1], right[1])), set()).add(ds*dl)
+                        elif dl == 0:
+                            self.assertIn(left[1], (0, Ls-1))
+                self.assertEqual(phase_counts, Counter({p: naa for p in range(3*k)}))
+                self.assertTrue(welds)
+                self.assertTrue(all(len(directions) == 1 for directions in welds.values()))
+                self.assertTrue(database.layout_report['layout_retained'])
+                self.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
+
+    def test_catalog_new_rows_still_require_shared_admission(self):
+        from pattern_rule_workbench import build_divider_route_catalog
+        def unsupported(pattern, _winding, factors, *_args):
+            return gw.PatternRouteDecision(
+                'disabled', 'no_local_formula', 'No admitted construction.',
+                pattern, tuple(factors), admission='unsupported-yet')
+        with patch('pattern_rule_workbench.PATTERNS', ('SLP',)), patch(
+                'pattern_rule_workbench.gw.resolve_pattern_route', side_effect=unsupported), patch(
+                'pattern_rule_workbench._probe_slp_selected_route') as public_probe:
+            records = build_divider_route_catalog('3/2', 4, 16, phases=12)
+        self.assertEqual(len(records), 28)
+        self.assertEqual(len({r.dividers for r in records}), len(records))
+        self.assertTrue(all(r.naa == math.prod(r.dividers) for r in records))
+        self.assertEqual({r.status for r in records}, {'unsupported-yet'})
+        public_probe.assert_not_called()
+
+    def test_native_and_nonintegral_local_q_catalog_scopes_are_preserved(self):
+        from pattern_rule_workbench import build_divider_route_catalog
+        def unsupported(pattern, _winding, factors, *_args):
+            return gw.PatternRouteDecision(
+                'disabled', 'no_local_formula', 'No admitted construction.',
+                pattern, tuple(factors), admission='unsupported-yet')
+        with patch('pattern_rule_workbench.gw.resolve_pattern_route', side_effect=unsupported):
+            for m, L in ((3, 4), (9, 12)):
+                with self.subTest(phases=m):
+                    records = build_divider_route_catalog('3/2', 4, L, phases=m)
+                    self.assertEqual(len(records), 40)
+                    self.assertEqual({r.dividers[0] for r in records}, {Fraction(3, 2)})
 
 
 class FractionalRouteDecisionTests(unittest.TestCase):
@@ -3986,9 +4434,9 @@ class GeneralPatternRuleTests(unittest.TestCase):
     def test_zpp_odd_integer_q_rejects_every_p2_two_divider_tuple(self):
         from pattern_rule_workbench import _base_inputs
 
-        reason = ('ZPP P2=2 requires q=2*Q; an odd positive integer effective q '
-                  'has no integer Q. This rejects the registered construction '
-                  'for this geometry, not every possible physical layout.')
+        reason = ('ZPP P2=2 retains the owner-approved exclusion for odd positive '
+                  'integer effective q. This is an admission boundary, '
+                  'not a proof against every possible physical layout.')
         for q_divider in range(1, 5):
             for pp_divider in (1, 2, 4):
                 factors = (q_divider, pp_divider, 2)
@@ -4853,8 +5301,10 @@ class GeneralPatternRuleTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'same as BWP'):
                 gw.get_winding_layout('UWP',t,w,l)
             self.assertFalse(gw.pattern_rejects_divider_tuple('BWP',(q,1,1),q))
-        self.assertFalse(gw.pattern_rejects_divider_tuple('UWP',(1,1,1),1))
-        self.assertFalse(gw.pattern_rejects_divider_tuple('UWP',(2,1,1),4))
+        # Owner cancellation also excludes NoDivider and proper-Q series;
+        # the full-Q reason above still names its established BWP identity.
+        self.assertTrue(gw.pattern_rejects_divider_tuple('UWP',(1,1,1),1))
+        self.assertTrue(gw.pattern_rejects_divider_tuple('UWP',(2,1,1),4))
 
     def test_uwp_shared_pp_p2_allowance(self):
         from pattern_rule_workbench import _base_inputs,build_divider_route_catalog
@@ -4934,28 +5384,31 @@ class GeneralPatternRuleTests(unittest.TestCase):
                 if row.status=='rejected':
                     self.assertTrue(row.reason.strip())
 
-    def test_uwp_q_only_series_from_oriented_q_p2(self):
+    def test_uwp_q_only_series_is_owner_rejected_but_p2_source_is_retained(self):
         from pattern_rule_workbench import _base_inputs
         for q,Q,poles in ((4,2,8),(6,2,4),(6,3,6),(8,4,8),(9,3,6)):
             for layers in (2,4,6):
                 with self.subTest(q=q,Q=Q,poles=poles,layers=layers):
                     w,t,l=_base_inputs('UWP',q,poles,layers,Q,(Q,1,1))
-                    self.assertEqual(gw.selected_integer_divider_route('UWP',w),'uwp_q_only_series')
-                    starts,db=gw.get_winding_layout('UWP',t,w,l)
+                    self.assertIsNone(gw.selected_integer_divider_route('UWP',w))
+                    decision=gw.resolve_pattern_route('UWP',w,configuration=t,layout=l)
+                    self.assertEqual(decision.admission,'rejected')
+                    self.assertIn('same-layer',decision.reason)
+                    with self.assertRaises(gw.PatternConfigurationError):
+                        gw.get_winding_layout('UWP',t,w,l,allow_candidate=True)
                     reference=SimpleNamespace(**vars(w))
                     reference.ab=2*Q
                     reference.branch_dividers=(Q,1,2)
                     _,source=gw.get_winding_layout('UWP',t,reference,l)
-                    self.assertEqual(len(db),3*Q)
                     for phase in range(3):
                         for group in range(Q):
                             a=source[phase*2*Q+group][1]
                             b=source[phase*2*Q+Q+group][1]
+                            # The former concatenation physically adds a
+                            # same-layer junction: the owner disallows it.
                             self.assertEqual(a[-1][1],b[0][1])
-                            self.assertEqual(db[phase*Q+group][1],a+b)
-                    self.assertTrue(db.layout_report['layout_retained'],db.layout_report)
-                    self.assertEqual(starts,[p[0] for _,p in db])
-                    self.assertEqual(len(db.series_connections),3*Q)
+                    self.assertTrue(source.layout_report['layout_retained'])
+                    self.assertFalse(getattr(source,'series_connections',()))
 
     def test_existing_constructions_extended_divider_routes(self):
         from pattern_rule_workbench import _base_inputs, _probe_route
@@ -5529,15 +5982,15 @@ class CpPpFourPassWeaveTests(unittest.TestCase):
                     'CP', winding, winding.branch_dividers, tp, layout)
                 self.assertNotEqual(decision.route_name, 'cp_pp_sector_slices')
 
-    def test_cp_pp_sector_slices_keep_public_source_failure(self):
+    def test_failed_eight_layer_sector_mother_uses_four_layer_quartets(self):
         from pattern_rule_workbench import _base_inputs
 
         winding, tp, layout = _base_inputs(
             'CP', 2, 16, 8, 8, (1, 8, 1), 3)
         decision = gw.resolve_pattern_route(
             'CP', winding, winding.branch_dividers, tp, layout)
-        self.assertNotEqual(decision.status, 'enabled')
-        self.assertIn('duplicate', decision.reason.lower())
+        self.assertEqual(decision.route_name, 'cp_gcd_quartet_parent_slices')
+        _assert_cp_quartet_oracle(self, winding, tp, layout)
 
     def test_public_cp_pp_weave_reproduces_saved_manual_sketch(self):
         from layout_analysis import analyze_pattern_identity
@@ -6388,9 +6841,7 @@ class CpFullQFullPpParentSliceTests(unittest.TestCase):
 
         for q, pp, D, layers, reason in (
                 (3, 6, 4, 4, 'no validated construction'),
-                (3, 6, 3, 4, 'no validated construction'),
-                (1, 4, 4, 8, 'duplicate'),
-                (3, 4, 4, 8, 'duplicate')):
+                (3, 6, 3, 4, 'polarity pool')):
             with self.subTest(q=q, pp=pp, D=D, L=layers):
                 winding, tp, layout = _base_inputs(
                     'CP', q, 2 * pp, layers, D, (1, D, 1), 3)
@@ -6399,19 +6850,24 @@ class CpFullQFullPpParentSliceTests(unittest.TestCase):
                 self.assertEqual(decision.status, 'disabled')
                 self.assertIn(reason, decision.reason.lower())
 
+        for q in (1, 3):
+            winding, tp, layout = _base_inputs('CP', q, 8, 8, 4, (1, 4, 1), 3)
+            _assert_cp_quartet_oracle(self, winding, tp, layout)
+
         winding, tp, layout = _base_inputs(
             'CP', 1, 8, 4, 4, (1, 4, 1), 3)
         layout.phase_shift_list[1] = 1
         decision = gw.resolve_pattern_route(
             'CP', winding, winding.branch_dividers, tp, layout)
-        self.assertEqual(decision.status, 'disabled')
+        self.assertEqual(decision.status, 'enabled', decision.reason)
+        _, database = gw.get_winding_layout('CP', tp, winding, layout)
+        self.assertEqual(database.layout_report['post_connection_shift']['connection_validation'], 'before shift')
 
     def test_q1_pp_only_keeps_source_and_phase_layer_preflight_boundaries(self):
         from pattern_rule_workbench import _base_inputs
 
         cases = (
-            (6, 8, 3, ('duplicate', 'misses')),
-            (6, 12, 3, ('duplicate', 'misses')),
+            (6, 8, 3, ('polarity pool', 'divisible by 4')),
             (6, 4, 9, ('divisible by 3',)),
         )
         for pp, layers, phases, reason_parts in cases:
@@ -6424,6 +6880,9 @@ class CpFullQFullPpParentSliceTests(unittest.TestCase):
                 for reason_part in reason_parts:
                     self.assertIn(reason_part, decision.reason.lower())
 
+        winding, tp, layout = _base_inputs('CP', 1, 12, 12, 6, (1, 6, 1), 3)
+        _assert_cp_quartet_oracle(self, winding, tp, layout)
+
     def test_pp_only_d6_layer8_keeps_public_p2_source_failure_disabled(self):
         from pattern_rule_workbench import _base_inputs
 
@@ -6432,21 +6891,18 @@ class CpFullQFullPpParentSliceTests(unittest.TestCase):
         decision = gw.resolve_pattern_route(
             'CP', winding, winding.branch_dividers, tp, layout)
         self.assertEqual(decision.status, 'disabled')
-        self.assertEqual(
-            decision.route_name, 'cp_q_pp_full_parent_slices')
-        self.assertIn('duplicate', decision.reason.lower())
-        self.assertIn('misses', decision.reason.lower())
+        self.assertEqual(decision.rule_id, 'cp_polarity_pool_rejected')
+        self.assertIn('divisible by 4', decision.reason.lower())
 
-    def test_q_pp_formula_keeps_l8_three_phase_source_failure_disabled(self):
+    def test_q_pp_l8_uses_configured_four_layer_quartet_mothers(self):
         from pattern_rule_workbench import _base_inputs
 
         winding, tp, layout = _base_inputs(
             'CP', 4, 16, 8, 8, (2, 4, 1), 3)
         decision = gw.resolve_pattern_route(
             'CP', winding, winding.branch_dividers, tp, layout)
-        self.assertEqual(decision.status, 'disabled')
-        self.assertIn('duplicate', decision.reason.lower())
-        self.assertIn('misses', decision.reason.lower())
+        self.assertEqual(decision.route_name, 'cp_gcd_quartet_parent_slices')
+        _assert_cp_quartet_oracle(self, winding, tp, layout)
 
     def test_full_q_full_pp_route_keeps_neutral_insert_side_gate(self):
         from pattern_rule_workbench import _base_inputs
@@ -6454,7 +6910,6 @@ class CpFullQFullPpParentSliceTests(unittest.TestCase):
         cases = (
             ('inlet', {'inlet_from_weld_side': 1}),
             ('adjustment', {'inlet_index_adjustments_phase_a': [1]}),
-            ('phase shift', {'phase_shift_list': [0, 1, 0, 0]}),
         )
         for label, values in cases:
             with self.subTest(setting=label):
@@ -6472,7 +6927,10 @@ class CpFullQFullPpParentSliceTests(unittest.TestCase):
         tp.tp_interval = 1
         decision = gw.resolve_pattern_route(
             'CP', winding, winding.branch_dividers, tp, layout)
-        self.assertEqual(decision.status, 'disabled')
+        self.assertEqual(decision.status, 'enabled', decision.reason)
+        _, database = gw.get_winding_layout('CP', tp, winding, layout)
+        self.assertTrue(database.layout_report['layout_retained'])
+        self.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
 
 
 class CpPpFourSectorTranslationTests(unittest.TestCase):
@@ -6590,24 +7048,22 @@ class CpPpFourSectorTranslationTests(unittest.TestCase):
             'CP', winding, winding.branch_dividers, tp, layout)
         self.assertEqual(decision.admission, 'unsupported-yet')
 
-    def test_parent_source_generation_still_bounds_layer_cases(self):
+    def test_four_sector_l8_uses_the_public_quartet_mother(self):
         from pattern_rule_workbench import _base_inputs
 
         winding, tp, layout = _base_inputs(
             'CP', 2, 8, 8, 4, (1, 4, 1), 3)
         decision = gw.resolve_pattern_route(
             'CP', winding, winding.branch_dividers, tp, layout)
-        self.assertEqual(decision.status, 'disabled')
-        self.assertEqual(decision.admission, 'rejected')
-        self.assertIn('duplicate', decision.reason.lower())
+        self.assertEqual(decision.route_name, 'cp_gcd_quartet_parent_slices')
+        _assert_cp_quartet_oracle(self, winding, tp, layout)
 
     def test_translation_route_keeps_neutral_insert_side_configuration(self):
         from pattern_rule_workbench import _base_inputs
 
         for key, value in (
                 ('inlet_from_weld_side', 1),
-                ('inlet_index_adjustments_phase_a', [1]),
-                ('phase_shift_list', [0, 1, 0, 0])):
+                ('inlet_index_adjustments_phase_a', [1])):
             with self.subTest(setting=key):
                 winding, tp, layout = _base_inputs(
                     'CP', 2, 8, 4, 4, (1, 4, 1), 3)
@@ -6732,6 +7188,403 @@ class CpArrayGlobalLayerGateTests(unittest.TestCase):
                       local_decision.reason)
 
 
+class CpQParentSliceTests(unittest.TestCase):
+    route = 'cp_q_pp_q_parent_slices'
+
+    def setUp(self):
+        gw._cached_neutral_non_wave_preflight.cache_clear()
+
+    def tearDown(self):
+        gw._cached_neutral_non_wave_preflight.cache_clear()
+
+    @staticmethod
+    def _inputs(q=6, pp=6, layers=4, phases=5, Q=2, D=3):
+        from pattern_rule_workbench import _base_inputs
+
+        return _base_inputs('CP', q, 2 * pp, layers, Q * D,
+                            (Q, D, 1), phases)
+
+    @staticmethod
+    def _frame(node, winding, shifts=None):
+        """Integer phase belts in the canonical native/three-phase-set frame."""
+        slot, layer = node[:2]
+        if shifts is not None:
+            slot = (slot - shifts[layer]) % winding.num_slots
+        sets = winding.num_phases // 3 if winding.num_phases % 3 == 0 else 1
+        local_layers = winding.num_layers // sets
+        set_index = layer // local_layers
+        local_slot = (slot - 2 * winding.q * set_index) % winding.num_slots
+        local_layer = layer % local_layers
+        local_q = sets * winding.q
+        local_phases = 3 if winding.num_phases % 3 == 0 else winding.num_phases
+        belt = local_slot // local_q
+        phase = set_index * local_phases + belt % local_phases
+        sign = 1 if belt % 2 == 0 else -1
+        return (phase, sign, set_index, local_slot, local_layer,
+                local_layers, local_phases * local_q)
+
+    def _short_step(self, start, end, slots):
+        delta = (end[0] - start[0]) % slots
+        self.assertNotEqual(delta, 0)
+        self.assertNotEqual(2 * delta, slots, 'This oracle requires a unique short arc.')
+        return delta if 2 * delta < slots else delta - slots
+
+    def _source_steps(self, source, winding):
+        recorded = getattr(source, 'signed_travel', None)
+        return {
+            branch_id: (tuple(recorded[branch_id]) if recorded is not None else
+                        tuple(self._short_step(start, end, winding.num_slots)
+                              for start, end in zip(path, path[1:])))
+            for branch_id, path in source
+        }
+
+    def _parent_oracle(self, winding, tp, layout):
+        from pattern_rule_workbench import _base_inputs
+
+        Q, D, _P2 = winding.branch_dividers
+        parent, _, _ = _base_inputs(
+            'CP', winding.q, winding.num_poles, winding.num_layers,
+            Q, (Q, 1, 1), winding.num_phases)
+        _, source = gw.get_winding_layout('CP', tp, parent, layout)
+        steps = self._source_steps(source, winding)
+        groups = {phase: [] for phase in range(winding.num_phases)}
+        for branch_id, path in source:
+            groups[self._frame(path[0], winding)[0]].append((branch_id, path))
+        width = winding.num_slots * winding.num_layers // (
+            winding.num_phases * winding.ab)
+        expected, expected_steps = [], {}
+        for phase in range(winding.num_phases):
+            self.assertEqual(len(groups[phase]), Q)
+            for part in range(D):
+                for parent_id, path in groups[phase]:
+                    self.assertEqual(len(path), D * width)
+                    first = part * width
+                    branch_id = len(expected) + 1
+                    expected.append([branch_id, path[first:first + width]])
+                    expected_steps[branch_id] = steps[parent_id][
+                        first:first + width - 1]
+        parent_edges = Counter(
+            (start[:2], end[:2], step)
+            for branch_id, path in source
+            for start, end, step in zip(path, path[1:], steps[branch_id]))
+        child_edges = Counter(
+            (start[:2], end[:2], step)
+            for branch_id, path in expected
+            for start, end, step in zip(path, path[1:], expected_steps[branch_id]))
+        self.assertLessEqual(child_edges, parent_edges)
+        removed = parent_edges - child_edges
+        self.assertEqual(sum(removed.values()),
+                         winding.num_phases * Q * (D - 1))
+        for (start, end, _step) in removed:
+            frame = self._frame(start, winding)
+            self.assertEqual(abs(end[1] - start[1]), frame[5] // 2)
+        return expected, expected_steps
+
+    def _assert_independent_layout(self, database, travel, winding, shifts=None):
+        import cmath
+
+        Q, D, _P2 = winding.branch_dividers
+        sets = winding.num_phases // 3 if winding.num_phases % 3 == 0 else 1
+        local_layers = winding.num_layers // sets
+        width = 2 * (sets * winding.q // Q) * (
+            winding.num_poles // (2 * D)) * local_layers
+        self.assertEqual(width % (2 * local_layers), 0)
+        self.assertEqual(len(database), winding.num_phases * Q * D)
+        self.assertEqual({len(path) for _, path in database}, {width})
+        occupancy = Counter(node[:2] for _, path in database for node in path)
+        self.assertEqual(occupancy, Counter(
+            (slot, layer) for slot in range(winding.num_slots)
+            for layer in range(winding.num_layers)))
+        self.assertEqual(set(travel), {branch_id for branch_id, _ in database})
+        phases, weld_directions = Counter(), {}
+        for branch_id, path in database:
+            frames = [self._frame(node, winding, shifts) for node in path]
+            phase = frames[0][0]
+            phases[phase] += 1
+            self.assertEqual({frame[0] for frame in frames}, {phase})
+            self.assertEqual({frame[2] for frame in frames}, {frames[0][2]})
+            signs = [frame[1] for frame in frames]
+            self.assertEqual((signs[0], signs[-1]), (1, -1))
+            self.assertTrue(all(left == -right
+                                for left, right in zip(signs, signs[1:])))
+            self.assertEqual(len(travel[branch_id]), len(path) - 1)
+            insertion_orientation, weld_signs = set(), set()
+            for index, ((start, end), step) in enumerate(zip(
+                    zip(path, path[1:]), travel[branch_id])):
+                self.assertIs(type(step), int)
+                self.assertNotEqual(step, 0)
+                self.assertEqual((start[0] + step) % winding.num_slots, end[0])
+                if shifts is not None:
+                    step -= shifts[end[1]] - shifts[start[1]]
+                frame = frames[index]
+                dl = end[1] - start[1]
+                self.assertLessEqual(abs(
+                    (frame[3] + step) // frame[6] - frame[3] // frame[6]), 1)
+                direction = 1 if step > 0 else -1
+                if index % 2:
+                    self.assertEqual(abs(dl), local_layers // 2)
+                    insertion_orientation.add(direction * (1 if dl > 0 else -1))
+                else:
+                    self.assertEqual(abs(dl), 1)
+                    weld_signs.add(direction)
+                    pair = (frame[2], min(frame[4], frames[index + 1][4]))
+                    weld_directions.setdefault(pair, set()).add(
+                        direction * (1 if dl > 0 else -1))
+            self.assertEqual(len(insertion_orientation), 1)
+            self.assertEqual(len(weld_signs), 1)
+            emf = sum(sign * cmath.exp(
+                1j * math.pi * winding.num_poles * node[0] / winding.num_slots)
+                for node, sign in zip(path, signs))
+            self.assertGreater(abs(emf), 1e-9)
+        self.assertEqual(phases, Counter(
+            {phase: Q * D for phase in range(winding.num_phases)}))
+        self.assertTrue(all(len(directions) == 1
+                            for directions in weld_directions.values()))
+
+    def test_formula_partitions_public_q_only_parents(self):
+        binding = ROUTE_FORMULA_BINDINGS.get(self.route)
+        self.assertIsNotNone(binding)
+        self.assertEqual(binding.operation, 'partition')
+        self.assertEqual(binding.resolve_source_dividers((2, 3, 1)), (2, 1, 1))
+        self.assertEqual(binding.order, 'piece')
+
+    def test_public_odd_d_slices_match_independent_native_and_array_oracle(self):
+        cases = ((6, 6, 4, 5, 2, 3), (6, 6, 4, 3, 2, 3),
+                 (2, 6, 12, 6, 2, 3), (2, 6, 12, 9, 2, 3))
+        for q, pp, layers, phases, Q, D in cases:
+            with self.subTest(q=q, pp=pp, layers=layers, phases=phases, Q=Q, D=D):
+                winding, tp, layout = self._inputs(q, pp, layers, phases, Q, D)
+                expected, travel = self._parent_oracle(winding, tp, layout)
+                self._assert_independent_layout(expected, travel, winding)
+                decision = gw.resolve_pattern_route(
+                    'CP', winding, winding.branch_dividers, tp, layout)
+                self.assertEqual(decision.status, 'enabled', decision.reason)
+                self.assertEqual(decision.route_name, self.route)
+                starts, database = gw.get_winding_layout('CP', tp, winding, layout)
+                self.assertEqual(list(database), expected)
+                self.assertEqual(starts, [path[0] for _, path in expected])
+                self.assertEqual(database.signed_travel, travel)
+                self._assert_independent_layout(database, travel, winding)
+                self.assertTrue(database.layout_report['layout_retained'])
+                self.assertEqual(database.layout_report['pattern_identity']['status'],
+                                 'valid')
+                self.assertEqual(database.layout_report['pattern_route']['route_name'],
+                                 self.route)
+                self.assertTrue(set(database.layout_report['errors']) <= {
+                    'parallel_emf_mismatch', 'multi_phase_emf_mismatch'})
+                self.assertEqual(database.layout_status, 'not strong symmetry layout')
+
+    def test_established_cp_routes_keep_precedence(self):
+        from pattern_rule_workbench import _base_inputs
+
+        for factors, route, status in (
+                ((2, 2, 1), 'cp_q_pp_two', 'disabled'),
+                ((2, 4, 1), 'cp_q_pp_full_parent_slices', 'enabled'),
+                ((2, 2, 2), 'cp_q_pp_p2_parent_slices', 'enabled')):
+            with self.subTest(factors=factors):
+                winding, tp, layout = _base_inputs(
+                    'CP', 4, 8, 4, math.prod(factors), factors, 3)
+                decision = gw.resolve_pattern_route('CP', winding, factors, tp, layout)
+                self.assertEqual(decision.status, status, decision.reason)
+                self.assertEqual(decision.route_name, route)
+                if status == 'disabled':
+                    self.assertIn('duplicate', decision.reason)
+
+    def test_factor_and_global_local_layer_boundaries_remain_closed(self):
+        from pattern_rule_workbench import _base_inputs
+
+        cases = ((6, 6, 4, 5, (1, 3, 1)), (6, 6, 4, 5, (4, 3, 1)),
+                 (6, 6, 4, 5, (2, 4, 1)), (Fraction(3, 2), 6, 4, 5, (1, 3, 1)),
+                 (6, 6, 6, 3, (2, 3, 1)), (2, 6, 12, 12, (2, 3, 1)))
+        for q, pp, layers, phases, factors in cases:
+            with self.subTest(q=q, layers=layers, phases=phases, factors=factors):
+                winding, tp, layout = _base_inputs(
+                    'CP', q, 2 * pp, layers, math.prod(factors), factors, phases)
+                decision = gw.resolve_pattern_route('CP', winding, factors, tp, layout)
+                self.assertEqual(decision.status, 'disabled')
+                self.assertNotEqual(decision.route_name, self.route)
+
+    def test_wrong_inlet_and_manual_adjustment_still_reject(self):
+        for values in ({'inlet_from_weld_side': 1},
+                       {'inlet_index_adjustments_phase_a': [1]}):
+            with self.subTest(values=values):
+                winding, tp, layout = self._inputs()
+                for name, value in values.items():
+                    setattr(layout, name, value)
+                decision = gw.resolve_pattern_route(
+                    'CP', winding, winding.branch_dividers, tp, layout)
+                self.assertEqual(decision.status, 'disabled')
+                with self.assertRaises(ValueError):
+                    gw.get_winding_layout('CP', tp, winding, layout)
+
+    def test_public_parent_failure_is_not_replaced_by_private_construction(self):
+        winding, tp, layout = self._inputs()
+        original = gw.get_winding_layout
+
+        def blocked_parent(pattern, transposition, reference, settings, **kwargs):
+            if getattr(reference, 'branch_dividers', None) == (2, 1, 1):
+                raise ValueError('public Q-only parent unavailable')
+            return original(pattern, transposition, reference, settings, **kwargs)
+
+        with patch.object(gw, 'get_winding_layout', side_effect=blocked_parent):
+            with self.assertRaisesRegex(ValueError, 'public Q-only parent unavailable'):
+                original('CP', tp, winding, layout)
+
+    def test_duplicate_parent_is_rejected(self):
+        winding, tp, layout = self._inputs()
+        original = gw.get_winding_layout
+
+        def duplicate_parent(pattern, transposition, reference, settings, **kwargs):
+            starts, database = original(pattern, transposition, reference, settings, **kwargs)
+            if getattr(reference, 'branch_dividers', None) == (2, 1, 1):
+                database[0][1][2] = database[0][1][0]
+            return starts, database
+
+        with patch.object(gw, 'get_winding_layout', side_effect=duplicate_parent):
+            with self.assertRaisesRegex(ValueError, 'duplicate|coverage|misses'):
+                original('CP', tp, winding, layout)
+
+    def test_absent_parent_travel_is_allowed_but_explicit_none_rejects(self):
+        from pattern_rule_workbench import _base_inputs
+
+        original = gw.get_winding_layout
+        for pattern in ('CP', 'TLP'):
+            for explicit_none in (False, True):
+                with self.subTest(pattern=pattern, explicit_none=explicit_none):
+                    gw._cached_neutral_non_wave_preflight.cache_clear()
+                    winding, tp, layout = _base_inputs(
+                        pattern, 6, 12, 4, 6, (2, 3, 1), 5)
+                    parents = []
+
+                    def replace_parent_evidence(code, transposition, reference,
+                                                settings, **kwargs):
+                        starts, database = original(
+                            code, transposition, reference, settings, **kwargs)
+                        if (code == pattern and getattr(
+                                reference, 'branch_dividers', None) == (2, 1, 1)):
+                            if hasattr(database, 'signed_travel'):
+                                del database.signed_travel
+                            if explicit_none:
+                                database.signed_travel = None
+                            parents.append(database)
+                        return starts, database
+
+                    with patch.object(gw, 'get_winding_layout',
+                                      side_effect=replace_parent_evidence):
+                        if explicit_none:
+                            with self.assertRaisesRegex(ValueError, 'signed.travel'):
+                                original(pattern, tp, winding, layout)
+                        else:
+                            starts, database = original(pattern, tp, winding, layout)
+                            self.assertEqual(starts, [path[0] for _, path in database])
+                            self.assertTrue(database.layout_report['layout_retained'])
+                            self.assertEqual(set(database.signed_travel),
+                                             {branch_id for branch_id, _ in database})
+                            self.assertEqual(database.signed_travel,
+                                             {branch_id: tuple(self._short_step(
+                                                 start, end, winding.num_slots)
+                                                 for start, end in zip(path, path[1:]))
+                                              for branch_id, path in database})
+                    self.assertTrue(parents, 'The public Q-only parent must be exercised.')
+                    self.assertTrue(all(hasattr(parent, 'signed_travel') == explicit_none
+                                        for parent in parents))
+
+    def test_invalid_parent_signed_travel_cannot_fall_back_to_shortest_arcs(self):
+        winding, tp, layout = self._inputs()
+        original = gw.get_winding_layout
+
+        def long_parent_edge(pattern, transposition, reference, settings, **kwargs):
+            starts, database = original(pattern, transposition, reference, settings, **kwargs)
+            if getattr(reference, 'branch_dividers', None) == (2, 1, 1):
+                database.signed_travel = self._source_steps(database, reference)
+                branch_id = database[0][0]
+                steps = list(database.signed_travel[branch_id])
+                steps[0] += reference.num_slots
+                database.signed_travel[branch_id] = tuple(steps)
+            return starts, database
+
+        with patch.object(gw, 'get_winding_layout', side_effect=long_parent_edge):
+            with self.assertRaisesRegex(ValueError, 'pole.region|pole region'):
+                original('CP', tp, winding, layout)
+
+    def test_public_target_requires_complete_valid_signed_evidence(self):
+        original = gw._dispatch_winding_pattern
+        for fault in ('missing', 'wrong endpoint', 'multiple regions'):
+            gw._cached_neutral_non_wave_preflight.cache_clear()
+
+            def corrupt_travel(pattern, tp, winding, layout, **kwargs):
+                starts, database = original(pattern, tp, winding, layout, **kwargs)
+                decision = kwargs.get('route_decision')
+                if decision is not None and decision.route_name == self.route:
+                    travel = dict(database.signed_travel)
+                    branch_id = database[0][0]
+                    if fault == 'missing':
+                        del travel[branch_id]
+                    else:
+                        steps = list(travel[branch_id])
+                        steps[0] += 1 if fault == 'wrong endpoint' else winding.num_slots
+                        travel[branch_id] = tuple(steps)
+                    database.signed_travel = travel
+                return starts, database
+
+            with self.subTest(fault=fault), patch.object(
+                    gw, '_dispatch_winding_pattern', side_effect=corrupt_travel):
+                winding, tp, layout = self._inputs()
+                with self.assertRaisesRegex(ValueError, 'signed.travel|signed travel|pole region'):
+                    gw.get_winding_layout('CP', tp, winding, layout)
+
+    def test_target_mixed_phase_corruption_preserves_counts_but_rejects(self):
+        original = gw._dispatch_winding_pattern
+
+        def mixed_phases(pattern, tp, winding, layout, **kwargs):
+            starts, database = original(pattern, tp, winding, layout, **kwargs)
+            decision = kwargs.get('route_decision')
+            if decision is not None and decision.route_name == self.route:
+                first = database[0][1]
+                second = next(path for _, path in database
+                              if self._frame(path[0], winding)[0] == 1)
+                first[2], second[2] = second[2], first[2]
+                self.assertEqual(len({node[:2] for _, path in database for node in path}),
+                                 winding.num_slots * winding.num_layers)
+                database.signed_travel = {
+                    branch_id: tuple(self._short_step(a, b, winding.num_slots)
+                                     for a, b in zip(path, path[1:]))
+                    for branch_id, path in database}
+            return starts, database
+
+        with patch.object(gw, '_dispatch_winding_pattern', side_effect=mixed_phases):
+            winding, tp, layout = self._inputs()
+            with self.assertRaisesRegex(ValueError, 'mixed_phase|phase'):
+                gw.get_winding_layout('CP', tp, winding, layout)
+
+    def test_nonzero_phase_shift_relocates_validated_slices_and_travel(self):
+        winding, tp, layout = self._inputs()
+        _, baseline = gw.get_winding_layout('CP', tp, winding, layout)
+        shifts = [0, 1, 0, 1]
+        layout.phase_shift_list = shifts
+        decision = gw.resolve_pattern_route(
+            'CP', winding, winding.branch_dividers, tp, layout)
+        self.assertEqual(decision.status, 'enabled', decision.reason)
+        starts, shifted = gw.get_winding_layout('CP', tp, winding, layout)
+        expected = [[branch_id, [((node[0] + shifts[node[1]]) % winding.num_slots,
+                                 node[1], *node[2:]) for node in path]]
+                    for branch_id, path in baseline]
+        travel = {
+            branch_id: tuple(step + shifts[end[1]] - shifts[start[1]]
+                             for start, end, step in zip(
+                                 path, path[1:], baseline.signed_travel[branch_id]))
+            for branch_id, path in baseline}
+        self.assertEqual(list(shifted), expected)
+        self.assertEqual(starts, [path[0] for _, path in expected])
+        self.assertEqual(shifted.signed_travel, travel)
+        self._assert_independent_layout(shifted, travel, winding, shifts)
+        self.assertTrue(shifted.layout_report['layout_retained'])
+        self.assertEqual(shifted.layout_report['pattern_identity'],
+                         baseline.layout_report['pattern_identity'])
+        self.assertEqual(shifted.layout_report['post_connection_shift']
+                         ['connection_validation'], 'before shift')
+
+
 class CpQOnlyAdjacentPairTests(unittest.TestCase):
     def test_public_route_pairs_adjacent_p2_parents_in_phase_order(self):
         from layout_analysis import analyze_pattern_identity
@@ -6812,9 +7665,9 @@ class CpQOnlyAdjacentPairTests(unittest.TestCase):
             'CP', 3, 8, 4, 3, (3, 1, 1), 3)
         decision = gw.resolve_pattern_route(
             'CP', winding, winding.branch_dividers, tp, layout)
-        self.assertEqual(decision.route_name, 'cp_q_only_pair_join')
+        self.assertEqual(decision.rule_id, 'cp_polarity_pool_rejected')
         self.assertEqual(decision.status, 'disabled')
-        self.assertIn('CLWP insertion', decision.reason)
+        self.assertIn('polarity pool', decision.reason)
 
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -6992,16 +7845,37 @@ class ZppPpOnlyHalfTurnTests(unittest.TestCase):
         self.assertEqual(decision.status, 'disabled')
         self.assertIn('weld-side inlet', decision.reason)
 
-    def test_zpp_pp_only_route_needs_its_generatable_q_parent(self):
+    def test_zpp_pp_only_gap_uses_actual_full_q_endpoint_parent(self):
         from pattern_rule_workbench import _base_inputs
 
         winding, tp, layout = _base_inputs(
             'ZPP', 4, 8, 4, 2, (1, 2, 1), phases=3)
         decision = gw.resolve_pattern_route(
             'ZPP', winding, (1, 2, 1), tp, layout)
-        self.assertEqual(decision.status, 'disabled')
-        self.assertEqual(decision.admission, 'unsupported-yet')
-        self.assertIn('no validated construction', decision.reason)
+        self.assertEqual(decision.status, 'enabled', decision.reason)
+        self.assertEqual(decision.route_name, 'zpp_actual_lane_endpoint_gcd_partition')
+        parent = SimpleNamespace(**{**vars(winding), 'ab': 4,
+                                    'branch_dividers': (4, 1, 1)})
+        _, source = gw.get_winding_layout('ZPP', tp, parent, layout)
+        expected = []
+        for phase in range(3):
+            paths = [path for _, path in source if path[0][0] // 4 % 3 == phase]
+            cohorts = [[], []]  # gcd(q=4,A=2)=2; each takes two physical lanes.
+            for pair in range(2):
+                pieces = [path[pair * 16:(pair + 1) * 16] for path in paths]
+                starts = {path[0][0] % 4: path for path in pieces}
+                ends = {path[-1][0] % 4: path[-1] for path in pieces}
+                for cohort, lanes in enumerate(((0, 1), (2, 3))):
+                    for index, lane in enumerate(lanes):
+                        cohorts[cohort].extend(starts[lane][:-1])
+                        cohorts[cohort].append(ends[lanes[(index + 1) % 2]])
+            expected.extend(cohorts)
+        _, database = gw.get_winding_layout('ZPP', tp, winding, layout)
+        self.assertEqual([path for _, path in database], expected)
+        self.assertEqual({len(path) for _, path in database}, {64})
+        self.assertEqual(len({tuple(node[:2]) for path in expected for node in path}),
+                         winding.num_slots * winding.num_layers)
+        self.assertTrue(database.layout_report['layout_retained'])
 
 
 class ZppIndexedSectorTranslationTests(unittest.TestCase):
@@ -7164,7 +8038,7 @@ class ZppIndexedSectorTranslationTests(unittest.TestCase):
                 'ZPP', local_database, local_winding,
                 local_layout)['status'], 'valid')
 
-    def test_non_coprime_stride_array_stays_unsupported_on_global_edge_failure(self):
+    def test_array_endpoint_partition_supersedes_variable_stride_boundary(self):
         from layout_analysis import analyze_pattern_identity
         from pattern_rule_workbench import _base_inputs
 
@@ -7172,28 +8046,33 @@ class ZppIndexedSectorTranslationTests(unittest.TestCase):
             'ZPP', 1, 12, 6, 3, (1, 3, 1), phases=9)
         decision = gw.resolve_pattern_route(
             'ZPP', winding, (1, 3, 1), tp, layout)
-        self.assertEqual(decision.status, 'disabled')
-        self.assertEqual(decision.rule_id, 'zpp_array_stride_unvalidated')
-        self.assertEqual(decision.admission, 'unsupported-yet')
-        self.assertIn('mapped global signed edges', decision.reason)
-
-        # Rebuild the local formula result under an explicit research-only
-        # decision to retain the counterexample behind the admission boundary.
-        topology = gw._phase_topology_for_winding(winding, layout)
-        forced_decision = gw.PatternRouteDecision(
-            'enabled', 'zpp_pp_only_indexed_translation',
-            'Research-only assembly for the global edge counterexample.',
-            'ZPP', (1, 3, 1),
-            route_name='zpp_pp_only_indexed_translation',
-            required_inlet='weld')
-        _starts, candidate = gw._array_three_phase_winding_sets(
-            'ZPP', tp, winding, layout, 3,
-            route_decision=forced_decision, topology=topology)
-        audit = analyze_pattern_identity('ZPP', candidate, winding, layout)
-        self.assertEqual(audit['status'], 'candidate')
-        self.assertIn('2 boundaries', audit['reason'])
-        with self.assertRaisesRegex(ValueError, 'multiple pole regions'):
-            gw.validate_selected_zpp(candidate, winding, layout)
+        self.assertEqual(decision.status, 'enabled', decision.reason)
+        self.assertEqual(decision.route_name, 'zpp_actual_lane_endpoint_gcd_partition')
+        # Here gcd(q_s=3,A=3)=3: each one-lane cohort needs one cut.
+        # Since 2*pp=12 is divisible by q_s, its physical endpoint is already
+        # on the same lane. The independent result is the full-Q parent lift.
+        local, local_tp, local_layout = _base_inputs(
+            'ZPP', 3, 12, 2, 3, (3, 1, 1), phases=3)
+        _, parent = gw.get_winding_layout('ZPP', local_tp, local, local_layout)
+        expected = []
+        for set_index in range(3):
+            for phase in range(3):
+                paths = [path for _, path in parent if path[0][0] // 3 % 3 == phase]
+                for path in sorted(paths, key=lambda path: path[0][0] % 3):
+                    expected.append([((slot + 2 * set_index) % winding.num_slots,
+                                      layer + 2 * set_index, *rest)
+                                     for slot, layer, *rest in path])
+        _, database = gw.get_winding_layout('ZPP', tp, winding, layout)
+        self.assertEqual([path for _, path in database], expected)
+        self.assertEqual({len(path) for _, path in database}, {24})
+        self.assertTrue(database.layout_report['layout_retained'])
+        self.assertEqual(database.layout_report['pattern_identity']['status'], 'valid')
+        # The direct aggregate analyzer uses fixed global boundaries. Keep
+        # that coordinate diagnostic separate from canonical phase-set gates.
+        aggregate = analyze_pattern_identity('ZPP', database, winding, layout)
+        self.assertEqual(aggregate['status'], 'candidate')
+        self.assertIn('2 boundaries', aggregate['reason'])
+        gw._validate_route_connections('ZPP', decision, database, winding, layout)
 
 
 class PostConnectionShiftTests(unittest.TestCase):
@@ -7319,11 +8198,11 @@ class PostConnectionShiftTests(unittest.TestCase):
         self.assertGreater(checked, 0)
         self.assertTrue(shifted.layout_report['layout_retained'])
 
-    def test_signed_travel_and_series_bridge_follow_shifted_endpoints(self):
+    def test_signed_travel_follows_shifted_endpoints_on_adjacent_routes(self):
         from pattern_rule_workbench import _base_inputs
 
         cases = [('ZPP', 2, 8, 4, 2, (1, 2, 1)),
-                 ('UWP', 4, 8, 4, 2, (2, 1, 1))]
+                 ('UWP', 4, 8, 4, 4, (2, 1, 2))]
         for pattern, q, poles, layers, naa, dividers in cases:
             with self.subTest(pattern=pattern):
                 winding, tp, layout = _base_inputs(

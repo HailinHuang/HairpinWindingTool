@@ -298,7 +298,7 @@ def test_exact_fraction_integer_q_and_long_wrap_choice():
     assert report['ordered_status'] == 'valid', report['errors']
 
 
-def test_only_marked_matching_uwp_series_bridge_is_accepted():
+def test_marked_uwp_same_layer_series_weld_is_rejected():
     class Branches(list):
         pass
     winding = SimpleNamespace(num_slots=24, num_layers=4, num_phases=3, q=2, ab=1)
@@ -309,11 +309,13 @@ def test_only_marked_matching_uwp_series_bridge_is_accepted():
     assert analyze_ordered_pattern('UWP', database, winding, layout)['ordered_status'] == 'candidate'
 
 
-    # A real bridge is a weld: preserve insertion/weld source parity.
+    # Metadata may describe the historical weld but cannot authorize it.
     path = [(0, 0), (6, 1), (12, 0), (18, 1), (0, 1), (18, 0), (12, 1), (6, 0)]
     database[:] = [(1, path)]
     database.series_connections = [dict(branch_id=1, edge_index=3, start=path[3], end=path[4], kind='same_layer_series', side='weld')]
-    assert analyze_ordered_pattern('UWP', database, winding, layout)['ordered_status'] == 'valid'
+    report = analyze_ordered_pattern('UWP', database, winding, layout)
+    assert report['ordered_status'] == 'candidate'
+    assert any('same-layer series weld' in error for error in report['errors'])
     database.series_connections = []
     assert analyze_ordered_pattern('UWP', database, winding, layout)['ordered_status'] == 'candidate'
     database.series_connections = [dict(branch_id=1, edge_index=3, start=(0, 0), end=path[4], kind='same_layer_series', side='weld')]

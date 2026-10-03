@@ -142,16 +142,24 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
                 self.assertTrue(sample['production']['layout_retained'])
                 self.assertEqual(sample['production']['identity_status'], 'valid')
 
-        source_failure = tlp['Q+PP+P2 parent slices: D=4 source boundary']
-        self.assertEqual(source_failure['preflight']['admission'],
-                         'unsupported-yet')
-        self.assertNotIn('production', source_failure)
+        source_boundary = tlp['Q+PP+P2 parent slices: D=4 source boundary']
+        self.assertEqual(source_boundary['preflight']['admission'], 'supported')
+        self.assertEqual(source_boundary['preflight']['rule_id'],
+                         'tlp_q_pp_p2_parent_slices')
+        self.assertNotIn('production', source_boundary)
         local_layers = tlp['Q+PP+P2 parent slices: short local-layer array']
-        self.assertEqual(local_layers['preflight']['admission'],
-                         'unsupported-yet')
+        self.assertEqual(local_layers['preflight']['admission'], 'supported')
         self.assertEqual(local_layers['preflight']['rule_id'],
-                         'tlp_q_pp_p2_local_layers_unsupported')
+                         'tlp_even_gcd_parent_slices')
         self.assertNotIn('production', local_layers)
+        from refresh_pattern_naa_division_layout import evaluate_case
+        for sample in (source_boundary, local_layers):
+            with self.subTest(q=sample['q'], phases=sample['phases']):
+                generated = evaluate_case(
+                    'TLP', sample['q'], sample['pp'], sample['layers'],
+                    sample['phases'], tuple(sample['dividers']), probe_generation=True)
+                self.assertTrue(generated['production']['layout_retained'])
+                self.assertEqual(generated['production']['identity_status'], 'valid')
         for name in (
                 'Q+PP+P2 parent slices: phase-shift boundary',
                 'Q+PP+P2 parent slices: transposition boundary'):
@@ -255,8 +263,16 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
                 self.assertTrue(sample['production']['layout_retained'])
                 self.assertEqual(sample['production']['identity_status'], 'valid')
 
+        # The Q-only parent partition now covers this former even-D boundary.
+        # Exact public parent/child paths are checked by TlpQppQParentSliceTests
+        # and the established even-PP/array regression, rather than this probe.
+        parent_cut = tlp['PP-only even-divider proper-Q boundary']
+        self.assertEqual(parent_cut['preflight']['admission'], 'supported')
+        self.assertEqual(parent_cut['preflight']['rule_id'],
+                         'tlp_q_pp_q_parent_slices')
+        self.assertNotIn('production', parent_cut)
+
         for name in (
-                'PP-only even-divider proper-Q boundary',
                 'PP-only even-divider odd local-D boundary',
                 'PP-only even-divider short local-layer boundary'):
             with self.subTest(name=name):
@@ -353,12 +369,14 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
 
         array_stride = zpp[
             'PP-only indexed translation: array stride >1 boundary']
-        self.assertEqual(array_stride['preflight']['status'], 'disabled')
+        self.assertEqual(array_stride['preflight']['status'], 'enabled')
         self.assertEqual(array_stride['preflight']['admission'],
-                         'unsupported-yet')
+                         'supported')
         self.assertEqual(array_stride['preflight']['rule_id'],
-                         'zpp_array_stride_unvalidated')
-        self.assertNotIn('production', array_stride)
+                         'zpp_actual_lane_endpoint_gcd_partition')
+        self.assertEqual(array_stride['production']['status'], 'retained-not-strong')
+        self.assertTrue(array_stride['production']['layout_retained'])
+        self.assertEqual(array_stride['production']['identity_status'], 'valid')
 
     def test_zpp_odd_integer_q_p2_probes_show_rejection_and_controls(self):
         inventory = json.loads((ROOT / 'pattern_route_inventory.json').read_text(
@@ -546,9 +564,15 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
                 self.assertEqual(sample['production']['identity_status'], 'valid')
 
         odd_sector = slp['Proper-Q+PP+P2 odd sector boundary']
-        self.assertEqual(odd_sector['preflight']['admission'],
-                         'unsupported-yet')
+        self.assertEqual(odd_sector['preflight']['admission'], 'supported')
+        self.assertEqual(odd_sector['preflight']['rule_id'], 'slp_p2_belt_pass_partition')
         self.assertNotIn('production', odd_sector)
+        from refresh_pattern_naa_division_layout import evaluate_case
+        generated = evaluate_case(
+            'SLP', odd_sector['q'], odd_sector['pp'], odd_sector['layers'],
+            odd_sector['phases'], tuple(odd_sector['dividers']), probe_generation=True)
+        self.assertTrue(generated['production']['layout_retained'])
+        self.assertEqual(generated['production']['identity_status'], 'valid')
         nondivisor = slp['Proper-Q+PP+P2 nondivisor D boundary']
         self.assertEqual(nondivisor['preflight']['admission'],
                          'unsupported-yet')
@@ -580,9 +604,9 @@ class PatternNaaDivisionLayoutTests(unittest.TestCase):
         source_failure = cp['Q=1 PP-only L=8 direct source failure']
         self.assertEqual(source_failure['preflight']['admission'], 'rejected')
         self.assertEqual(source_failure['preflight']['rule_id'],
-                         'cp_q_pp_full_parent_slices')
-        self.assertIn('duplicate', source_failure['preflight']['reason'])
-        self.assertIn('misses', source_failure['preflight']['reason'])
+                         'cp_polarity_pool_rejected')
+        # H=8/2=4 does not divide A=6: the equal polarity pools cannot be covered.
+        self.assertIn('Naa divisible by 4', source_failure['preflight']['reason'])
         self.assertNotIn('production', source_failure)
 
     def test_cp_array_layer_probes_show_global_and_local_boundaries(self):

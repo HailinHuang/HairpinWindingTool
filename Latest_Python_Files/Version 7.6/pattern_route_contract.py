@@ -3,6 +3,27 @@ from dataclasses import dataclass
 from fractions import Fraction
 
 
+def rational_half_belt_translation_pitch(q, poles, layers, phases, *, pattern='TLP'):
+    """Return the integer half-belt pitch for the implemented lap construction.
+
+    Reduced q=a/b requires even a, odd b>2, q>1, b|(2m-1), P=2bR,
+    and even L>=4. Native m=3 or odd m not divisible by three uses the
+    canonical belt model needed by the slot-permutation proof.
+    """
+    q = Fraction(str(q))
+    a, b = q.numerator, q.denominator
+    if (q <= 1 or a % 2 or b <= 2 or b % 2 == 0
+            or any(type(value) is not int or value <= 0
+                   for value in (poles, layers, phases))
+            or phases < 3 or phases % 2 == 0
+            or (phases > 3 and phases % 3 == 0)
+            or (2 * phases - 1) % b or poles % (2 * b)
+            or layers < 4 or layers % 2
+            or (pattern == 'SLP' and layers != 4)):
+        return None
+    return a * (2 * phases - 1) // (2 * b)
+
+
 @dataclass(frozen=True)
 class PatternRouteRule:
     """Declarative identity and configuration contract for a Pattern route."""
@@ -40,6 +61,12 @@ class PatternRouteDecision:
 
 
 PATTERN_ROUTE_RULES = {
+    "slp_rational_half_belt_translation": PatternRouteRule(
+        "slp_rational_half_belt_translation", "SLP", "slp_rational_half_belt_translation",
+        ("ALLP", "SLPP"), "weld"),
+    "tlp_rational_half_belt_translation": PatternRouteRule(
+        "tlp_rational_half_belt_translation", "TLP", "tlp_rational_half_belt_translation",
+        ("ALLP", "CLLP"), "weld"),
     "uwp_half_integer_p2": PatternRouteRule(
         "uwp_half_integer_p2", "UWP", "uwp_half_integer_p2",
         ("ALWP",), "insert", "fractional_wave"),
@@ -69,6 +96,15 @@ PATTERN_ROUTE_RULES = {
         ("ALWP", "CLWP"), "insert"),
     "tlp_q_only_pair_join": PatternRouteRule(
         "tlp_q_only_pair_join", "TLP", "tlp_q_only_pair_join",
+        ("ALLP", "CLLP"), "insert"),
+    "tlp_q_pp_q_parent_slices": PatternRouteRule(
+        "tlp_q_pp_q_parent_slices", "TLP", "tlp_q_pp_q_parent_slices",
+        ("ALLP", "CLLP"), "insert"),
+    "tlp_even_gcd_parent_slices": PatternRouteRule(
+        "tlp_even_gcd_parent_slices", "TLP", "tlp_even_gcd_parent_slices",
+        ("ALLP", "CLLP"), "insert"),
+    "tlp_p2_parent_slices": PatternRouteRule(
+        "tlp_p2_parent_slices", "TLP", "tlp_p2_parent_slices",
         ("ALLP", "CLLP"), "insert"),
     "tsp_pp_p2_sector": PatternRouteRule(
         "tsp_pp_p2_sector", "TSP", "tsp_pp_p2_sector",
@@ -113,6 +149,9 @@ PATTERN_ROUTE_RULES = {
     "slp_q_pp_p2_parent_cut": PatternRouteRule(
         "slp_q_pp_p2_parent_cut", "SLP", "slp_q_pp_p2_parent_cut",
         ("ALLP", "SLPP"), "insert"),
+    "slp_p2_belt_pass_partition": PatternRouteRule(
+        "slp_p2_belt_pass_partition", "SLP", "slp_p2_belt_pass_partition",
+        ("ALLP", "SLPP"), "insert"),
     "slp_pair_lane_p2": PatternRouteRule(
         "slp_pair_lane_p2", "SLP", "slp_pair_lane_p2",
         ("ALLP", "SLPP"), "insert"),
@@ -123,6 +162,9 @@ PATTERN_ROUTE_RULES = {
         "zlp_q_pp", "ZLP", "zlp", ("ALLP", "SLPP"), "insert"),
     "zpp_q_pp_p2": PatternRouteRule(
         "zpp_q_pp_p2", "ZPP", "zpp", ("SLPP",), "weld"),
+    "zpp_actual_lane_endpoint_gcd_partition": PatternRouteRule(
+        "zpp_actual_lane_endpoint_gcd_partition", "ZPP",
+        "zpp_actual_lane_endpoint_gcd_partition", ("SLPP",), "weld"),
     "zpp_pp_only_half_turn": PatternRouteRule(
         "zpp_pp_only_half_turn", "ZPP", "zpp_pp_only_half_turn",
         ("SLPP",), "weld"),
@@ -139,6 +181,18 @@ PATTERN_ROUTE_RULES = {
         ("CLWP",), "insert"),
     "cp_q_only_pair_join": PatternRouteRule(
         "cp_q_only_pair_join", "CP", "cp_q_only_pair_join", ("CLWP",), "insert"),
+    "cp_q_pp_q_parent_slices": PatternRouteRule(
+        "cp_q_pp_q_parent_slices", "CP", "cp_q_pp_q_parent_slices",
+        ("CLWP",), "insert"),
+    "cp_gcd_quartet_parent_slices": PatternRouteRule(
+        "cp_gcd_quartet_parent_slices", "CP", "cp_gcd_quartet_parent_slices",
+        ("CLWP",), "insert"),
+    "cp_odd_half_span_parent_slices": PatternRouteRule(
+        "cp_odd_half_span_parent_slices", "CP", "cp_odd_half_span_parent_slices",
+        ("CLWP",), "insert"),
+    "cp_two_layer_tlp_transfer": PatternRouteRule(
+        "cp_two_layer_tlp_transfer", "CP", "cp_two_layer_tlp_transfer",
+        ("CLWP",), "insert"),
     "cp_q_pp_full_parent_slices": PatternRouteRule(
         "cp_q_pp_full_parent_slices", "CP", "cp_q_pp_full_parent_slices",
         ("CLWP",), "insert"),
@@ -156,7 +210,8 @@ PATTERN_ROUTE_RULES = {
 }
 
 SLP_ROTATED_WELD_ROUTES = frozenset((
-    'slp_p2_from_reference', 'slp_pair_lane_p2', 'slp_pp_p2_sector'))
+    'slp_p2_from_reference', 'slp_pair_lane_p2', 'slp_pp_p2_sector',
+    'slp_p2_belt_pass_partition'))
 
 
 PATTERN_DEFAULT_PIN_PROFILES = {

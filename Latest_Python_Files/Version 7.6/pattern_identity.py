@@ -12,10 +12,11 @@ from math import isfinite
 from collections.abc import Mapping
 from fractions import Fraction
 from phase_topology import supports_phase_count
+from pattern_route_contract import rational_half_belt_translation_pitch
 
 PATTERN_CONTRACTS = {
     'BWP': 'Adjacent-layer wave runs keep one slot direction; insertion-side boundary returns separate opposite runs. Welds stay inside layer pairs.',
-    'UWP': 'Adjacent-layer wave edges keep one slot direction. Welds stay inside layer pairs. Explicit validated same-layer series welds separate source runs.',
+    'UWP': 'Adjacent-layer wave edges keep one slot direction. Welds stay inside layer pairs; same-layer series welds are rejected.',
     'SSP': 'Ordinary spiral passes move monotonically through adjacent layers with one slot direction; insertion-side same-layer returns occur at boundary layers.',
     'TSP': 'Ordinary spiral passes move monotonically through adjacent layers with one slot direction; insertion-side top-bottom returns restart the layer traversal.',
     'SLP': 'Ordinary lap passes move monotonically through adjacent layers while slot direction alternates; insertion-side same-layer returns occur at boundary layers.',
@@ -85,8 +86,6 @@ def _advance(code, previous, edge, step, layers, orientation):
             return None
         return (dl, sign, None)
     if code in ('BWP', 'UWP'):
-        if code == 'UWP' and edge['series_bridge']:
-            return (None, None, None) if not insert and dl == 0 else None
         if code == 'BWP' and dl == 0:
             if not insert or not boundary:
                 return None
@@ -170,7 +169,7 @@ def analyze_ordered_pattern(pattern, database, winding, layout):
 
     Domain qualification never silently certifies an undefined construction.
     A compatible short path need not exhibit every optional return type.
-    UWP series exceptions require the constructor's existing endpoint metadata.
+    Historical series metadata cannot authorize a same-layer UWP weld.
     A constructor may provide complete physical signed steps as
     database.signed_travel[branch_id]; otherwise short-arc direction is inferred.
     """
@@ -179,16 +178,23 @@ def analyze_ordered_pattern(pattern, database, winding, layout):
     q, phases = winding.q, int(winding.num_phases)
     half_integer_q = (isinstance(q, Real) and isfinite(q) and q > 0
                       and int(2 * q) == 2 * q)
-    pole_pitch = Fraction(int(2 * q) * phases, 2) if half_integer_q else 0
+    rational_lap = False
+    if (pattern in ('TLP', 'SLP') and not half_integer_q and isinstance(q, Real)
+            and isfinite(q) and q > 1 and phases >= 3 and slots > 0):
+        poles = Fraction(slots, 1) / (Fraction(str(q)) * phases)
+        rational_lap = (poles.denominator == 1 and rational_half_belt_translation_pitch(
+            q, int(poles), layers, phases, pattern=pattern) is not None)
+    pole_pitch = Fraction(str(q)) * phases if half_integer_q or rational_lap else 0
     qualification = ('bounded-integer-even-layer' if half_integer_q and int(q) == q
                      else 'bounded-half-integer-even-layer' if half_integer_q
+                     else f'bounded-rational-{pattern.lower()}-half-belt-translation' if rational_lap
                      else 'unsupported-domain')
     errors = []
-    if (not half_integer_q or layers < 2 or layers % 2
+    if (not (half_integer_q or rational_lap) or layers < 2 or layers % 2
             or not supports_phase_count(phases) or slots <= 0):
         qualification = 'unsupported-domain'
         errors.append(
-            'Ordered recognition requires positive integer or half-integer q, even layers, and a supported phase count; arrayed multiphase layouts are checked per three-phase set.')
+            'Ordered recognition requires integer/half-integer q or the implemented rational lap half-belt translation domain, even layers, and a supported phase count; arrayed multiphase layouts are checked per three-phase set.')
     shifts = tuple(getattr(layout, 'phase_shift_list', ()) or (0,) * max(layers, 0))
     if len(shifts) != layers:
         errors.append('Phase-shift list does not match layer count.')
@@ -237,6 +243,10 @@ def analyze_ordered_pattern(pattern, database, winding, layout):
                 if valid_bridge:
                     side = 'weld'
                     segment_start = index + 1
+                    if pattern == 'UWP':
+                        branch_errors.append(
+                            f'edge {index}: UWP same-layer series welds are rejected; '
+                            'welds must join adjacent layers.')
                 if marked and not valid_bridge:
                     branch_errors.append(f'edge {index}: series bridge metadata does not match the actual connection.')
                 actual_steps = ((travel[index],) if travel is not None else

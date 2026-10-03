@@ -208,11 +208,12 @@ three-phase construction.
   independent checks; the saved manual draft alone is not production evidence.
 - TLP `(Q,1,1)` joins `g=2q/Q` consecutive full-q `(q,1,2)` parents within
   each outer-layer cohort. Even Q divides integer q, pp>=2, even L>=2 and
-  the supported native phase domain are required. Integer-global-q arrays
+  the supported native phase domain are required. Integer/half-integer arrays
   use q_s=k*q and L_s=L/k for m=3k; even Q divides q_s and L_s is even >=2.
   The local construction is validated before the canonical set rotation;
   no k|Q restriction applies. Q>2 neutral groups retain unequal parallel
   complex EMF as not strong symmetry; two-layer overlap stays visible.
+  Half-integer q=h/2 with odd h requires k divisible by four for even local q_s.
   Preflight and manual completion do not establish public generation.
 - TSP `(1,D,2)` uses the fixed-lane two-inlet formula only when `q|D|pp` and
   every local q lane covers every pole-pair residue exactly once. Phase-set
@@ -266,6 +267,9 @@ def _base_inputs(pattern, q, poles, layers, naa, dividers=None, phases=3):
     layout = SimpleNamespace(phase_shift_list=[0] * layers, radial_shift=0,
                              inlet_from_weld_side=int(
                                  gw.pattern_requires_weld_side_inlet(pattern)))
+    if pattern in ('TLP', 'SLP') and Fraction(q).denominator > 2:
+        decision = gw.resolve_pattern_route(pattern, winding, dividers)
+        layout.inlet_from_weld_side = int(decision.required_inlet == 'weld')
     return winding, transposition, layout
 
 
@@ -290,8 +294,14 @@ def _probe_route(pattern, q, poles, layers, naa, dividers, phases=3,
                     and baseline.layout_report['electrically_valid']):
                 return True, ('strong symmetry layout: '
                               + assessment['reason'])
-        _, database = gw.get_auto_configured_layout(
-            pattern, transposition, winding, layout, allow_candidate=True)
+        if pattern in ('TLP', 'SLP') and Fraction(q).denominator > 2:
+            _, database = gw.get_winding_layout(pattern, transposition, winding, layout)
+            return True, (f'Production rational {pattern} passed required layout/identity checks; '
+                          + database.layout_status + ': '
+                          + ', '.join(database.layout_report['errors']))
+        else:
+            _, database = gw.get_auto_configured_layout(
+                pattern, transposition, winding, layout, allow_candidate=True)
     except (ValueError, TypeError, IndexError, ZeroDivisionError) as exc:
         return False, str(exc)
     identity = database.layout_report.get('pattern_identity', {})
@@ -372,8 +382,7 @@ def build_divider_route_catalog(q_text: str, pp: int, layers: int,
     slots = q * poles * phases
     if q <= 0 or slots.denominator != 1:
         raise ValueError("q and pp must produce an integer slot count.")
-    if q.denominator not in (1, 2):
-        raise ValueError("Catalog q must be an integer or positive half-integer.")
+    local_q = q * three_phase_set_count(phases)
     if q.denominator == 1:
         configurations = tuple(
             (q_divider * pp_divider * p2_divider,
@@ -381,22 +390,35 @@ def build_divider_route_catalog(q_text: str, pp: int, layers: int,
             for q_divider in _divisors(int(q))
             for pp_divider in _divisors(pp)
             for p2_divider in (1, 2))
-    else:
+    elif q.denominator == 2:
         # Keep the current fractional catalog scope; one resolver judges every row.
         configurations = tuple(
             (int(2 * q * pp_divider), (q, pp_divider, 2))
             for pp_divider in _divisors(pp))
         if pp % 2 == 0:
             configurations += ((int(2 * q), (q, 2, 1)),)
+        if three_phase_set_count(phases) > 1 and local_q.denominator == 1:
+            # Existing integer-local formulas apply to these half-q phase arrays.
+            # Enumerating their factors does not bypass production admission.
+            configurations += tuple(
+                (Q * D * P2, (Q, D, P2))
+                for Q in _divisors(int(local_q))
+                for D in _divisors(pp)
+                for P2 in (1, 2)
+                if (Q * D * P2, (Q, D, P2)) not in configurations)
+    else:
+        # Enumerate only exact integral branch counts; the resolver owns support.
+        configurations = tuple(
+            (int(2 * q * D), (q, D, 2)) for D in _divisors(pp)
+            if (2 * q * D).denominator == 1)
     records = []
     for pattern in PATTERNS:
         pattern_configurations = configurations
-        if (pattern == 'TLP' and q.denominator == 1
+        if (pattern == 'TLP' and local_q.denominator == 1
                 and three_phase_set_count(phases) > 1):
-            local_q = int(q) * three_phase_set_count(phases)
             # Enumerate the local q-only requests; the public resolver owns support.
             pattern_configurations += tuple(
-                (Q, (Q, 1, 1)) for Q in _divisors(local_q)
+                (Q, (Q, 1, 1)) for Q in _divisors(int(local_q))
                 if (Q, (Q, 1, 1)) not in configurations)
         for naa, dividers in pattern_configurations:
             winding, transposition, layout = _base_inputs(

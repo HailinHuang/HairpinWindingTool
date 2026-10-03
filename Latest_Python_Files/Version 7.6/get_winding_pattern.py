@@ -23,15 +23,19 @@ from explicit_connections import validate_branches, EMF_ASYMMETRY_ERRORS
 from pattern_route_contract import (
     PatternRouteRule, PatternRouteDecision, PATTERN_ROUTE_RULES,
     PATTERN_DEFAULT_PIN_PROFILES, SLP_ROTATED_WELD_ROUTES,
+    rational_half_belt_translation_pitch,
 )
 from divider_connection_formulas import (
     DividerConnectionFormula, apply_route_formula, phase_set_local_dividers,
     cp_four_pass_weave, cp_parent_half_translation,
     spiral_q_pp_parent_cut, slp_q_pp_single_sector_weld_rotation,
+    slp_p2_belt_pass_partition, slp_weld_cycle_gcd_partition,
     slp_q_pp_p2_lane_regroup, tsp_pp_p2_sector_branches,
     tsp_pp_p2_sector_residues_are_complete, tsp_q_lane_sweep_completion,
     tsp_spiral_pass_partition, tsp_spiral_pass_partition_dimensions,
-    zpp_indexed_sector_stride,
+    zpp_indexed_sector_stride, zpp_actual_lane_endpoint_gcd_partition,
+    tlp_rational_half_belt_translation_paths,
+    slp_rational_half_belt_translation_paths,
 )
 from half_integer_q_connection_formulas import (
     build_bwp_half_integer_base_path,
@@ -987,9 +991,16 @@ def pattern_rejects_divider_tuple(pattern, factors, q=None, pp=None, layers=None
                 return True
     if (normalized == 'TLP' and pp is not None
             and selected[1] * selected[2] > Fraction(str(pp))):
-        return True
+        # The closed rational maximal split is a separate construction, not
+        # the legacy integer/half-q pass cut. Its resolver proves admission.
+        q_value = Fraction(str(q)) if q is not None else None
+        return not (q_value is not None and q_value.denominator > 2
+                    and selected == (q_value, Fraction(str(pp)), 2))
     if normalized == 'UWP':
+        q_value = Fraction(str(q)) if q is not None else None
         return (selected[1] * selected[2] > 2
+                or (q_value is not None and q_value > 0
+                    and q_value.denominator == 1 and selected[1:] == (1, 1))
                 or (q is not None and selected == (q, 1, 1)
                     and selected[0] > 1))
     if normalized == 'LPP':
@@ -1008,6 +1019,38 @@ def supports_slp_p2_from_reference(winding, factors):
             and _supported_phase_domain(winding))
 
 
+@lru_cache(maxsize=512)
+def _legacy_slp_p2_has_valid_geometry(q, poles, layers, phases):
+    """Keep existing valid P2 paths; replace demonstrated identity candidates."""
+    winding = SimpleNamespace(q=q, num_slots=q * poles * phases,
+        num_poles=poles, num_phases=phases, num_layers=layers, ab=2,
+        branch_dividers=(1, 1, 2))
+    tp = SimpleNamespace(tp_type='Regular', tp_interval=0, tp_times=0,
+        uni_tp=0, pltp_fl=0, pltp_ll=0, jltp=0, jld=1, pole_group_tp={})
+    layout = SimpleNamespace(phase_shift_pattern='None', phase_shift_list=[0] * layers,
+        radial_shift=0, inlet_from_weld_side=0, inlet_index_adjustments_phase_a=[])
+    try:
+        starts, database = _slp_p2_from_reference(tp, winding, layout)
+        _validate_generated_layout_consistency('SLP', starts, database, winding)
+        validate_slp_factor_route(database, winding, layout)
+        return _analyze_pattern_identity_for_sets('SLP', database, winding, layout)['status'] == 'valid'
+    except (ValueError, TypeError, IndexError):
+        return False
+
+
+def supports_slp_p2_belt_pass_partition(winding, factors):
+    """Admit physical N-belt/lane partitions of a configured full-Q mother."""
+    values = _integer_divider_tuple(factors)
+    q, pp = winding.q, winding.num_poles // 2
+    return bool(values is not None and type(q) is int and q >= 1
+                and q % values[0] == 0 and pp % values[1] == 0 and values[2] == 2
+                and winding.ab == 2 * values[0] * values[1]
+                and winding.num_poles >= 4 and winding.num_poles % 2 == 0
+                and winding.num_layers >= 2 and winding.num_layers % 2 == 0
+                and three_phase_set_count(winding.num_phases) == 1
+                and _supported_phase_domain(winding))
+
+
 def supports_slp_full_q_p2(winding, factors):
     """Recognize full-Q P2 branches made from even lap-pass sectors."""
     if (type(winding.q) is not int or winding.q <= 1
@@ -1023,7 +1066,7 @@ def supports_slp_full_q_p2(winding, factors):
 
 
 def supports_slp_q_pp_p2_parent_cut(winding, factors):
-    """Recognize proper-Q+PP P2 paths cut from the public full-Q parent."""
+    """Recognize proper-Q P2 lane regrouping, with an optional PP cut."""
     if (type(winding.q) is not int or winding.q <= 1
             or len(factors) != 3
             or any(type(value) is not int for value in factors)):
@@ -1031,7 +1074,7 @@ def supports_slp_q_pp_p2_parent_cut(winding, factors):
     q_divider, pp_divider, p2_divider = factors
     if (not 1 < q_divider < winding.q
             or winding.q % q_divider
-            or pp_divider <= 1 or p2_divider != 2
+            or pp_divider < 1 or p2_divider != 2
             or winding.num_poles <= 0 or winding.num_poles % 2):
         return False
     pp = winding.num_poles // 2
@@ -1043,8 +1086,9 @@ def supports_slp_q_pp_p2_parent_cut(winding, factors):
 
 
 def supports_slp_pair_lane_p2(winding, factors):
-    """Recognize a two-pass branch joining paired q lanes in one pole sector."""
+    """Recognize paired lanes in the legacy three-phase reference ordering."""
     return (type(winding.q) is int and winding.q > 0
+            and winding.num_phases == 3
             and len(factors) == 3 and factors[0] > 0
             and winding.q == 2 * factors[0]
             and winding.num_poles > 0 and winding.num_poles % 2 == 0
@@ -1074,6 +1118,13 @@ def divider_exclusion_reason(pattern, factors=None, q=None, pp=None, layers=None
         if q is not None and factors is not None and tuple(factors) == (q,1,1) and q > 1:
             return ('UWP q-only with q-divider=q is the same as BWP q-only '
                     'with q-divider=q; use the BWP route.')
+        if (q is not None and Fraction(str(q)).denominator == 1 and q > 0
+                and factors is not None and tuple(factors)[1:] == (1, 1)):
+            return ('UWP current (Q,1,1) construction is rejected by the owner: '
+                    'it requires a same-layer series junction and has no '
+                    'permitted same-layer weld exception. Actual welds must '
+                    'join adjacent layers. This excludes the registered '
+                    'construction, not every possible physical winding.')
         return ('UWP pp-divider and P2-divider share the same splitting allowance; '
                 'their product must be 1 or 2.')
     if normalized == 'BWP':
@@ -1098,10 +1149,9 @@ def divider_exclusion_reason(pattern, factors=None, q=None, pp=None, layers=None
             q_value = Fraction(str(q))
             if (q_value.denominator == 1 and q_value.numerator > 0
                     and q_value.numerator % 2 == 1):
-                return ('ZPP P2=2 requires q=2*Q; an odd positive integer '
-                        'effective q has no integer Q. This rejects the '
-                        'registered construction for this geometry, not every '
-                        'possible physical layout.')
+                return ('ZPP P2=2 retains the owner-approved exclusion for odd positive '
+                        'integer effective q. This is an admission boundary, '
+                        'not a proof against every possible physical layout.')
         return f'{normalized} explicitly excludes this divider tuple.'
     if normalized == 'ZLP':
         return 'ZLP does not support Q-divider greater than 1.'
@@ -1315,6 +1365,60 @@ def supports_tlp_pp_only_two(winding, factors):
         and winding.num_poles > 0 and winding.num_poles % 4 == 0
         and winding.num_layers >= 4 and winding.num_layers % 2 == 0
         and _supported_phase_domain(winding))
+
+
+def supports_integer_q_pp_q_parent_slices(pattern, winding, factors):
+    """Partition existing CP/TLP Q-only parents at complete 2L blocks."""
+    values = _integer_divider_tuple(factors)
+    if (values is None or values[0] <= 1 or values[1] <= 1
+            or values[2] != 1 or winding.ab != values[0] * values[1]
+            or winding.num_poles <= 0 or winding.num_poles % 2
+            or (winding.num_poles // 2) % values[1]):
+        return False
+    Q = values[0]
+    parent = _cp_reference_winding(winding, Q, (Q, 1, 1))
+    if pattern == 'TLP':
+        return supports_integer_tlp_q_only_pair_join(parent, (Q, 1, 1))
+    if pattern == 'CP':
+        return supports_integer_cp_q_only_pair_join(parent, (Q, 1, 1))
+    return False
+
+
+def supports_tlp_even_gcd_parent_slices(winding, factors):
+    """Cut an even-gcd public Q-only mother into complete TLP passes."""
+    values = _integer_divider_tuple(factors)
+    q = getattr(winding, 'q', None)
+    if (values is None or type(q) is not int or q <= 0 or q % 2
+            or values in ((q, 1, 2), (1, 1, 2))):
+        return False
+    Q, D, P2 = values
+    pp = winding.num_poles // 2
+    naa = Q * D * P2
+    if (P2 not in (1, 2) or q % Q or pp % D or D * P2 > pp
+            or naa % 2 or winding.ab != naa):
+        return False
+    g = gcd(q, naa)
+    parent = _cp_reference_winding(winding, g, (g, 1, 1))
+    return supports_integer_tlp_q_only_pair_join(parent, (g, 1, 1))
+
+
+def supports_tlp_p2_parent_slices(winding, factors):
+    """Cut odd-q public (1,1,2) paths, retaining at least two lap passes."""
+    values = _integer_divider_tuple(factors)
+    q = getattr(winding, 'q', None)
+    if values is None or type(q) is not int or q <= 0 or not q % 2:
+        return False
+    Q, D, P2 = values
+    pp = winding.num_poles // 2
+    return bool(values not in ((1, 1, 2), (q, 1, 2))
+                and P2 in (1, 2) and q % Q == 0 and pp % D == 0
+                and D * P2 <= pp and (Q * D * P2) % 2 == 0
+                and winding.ab == Q * D * P2
+                and winding.num_poles >= 4 and winding.num_poles % 2 == 0
+                and winding.num_layers >= 2 and winding.num_layers % 2 == 0
+                and three_phase_set_count(winding.num_phases) == 1
+                and _supported_phase_domain(winding)
+                and winding.num_slots == 2 * pp * winding.num_phases * q)
 
 
 def supports_tlp_pp_only_even(winding, factors):
@@ -2068,6 +2172,48 @@ def validate_tlp_welds(database, winding, layout):
             directions[pair] = shared
 
 
+def _tlp_rational_half_belt_translation_from_formula(winding):
+    groups = tlp_rational_half_belt_translation_paths(
+        winding.q, winding.num_phases, winding.num_poles, winding.num_layers)
+    database = _CandidateBranches([
+        [index, path] for index, path in enumerate(
+            (path for group in groups for path in group), 1)])
+    return [path[0] for _, path in database], database
+
+
+def _slp_rational_half_belt_translation_from_formula(winding):
+    groups = slp_rational_half_belt_translation_paths(
+        winding.q, winding.num_phases, winding.num_poles, winding.num_layers)
+    database = _CandidateBranches([
+        [index, path] for index, path in enumerate(
+            (path for group in groups for path in group), 1)])
+    return [path[0] for _, path in database], database
+
+
+def validate_rational_lap_half_belt_translation(pattern, database, winding, layout):
+    """Check the actual weld pitch in addition to the existing weld rules."""
+    pitch = rational_half_belt_translation_pitch(
+        winding.q, winding.num_poles, winding.num_layers, winding.num_phases, pattern=pattern)
+    if pitch is None:
+        raise ValueError(f'Rational {pattern} half-belt translation geometry is unsupported.')
+    if pattern == 'SLP':
+        validate_slp_factor_route(database, winding, layout)
+    else:
+        validate_tlp_welds(database, winding, layout)
+    for branch_id, path in database:
+        for index in range(1, len(path) - 1, 2):
+            left, right = path[index:index + 2]
+            if abs(right[1] - left[1]) != 1:
+                raise ValueError(f'{pattern} welds must join adjacent layers.')
+            steps = _connection_travel_steps(
+                database, branch_id, index, left, right, winding.num_slots,
+                layout.phase_shift_list)
+            if not steps or any(abs(step) != pitch for step in steps):
+                raise ValueError(f'Rational {pattern} requires weld pitch q*(m-1/2).')
+    if pattern == 'TLP':
+        _validate_selected_electrical('Rational TLP half-belt translation', database, winding, layout)
+
+
 def validate_tlp_pp_only_two_returns(database, winding):
     """Keep first/last-layer returns forward relative to layer traversal."""
     returns = []
@@ -2365,9 +2511,33 @@ def _selected_integer_divider_route(pattern, winding):
     if pattern_rejects_divider_tuple(
             pattern, factors, winding.q, winding.num_poles // 2):
         return None
+    if (pattern == 'ZPP'
+            and supports_zpp_actual_lane_endpoint_gcd_partition(winding, factors)
+            and (getattr(winding, '_zpp_array_endpoint_partition', False)
+                 or (not supports_integer_zpp_factors(winding, factors)
+                     and not supports_integer_zpp_pp_only_centered_entry_translation(
+                         winding, factors)
+                     and not supports_integer_zpp_pp_only_indexed_translation(
+                         winding, factors)))):
+        return 'zpp_actual_lane_endpoint_gcd_partition'
+    if (pattern == 'CP' and winding.num_layers >= 8
+            and winding.num_layers % 4 == 0
+            and supports_cp_polarity_pool_parent_slices(winding, factors)):
+        return 'cp_gcd_quartet_parent_slices'
+    if (pattern == 'CP' and winding.num_layers == 2
+            and not _cp_layer_admission_reason(winding)
+            and winding.ab % 2 == 0 and factors[2] in (1, 2)
+            and winding.q % factors[0] == 0
+            and (winding.num_poles // 2) % factors[1] == 0
+            and factors[1] * factors[2] <= winding.num_poles // 2):
+        return 'cp_two_layer_tlp_transfer'
     if pattern == 'SSP' and supports_ssp_reflected_p2(winding, factors):
         return 'ssp_p2_reflected'
     if pattern == 'SLP' and supports_slp_p2_from_reference(winding, factors):
+        if (supports_slp_p2_belt_pass_partition(winding, factors)
+                and not _legacy_slp_p2_has_valid_geometry(
+                    winding.q, winding.num_poles, winding.num_layers, winding.num_phases)):
+            return 'slp_p2_belt_pass_partition'
         return 'slp_p2_from_reference'
     if pattern == 'SLP' and supports_slp_full_q_p2(winding, factors):
         return 'slp_full_q_p2'
@@ -2389,11 +2559,31 @@ def _selected_integer_divider_route(pattern, winding):
         return 'tlp_pp_only_two'
     if pattern == 'TLP' and supports_tlp_pp_only_even(winding, factors):
         return 'tlp_pp_only_even'
-    if pattern == 'TLP' and supports_tlp_pp_p2_short_unit(winding, factors):
-        return 'tlp_pp_p2_short_unit'
-    if pattern == 'TLP' and supports_tlp_q_pp_p2_parent_slices(
-            winding, factors):
-        return 'tlp_q_pp_p2_parent_slices'
+    if pattern == 'TLP':
+        sector_route = ('tlp_pp_p2_short_unit'
+                        if supports_tlp_pp_p2_short_unit(winding, factors) else
+                        'tlp_q_pp_p2_parent_slices'
+                        if supports_tlp_q_pp_p2_parent_slices(winding, factors) else None)
+        if sector_route:
+            status, _reason = _cached_neutral_non_wave_preflight(
+                pattern, winding.q, winding.num_poles, winding.num_phases,
+                winding.num_layers, winding.ab, factors, False, sector_route)
+            if status == 'enabled':
+                return sector_route
+            # Keep successful old sector deployments. A demonstrated geometry
+            # failure selects another parameter formula before configured
+            # generation; its actual TP mother may still fail, without retry.
+            if supports_tlp_even_gcd_parent_slices(winding, factors):
+                return 'tlp_even_gcd_parent_slices'
+            if supports_tlp_p2_parent_slices(winding, factors):
+                return 'tlp_p2_parent_slices'
+            return sector_route
+    if (pattern == 'TLP' and factors[0] % 2
+            and factors[1:] == (2, 1)
+            and supports_tlp_even_gcd_parent_slices(winding, factors)):
+        # An odd-Q mother violates the admitted even-Naa grammar. Use the
+        # public even-gcd mother instead of that unavailable Q/P2 source.
+        return 'tlp_even_gcd_parent_slices'
     if pattern == 'TSP' and supports_integer_tsp_pp_only_q_p2_identity(
             winding, factors):
         return 'tsp_pp_only_q_p2_identity'
@@ -2406,16 +2596,23 @@ def _selected_integer_divider_route(pattern, winding):
     if pattern == 'UWP' and supports_uwp_short_p2_weld(winding, factors):
         return 'uwp_short_p2_weld'
     if supports_q_pp_two_reference(pattern, winding, factors):
+        if (pattern == 'TSP' and factors[0] < winding.q
+                and supports_integer_tsp_spiral_pass_partition(winding, factors)):
+            # The proper-Q raw q/P2 source omits lanes. The complete-pass
+            # construction covers these legal factors without that source.
+            return 'tsp_spiral_pass_partition'
+        if pattern == 'TLP' and factors[0] < winding.q:
+            # Proper-Q raw q/P2 mothers stop before covering every q lane.
+            # Use an already admitted complete mother, not its inlet recipe.
+            if supports_integer_q_pp_q_parent_slices(pattern, winding, factors):
+                return 'tlp_q_pp_q_parent_slices'
+            if supports_tlp_even_gcd_parent_slices(winding, factors):
+                return 'tlp_even_gcd_parent_slices'
+            if supports_tlp_p2_parent_slices(winding, factors):
+                return 'tlp_p2_parent_slices'
         # Existing ZPP Q*P2=q routes retain their established construction.
         if not (pattern == 'ZPP' and factors[0] == winding.q):
             return f'{pattern.lower()}_q_pp_two'
-    if (pattern == 'UWP' and factors[1:] == (1,1)
-            and 1 < factors[0] < winding.q and winding.q % factors[0] == 0
-            and winding.ab == factors[0]
-            and winding.num_poles > 0 and winding.num_poles % 2 == 0
-            and winding.num_layers >= 2 and winding.num_layers % 2 == 0
-            and _supported_phase_domain(winding)):
-        return 'uwp_q_only_series'
     if pattern == 'CP' and supports_integer_cp_pp_four_pass_weave(
             winding, factors):
         return 'cp_pp_four_pass_weave'
@@ -2443,6 +2640,24 @@ def _selected_integer_divider_route(pattern, winding):
                 'zpp_pp_only_indexed_translation')
     is_default = factors == classify_branch_mode(
         winding.ab, winding.q, winding.num_poles, pattern)[1:4]
+    if (pattern in ('CP', 'TLP') and (pattern == 'TLP' or not is_default)
+            and supports_integer_q_pp_q_parent_slices(pattern, winding, factors)):
+        return f'{pattern.lower()}_q_pp_q_parent_slices'
+    if pattern == 'TLP' and supports_tlp_even_gcd_parent_slices(winding, factors):
+        return 'tlp_even_gcd_parent_slices'
+    if pattern == 'TLP' and supports_tlp_p2_parent_slices(winding, factors):
+        return 'tlp_p2_parent_slices'
+    if pattern == 'SLP' and supports_slp_p2_belt_pass_partition(winding, factors):
+        return 'slp_p2_belt_pass_partition'
+    if (pattern == 'CP' and winding.num_layers in (4, 6)
+            and factors[2] == 2 and is_default):
+        return None
+    if (pattern == 'CP' and winding.num_layers in (4, 6)
+            and supports_integer_cp_pp_p2(winding, factors)):
+        return 'cp'
+    if pattern == 'CP' and supports_cp_polarity_pool_parent_slices(winding, factors):
+        return ('cp_gcd_quartet_parent_slices' if winding.num_layers % 4 == 0
+                else 'cp_odd_half_span_parent_slices')
     if (pattern == 'TSP' and (not is_default or factors[1] > 1)
             and supports_integer_tsp_spiral_pass_partition(winding, factors)):
         return 'tsp_spiral_pass_partition'
@@ -2679,23 +2894,32 @@ def _is_tlp_full_q_even_array_request(winding, factors):
 
 
 def _tlp_full_q_even_array_local_dividers(winding, factors, set_count):
-    """Map full-Q TLP factors into a layer-assigned three-phase set."""
+    """Keep the established mapping, otherwise use admitted Q-parent cuts."""
     if not _is_tlp_full_q_even_array_request(winding, factors):
         return None
+    if int(winding.num_layers) % set_count:
+        return None
+    local_layers = int(winding.num_layers) // set_count
+    pp = int(winding.num_poles) // 2
     try:
         local = phase_set_local_dividers(tuple(factors), set_count)
     except ValueError:
-        return None
-    local_divider = local[1]
-    pp = int(winding.num_poles) // 2
-    if (local_divider < 4 or local_divider % 2
-            or pp % int(factors[1]) or pp % local_divider
-            or int(winding.num_layers) % set_count):
-        return None
-    local_layers = int(winding.num_layers) // set_count
-    if local_layers < 4 or local_layers % 2:
-        return None
-    return local
+        local = None
+    if (local is not None and local[1] >= 4 and local[1] % 2 == 0
+            and pp % int(factors[1]) == 0 and pp % local[1] == 0
+            and local_layers >= 4 and local_layers % 2 == 0):
+        return local
+
+    local_winding = SimpleNamespace(
+        q=winding.q * set_count, num_slots=winding.num_slots,
+        num_poles=winding.num_poles, num_phases=3,
+        num_layers=local_layers, ab=winding.ab,
+        branch_dividers=tuple(factors))
+    if (supports_integer_q_pp_q_parent_slices('TLP', local_winding, factors)
+            or supports_tlp_even_gcd_parent_slices(local_winding, factors)
+            or supports_tlp_p2_parent_slices(local_winding, factors)):
+        return tuple(factors)
+    return None
 
 
 def _phase_array_local_inputs(winding, layout, phase_set_spec, factors,
@@ -2724,6 +2948,15 @@ def _phase_array_local_inputs(winding, layout, phase_set_spec, factors,
         branch_dividers=local_factors)
     if pattern == 'CP':
         local_winding['_cp_array_global_layers'] = winding.num_layers
+    if (pattern == 'ZPP' and set_count > 1 and factors[0] == 1
+            and factors[1] > 1 and factors[2] == 1
+            and Fraction(str(winding.q)).denominator == 1
+            and winding.num_poles // 2 % factors[1] == 0
+            and zpp_indexed_sector_stride(
+                factors[1], winding.num_poles // 2 // factors[1]) > 1):
+        # These arrays cannot use the old indexed translation. Resolve the
+        # admitted endpoint partition in local coordinates instead.
+        local_winding['_zpp_array_endpoint_partition'] = True
 
     source_layout = (vars(layout) if hasattr(layout, '__dict__')
                      else layout._asdict() if layout is not None else {})
@@ -2785,7 +3018,10 @@ def _resolve_phase_array_route(pattern, winding, factors, configuration,
             and q.numerator % 2 == 0 and pp % factors[1] == 0
             and 2 * factors[1] <= pp
             and any(spec.layer_count < 4 or spec.layer_count % 2
-                    for spec in topology.phase_sets)):
+                    for spec in topology.phase_sets)
+            and not supports_tlp_even_gcd_parent_slices(
+                _phase_array_local_inputs(winding, layout, topology.phase_sets[0],
+                                          factors, pattern)[0], factors)):
         return PatternRouteDecision(
             'disabled', 'tlp_q_pp_p2_local_layers_unsupported',
             'The current TLP (2,D,2) parent-slice constructor requires at '
@@ -2806,12 +3042,6 @@ def _resolve_phase_array_route(pattern, winding, factors, configuration,
     route_names = {item.route_name for item in local_decisions}
     route_name = (next(iter(route_names)) if len(route_names) == 1
                   else 'three_phase_set_array')
-    if 'tlp_q_only_pair_join' in route_names and q.denominator != 1:
-        return PatternRouteDecision(
-            'disabled', 'tlp_q_only_integer_scope',
-            'TLP q-only cohort joins are registered for integer global q; '
-            'fractional-global-q phase arrays remain unsupported-yet for this construction.',
-            pattern, tuple(factors), admission='unsupported-yet')
     q = Fraction(str(winding.q))
     if (pattern == 'TSP' and q.denominator != 1
             and 'tsp_spiral_pass_partition' in route_names):
@@ -2855,6 +3085,7 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
     capability must all be present.
     """
     pattern = normalize_pattern_name(pattern, allow_extra=False)
+    rational_lap_request = pattern in ('TLP', 'SLP') and Fraction(str(winding.q)).denominator > 2
     if _post_connection_shift_requested(layout, winding):
         layout = _without_post_connection_shifts(layout, winding)
         topology = None
@@ -2879,6 +3110,9 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
     set_count = topology.set_count
     selected = (getattr(winding, 'branch_dividers', None)
                 if dividers is None else dividers)
+    if rational_lap_request:
+        return _rational_lap_route_decision(
+            pattern, winding, selected, configuration, layout)
     if pattern == 'CP':
         layer_reason = _cp_layer_admission_reason(winding)
         if layer_reason:
@@ -2935,7 +3169,44 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
             divider_exclusion_reason(
                 pattern, factors, winding.q, pp, winding.num_layers),
             pattern, factors)
-
+    local_spec = topology.phase_sets[0]
+    local_q, local_layers = local_spec.local_q, local_spec.layer_count
+    if (pattern == 'UWP' and local_q.denominator == 1 and local_q > 0
+            and local_q % factors[0] == 0 and factors[1:] == (1, 1)):
+        return PatternRouteDecision(
+            'disabled', 'uwp_factor_rejected',
+            divider_exclusion_reason(pattern, factors, local_q, pp),
+            pattern, factors)
+    if (pattern == 'CP' and factors != (1, 1, 1)
+            and local_q.denominator == 1 and local_q > 0
+            and local_layers > 0 and local_layers % 2 == 0
+            and local_q % factors[0] == 0 and pp % factors[1] == 0
+            and factors[2] in (1, 2)):
+        half = local_layers // 2
+        divisor = half if half % 2 == 0 else 2
+        if winding.ab % divisor:
+            return PatternRouteDecision(
+                'disabled', 'cp_polarity_pool_rejected',
+                f'CP current insert-inlet grammar requires Naa divisible by {divisor}: '
+                f'q_s={local_q}, L_s={local_layers}, H={half}, Naa={winding.ab}. '
+                'Complete equal polarity pools require Naa/H branches per '
+                'quartet pool when H is even, or Naa/2 per invariant pool '
+                'when H is odd. This rule preserves strict phase/polarity, '
+                'adjacent welds and insertion span H.', pattern, factors)
+    if (pattern in ('TSP', 'TLP') and winding.ab % 2
+            and local_q.denominator == 1 and local_q > 0
+            and local_layers > 0 and local_layers % 2 == 0
+            and factors[2] == 1 and local_q % factors[0] == 0
+            and pp > 0 and pp % factors[1] == 0):
+        pool = local_q * pp
+        return PatternRouteDecision(
+            'disabled', f'{pattern.lower()}_odd_naa_rejected',
+            f'{pattern} current grammar requires even Naa: q_s={local_q}, '
+            f'L_s={local_layers}, Naa={winding.ab}, layer-zero N/S={pool}, '
+            f'B/L_s={2 * pool / winding.ab}, Naa/2={Fraction(winding.ab, 2)}. '
+            'Each branch has one layer-zero polarity; equal full coverage '
+            'requires an integer Naa/2 branches of each sign.',
+            pattern, factors)
     if set_count > 1:
         if (pattern == 'TLP'
                 and _is_tlp_full_q_even_array_request(winding, factors)
@@ -2944,7 +3215,8 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
             return PatternRouteDecision(
                 'disabled', 'tlp_pp_only_even_array_unsupported',
                 'The full-Q TLP divider triple must map to an even local PP '
-                'divider of at least four and at least four local layers.',
+                'divider of at least four with at least four local layers, '
+                'or an admitted same-factor local Q-parent partition.',
                 pattern, factors, admission='unsupported-yet')
         if (pattern == 'TSP' and factors[0] == 1
                 and factors[1] > 1 and factors[2] == 2):
@@ -2975,11 +3247,14 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
             if (q_value.denominator == 1 and pp > 0 and pp % divider == 0
                     and zpp_indexed_sector_stride(
                         divider, pp // divider) > 1):
-                return PatternRouteDecision(
-                    'disabled', 'zpp_array_stride_unvalidated',
-                    'Variable-stride ZPP is not admitted for arrayed phase sets '
-                    'until mapped global signed edges pass the one-pole-region check.',
-                    pattern, factors, admission='unsupported-yet')
+                local_winding, _ = _phase_array_local_inputs(
+                    winding, layout, topology.phase_sets[0], factors, pattern)
+                if not supports_zpp_actual_lane_endpoint_gcd_partition(
+                        local_winding, factors):
+                    return PatternRouteDecision(
+                        'disabled', 'zpp_array_stride_unvalidated',
+                        'Variable-stride ZPP has no admitted local endpoint partition.',
+                        pattern, factors, admission='unsupported-yet')
         try:
             q = Fraction(str(winding.q))
             default_factors = (tuple(classify_branch_mode(
@@ -3039,6 +3314,8 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
         winding, '_cp_array_global_layers', None)
     if cp_array_global_layers is not None:
         route_values['_cp_array_global_layers'] = cp_array_global_layers
+    if getattr(winding, '_zpp_array_endpoint_partition', False):
+        route_values['_zpp_array_endpoint_partition'] = True
     route_winding = SimpleNamespace(**route_values, branch_dividers=factors)
     route_name = _selected_integer_divider_route(pattern, route_winding)
     if (pattern == 'UWP' and route_name in ('pp_only', 'uwp_q_factor_pp')
@@ -3065,6 +3342,9 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
                                          'tlp_pp_p2_short_unit',
                                          'tlp_q_pp_p2_parent_slices',
                                          'tlp_q_only_pair_join',
+                                         'tlp_q_pp_q_parent_slices',
+                                         'tlp_even_gcd_parent_slices',
+                                         'tlp_p2_parent_slices',
                                          'tsp_pp_only_q_p2_identity',
                                          'tsp_q_only_pair_join',
                                          'tsp_pp_p2_sector',
@@ -3076,6 +3356,7 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
                                          'slp_p2_from_reference', 'slp_full_q_p2',
                                          'slp_q_pp_p2_parent_cut',
                                          'slp_pair_lane_p2', 'slp_pp_p2_sector',
+                                         'slp_p2_belt_pass_partition',
                                          'zlp_p2_mirrored',
                                          'zlp_pp_p2_source_cut')):
         rule = PATTERN_ROUTE_RULES[route_name]
@@ -3086,6 +3367,7 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
     elif pattern == 'ZPP' and route_name == 'zpp':
         rule = PATTERN_ROUTE_RULES['zpp_q_pp_p2']
     elif pattern == 'ZPP' and route_name in (
+            'zpp_actual_lane_endpoint_gcd_partition',
             'zpp_pp_only_centered_entry_translation',
             'zpp_pp_only_half_turn',
             'zpp_pp_only_indexed_translation'):
@@ -3096,6 +3378,12 @@ def resolve_pattern_route(pattern, winding, dividers=None, configuration=None,
         rule = PATTERN_ROUTE_RULES['cp_pp_four_pass_weave']
     elif pattern == 'CP' and route_name == 'cp_q_only_pair_join':
         rule = PATTERN_ROUTE_RULES['cp_q_only_pair_join']
+    elif pattern == 'CP' and route_name == 'cp_q_pp_q_parent_slices':
+        rule = PATTERN_ROUTE_RULES['cp_q_pp_q_parent_slices']
+    elif pattern == 'CP' and route_name in (
+            'cp_gcd_quartet_parent_slices', 'cp_odd_half_span_parent_slices',
+            'cp_two_layer_tlp_transfer'):
+        rule = PATTERN_ROUTE_RULES[route_name]
     elif pattern == 'CP' and route_name == 'cp_q_pp_full_parent_slices':
         rule = PATTERN_ROUTE_RULES['cp_q_pp_full_parent_slices']
     elif pattern == 'CP' and route_name == 'cp_q_pp_p2_parent_slices':
@@ -3477,6 +3765,26 @@ def supports_integer_cp_pp_p2(winding, selected):
             and winding.ab == pp_divider * p2_divider)
 
 
+def supports_cp_polarity_pool_parent_slices(winding, selected):
+    """Use a gcd P2 mother in each CP polarity pool or four-layer quartet."""
+    factors = _integer_divider_tuple(selected)
+    q, layers = winding.q, winding.num_layers
+    if (factors is None or type(q) is not int or q < 1 or layers < 4
+            or layers % 2 or _cp_layer_admission_reason(winding)
+            or three_phase_set_count(winding.num_phases) != 1
+            or not _supported_phase_domain(winding)):
+        return False
+    Q, D, P2 = factors
+    pp, half = winding.num_poles // 2, layers // 2
+    divisor = half if half % 2 == 0 else 2
+    return bool(winding.num_poles >= 4 and winding.num_poles % 2 == 0
+                and Q > 0 and D > 0 and P2 in (1, 2)
+                and q % Q == 0 and pp % D == 0
+                and winding.ab == Q * D * P2 and winding.ab % divisor == 0
+                and not (D == 1 and P2 == 2 and (half == 2 or half % 2))
+                and winding.num_slots == 2 * pp * q * winding.num_phases)
+
+
 def supports_integer_cp_pp_four_pass_weave(winding, selected):
     """Recognize the four-pass CP PP weave from its parent-path geometry."""
     factors = _integer_divider_tuple(selected)
@@ -3591,6 +3899,24 @@ def supports_integer_cp_q_only_pair_join(winding, selected):
             and winding.num_poles > 0 and winding.num_poles % 2 == 0
             and not _cp_layer_admission_reason(winding)
             and _supported_phase_domain(winding))
+
+
+def supports_zpp_actual_lane_endpoint_gcd_partition(winding, selected):
+    """Factor domain of the reviewed physical-endpoint/gcd construction."""
+    factors = _integer_divider_tuple(selected)
+    if factors is None or any(value <= 0 for value in factors):
+        return False
+    Q, D, P2 = factors
+    q = Fraction(str(winding.q))
+    pp = winding.num_poles // 2
+    return (q.denominator == 1 and q > 0 and q % Q == 0
+            and winding.num_poles >= 4 and winding.num_poles % 2 == 0
+            and pp % D == 0 and P2 in (1, 2)
+            and winding.num_layers >= 2 and winding.num_layers % 2 == 0
+            and _supported_phase_domain(winding)
+            and three_phase_set_count(winding.num_phases) == 1
+            and winding.ab == Q * D * P2
+            and not pattern_rejects_divider_tuple('ZPP', factors, q, pp))
 
 
 def supports_integer_zpp_factors(winding, selected):
@@ -3956,6 +4282,26 @@ def validate_selected_zpp(database, winding, layout):
                     'ZPP selected connection crosses multiple pole regions.')
 
 
+def validate_zpp_actual_lane_endpoint_partition(database, winding, layout):
+    """Keep the endpoint construction's actual adjacent-layer weld contract."""
+    validate_selected_zpp(database, winding, layout)
+    tau = winding.num_phases * winding.q
+    directions = {}
+    for branch_id, path in database:
+        for index in range(1, len(path) - 1, 2):
+            start, end = path[index:index + 2]
+            dl = end[1] - start[1]
+            steps = _connection_travel_steps(
+                database, branch_id, index, start, end, winding.num_slots)
+            if abs(dl) != 1 or len(steps) != 1 or abs(steps[0]) != tau:
+                raise ValueError('ZPP endpoint partition requires adjacent-layer welds of pitch tau.')
+            pair = tuple(sorted((start[1], end[1])))
+            direction = 1 if steps[0] * dl > 0 else -1
+            if pair in directions and directions[pair] != direction:
+                raise ValueError('ZPP endpoint partition weld directions conflict within a layer pair.')
+            directions[pair] = direction
+
+
 def validate_selected_cp(database, winding, layout, *, require_signed_travel=False):
     _validate_selected_electrical('CP selected', database, winding, layout)
     if require_signed_travel:
@@ -3988,6 +4334,24 @@ def validate_selected_cp(database, winding, layout, *, require_signed_travel=Fal
             layer_step = end[1] - start[1]
             if abs(layer_step) not in (1, cross_layers):
                 raise ValueError('CP selected branch has an invalid cross-layer edge.')
+
+
+def validate_cp_parent_partition_welds(database, winding, layout):
+    """Check the inherited CP weld pitch/direction in each actual layer pair."""
+    validate_selected_cp(database, winding, layout, require_signed_travel=True)
+    directions, tau = {}, winding.num_phases * winding.q
+    for bid, path in database:
+        for index in range(0, len(path) - 1, 2):
+            a, b = path[index:index + 2]
+            ds = database.signed_travel[bid][index]
+            dl = b[1] - a[1]
+            if abs(dl) != 1 or abs(ds) != tau:
+                raise ValueError('CP parent partition welds require adjacent layers and pitch tau.')
+            pair = tuple(sorted((a[1], b[1])))
+            direction = 1 if ds * dl > 0 else -1
+            if pair in directions and directions[pair] != direction:
+                raise ValueError('CP parent partition welds conflict within an actual layer pair.')
+            directions[pair] = direction
 
 
 def _three_phase_set_views(database, winding, layout, topology=None):
@@ -4242,8 +4606,8 @@ def validate_tsp_spiral_pass_partition(database, winding, layout):
         winding.num_slots, winding.num_poles, layers,
         layout.phase_shift_list, phases)}
     for branch_id, path in database:
-        if len(path) != width or len(path) < 2 * layers or len(path) % layers:
-            raise ValueError('TSP branch must contain at least two complete spiral passes.')
+        if len(path) != width or len(path) < layers or len(path) % layers:
+            raise ValueError('TSP branch must contain complete spiral passes.')
         direction = 1 if path[0][1] == 0 else -1
         expected_layers = (tuple(range(layers)) if direction > 0
                            else tuple(reversed(range(layers))))
@@ -4519,13 +4883,46 @@ def _validate_route_connections(pattern, decision, database, winding, layout,
                                 topology=None):
     """Apply each registered route's connection checks to actual generated paths."""
     set_routes = getattr(database, 'phase_set_array', {}).get('routes', ())
+    signed_routes = ('cp_q_pp_q_parent_slices', 'tlp_q_pp_q_parent_slices',
+                     'tlp_even_gcd_parent_slices', 'tlp_p2_parent_slices',
+                     'cp_gcd_quartet_parent_slices', 'cp_odd_half_span_parent_slices',
+                     'cp_two_layer_tlp_transfer',
+                     'slp_p2_belt_pass_partition',
+                     'zpp_actual_lane_endpoint_gcd_partition')
+    if (decision.route_name in signed_routes
+            or any(item.get('route_name') in signed_routes for item in set_routes)):
+        recorded = getattr(database, 'signed_travel', None)
+        if (not isinstance(recorded, Mapping)
+                or set(recorded) != {branch_id for branch_id, _path in database}):
+            raise ValueError(
+                f'{pattern} parent construction requires complete signed-travel evidence.')
+        sequence_routes = ('zpp_actual_lane_endpoint_gcd_partition',
+                           'tlp_even_gcd_parent_slices', 'tlp_p2_parent_slices',
+                           'cp_gcd_quartet_parent_slices', 'cp_odd_half_span_parent_slices',
+                           'cp_two_layer_tlp_transfer', 'slp_p2_belt_pass_partition')
+        if (decision.route_name in sequence_routes
+                or any(item.get('route_name') in sequence_routes
+                       for item in set_routes)):
+            if any(not isinstance(recorded[branch_id], (tuple, list))
+                   or len(recorded[branch_id]) != len(path) - 1
+                   for branch_id, path in database):
+                raise ValueError(f'{pattern} parent partition requires complete signed-travel sequences.')
     for set_index, (local_database, local_winding, local_layout) in enumerate(
             _three_phase_set_views(database, winding, layout, topology)):
         route = (set_routes[set_index].get('route_name')
                  if set_index < len(set_routes) else decision.route_name)
+        if pattern == 'CP' and route in (
+                'cp_gcd_quartet_parent_slices', 'cp_odd_half_span_parent_slices',
+                'cp_two_layer_tlp_transfer'):
+            validate_cp_parent_partition_welds(local_database, local_winding, local_layout)
+        if route in ('tlp_rational_half_belt_translation', 'slp_rational_half_belt_translation'):
+            validate_rational_lap_half_belt_translation(
+                pattern, local_database, local_winding, local_layout)
         if pattern == 'TSP' and route == 'tsp_q_only_pair_join':
             validate_tsp_q_only_pair_join(
                 local_database, local_winding, local_layout)
+        if pattern == 'SLP' and route == 'slp_p2_belt_pass_partition':
+            validate_slp_belt_pass_partition(local_database, local_winding, local_layout)
         if pattern == 'TSP' and route == 'tsp_pp_p2_sector':
             validate_tsp_pp_p2_sector(
                 local_database, local_winding, local_layout)
@@ -4541,16 +4938,27 @@ def _validate_route_connections(pattern, decision, database, winding, layout,
         if pattern == 'CP' and route in (None, 'cp', 'cp_q_pp_two',
                                          'cp_pp_four_pass_weave',
                                          'cp_q_only_pair_join',
+                                         'cp_q_pp_q_parent_slices',
+                                         'cp_gcd_quartet_parent_slices',
+                                         'cp_odd_half_span_parent_slices',
+                                         'cp_two_layer_tlp_transfer',
                                          'cp_q_pp_p2_parent_slices'):
             validate_selected_cp(
                 local_database, local_winding, local_layout,
                 require_signed_travel=(
-                    route == 'cp_q_pp_p2_parent_slices'))
+                    route in ('cp_q_pp_p2_parent_slices',
+                              'cp_gcd_quartet_parent_slices',
+                              'cp_odd_half_span_parent_slices',
+                              'cp_two_layer_tlp_transfer',
+                              'cp_q_pp_q_parent_slices')))
         if pattern == 'ZPP' and route in (
                 None, 'zpp', 'zpp_q_pp_two', 'zpp_pp_only_half_turn',
                 'zpp_pp_only_indexed_translation',
                 'zpp_pp_only_centered_entry_translation'):
             validate_selected_zpp(local_database, local_winding, local_layout)
+        if pattern == 'ZPP' and route == 'zpp_actual_lane_endpoint_gcd_partition':
+            validate_zpp_actual_lane_endpoint_partition(
+                local_database, local_winding, local_layout)
         if pattern == 'ZLP' and route in (None, 'zlp', 'zlp_p2_mirrored',
                                        'zlp_pp_p2_source_cut'):
             validate_selected_zlp(local_database, local_winding, local_layout)
@@ -4828,6 +5236,53 @@ def _half_integer_uwp_transfer_source(pattern, winding, factors):
         return None
     source = (q, 1, factors[1])
     return source if supports_half_integer_uwp_p2(pattern, winding, source) else None
+
+
+def _rational_lap_route_decision(pattern, winding, factors, configuration, layout):
+    """Admit the closed maximal split through its parameter formula."""
+    q = Fraction(str(winding.q))
+    pp = winding.num_poles // 2
+    implicit = factors is None
+    if implicit:
+        factors = (q, pp, 2)
+    try:
+        selected = tuple(Fraction(str(value)) for value in factors)
+    except (TypeError, ValueError, ZeroDivisionError):
+        selected = ()
+    if len(selected) != 3 or any(value <= 0 for value in selected):
+        return PatternRouteDecision(
+            'disabled', 'invalid_dividers', 'Three positive dividers are required.',
+            pattern, None)
+    if selected[0] * selected[1] * selected[2] != winding.ab:
+        return PatternRouteDecision(
+            'disabled', 'divider_product_mismatch', 'Q x PP x P2 must equal Naa.',
+            pattern, selected)
+    pitch = rational_half_belt_translation_pitch(
+        q, winding.num_poles, winding.num_layers, winding.num_phases, pattern=pattern)
+    if (pitch is None or selected != (q, pp, 2)
+            or winding.num_slots != q * winding.num_poles * winding.num_phases):
+        return PatternRouteDecision(
+            'disabled', f'{pattern.lower()}_rational_half_belt_translation_unsupported',
+            'This formula requires reduced q=a/b>1 with even a, odd b>2, '
+            'native odd m, b|(2m-1), P=2bR, (Q,D,P2)=(q,pp,2), '
+            'and even L>=4 for TLP or L=4 for this SLP replacement.',
+            pattern, selected, admission='unsupported-yet')
+    rule = PATTERN_ROUTE_RULES[f'{pattern.lower()}_rational_half_belt_translation']
+    reason = _configuration_preflight(pattern, configuration, winding, layout)
+    if (not reason and configuration is not None and layout is not None
+            and not pp_only_configuration_is_unshifted(
+                _normalized_tp_info(configuration, winding), layout, weld_side=True)):
+        reason = (f'Rational {pattern} half-belt translation construction requires neutral Regular, '
+                  'zero shifts/adjustments and a weld-side inlet.')
+    if reason:
+        return PatternRouteDecision(
+            'disabled', 'invalid_configuration', reason, pattern, selected,
+            rule.route_name, rule.pin_profile, rule.required_inlet)
+    return PatternRouteDecision(
+        'enabled', rule.rule_id,
+        'Closed slot-permutation/layer-walk formula; public generation must pass all gates.',
+        pattern, selected, rule.route_name, rule.pin_profile, rule.required_inlet,
+        _effective_tp_type(configuration, winding), implicit)
 
 
 def _half_integer_route_decision(pattern, winding, factors, configuration=None,
@@ -5957,6 +6412,19 @@ def pattern_UWP(TP_info,Winding_Para,Layout_Para):
         
     elif Winding_Para.ab == 2 or Winding_Para.ab == 1:
         start_conductor_ids = [(i*Winding_Para.q,0,0) for i in range(Winding_Para.num_phases*2)]
+        if Winding_Para.ab == 2 and p2_divider == 2:
+            # Anchor both cohorts to the same phase-local N belt. The common
+            # P2 orientation reverses the second cohort to last-layer entry.
+            n_inlets = {}
+            for slot, layer, phase, sign in phase_map(
+                    Winding_Para.num_slots, Winding_Para.num_poles,
+                    Winding_Para.num_layers, Layout_Para.phase_shift_list,
+                    Winding_Para.num_phases):
+                if layer == 0 and sign == 1:
+                    n_inlets.setdefault(phase, slot)
+            start_conductor_ids = [
+                ((n_inlets[phase] + cohort * num_phasors) % Winding_Para.num_slots, 0, 0)
+                for cohort in range(2) for phase in range(Winding_Para.num_phases)]
         num_layer_pattern = int(Winding_Para.num_layers/2)
         # ####Assume welding side are identical
         num_poles_pattern_repeat = int(Winding_Para.num_poles/2)-1
@@ -6603,6 +7071,39 @@ def _slp_q_pp_p2_parent_cut_from_full_q(TP_info, Winding_Para, Layout_Para):
     return starts, database
 
 
+def validate_slp_belt_pass_partition(database, winding, layout):
+    validate_slp_factor_route(database, winding, layout)
+    first = 1 if layout.inlet_from_weld_side else 0
+    tau = winding.num_phases * winding.q
+    for bid, path in database:
+        for index in range(first, len(path) - 1, 2):
+            a, b = path[index:index + 2]
+            if abs(b[1] - a[1]) != 1 or abs(database.signed_travel[bid][index]) != tau:
+                raise ValueError('SLP belt-pass welds require adjacent layers and pitch tau.')
+
+
+def _slp_p2_belt_pass_partition_from_reference(tp, winding, layout):
+    """Use the requested TP's strict full-Q mother, retaining all body welds."""
+    values = vars(winding) if hasattr(winding, '__dict__') else winding._asdict()
+    parent = SimpleNamespace(**deepcopy(values))
+    parent.ab, parent.branch_dividers = winding.q, (winding.q, 1, 1)
+    fields = vars(layout) if hasattr(layout, '__dict__') else layout._asdict()
+    source_layout = SimpleNamespace(**deepcopy(fields))
+    source_layout.inlet_from_weld_side = 0
+    _, source = get_winding_layout('SLP', tp, parent, source_layout)
+    formula = (slp_weld_cycle_gcd_partition if layout.inlet_from_weld_side
+               else slp_p2_belt_pass_partition)
+    pieces, travel = formula(
+        source, dividers=tuple(winding.branch_dividers), q=winding.q,
+        pp=winding.num_poles // 2, layer_count=winding.num_layers,
+        phase_count=winding.num_phases, num_slots=winding.num_slots)
+    database = _CandidateBranches([[bid, piece.path] for bid, piece in enumerate(pieces, 1)])
+    database.signed_travel = travel
+    orient_p2_branches_n_to_s(database, winding, layout)
+    validate_slp_belt_pass_partition(database, winding, layout)
+    return [path[0] for _, path in database], database
+
+
 def _slp_p2_from_reference(TP_info, Winding_Para, Layout_Para):
     """Split each no-divider SLP phase path and rotate whole lap passes.
 
@@ -7070,6 +7571,248 @@ def _cp_q_only_pair_join_from_p2_parent(tp_info, winding, layout):
             database.append([branch_id, joined.path])
 
     validate_selected_cp(database, winding, layout)
+    return [path[0] for _, path in database], database
+
+
+def _zpp_actual_lane_endpoint_partition_from_reference(tp_info, winding, layout):
+    """Apply the endpoint/gcd formula to the actual configured public parent."""
+    factors = _integer_divider_tuple(winding.branch_dividers)
+    if not supports_zpp_actual_lane_endpoint_gcd_partition(winding, factors):
+        raise ValueError('ZPP endpoint partition is outside its formula domain.')
+    q, pp = int(winding.q), winding.num_poles // 2
+    parent = _cp_reference_winding(winding, q, (q, 1, 1))
+    _, source = get_winding_layout('ZPP', tp_info, parent, layout)
+    recorded = getattr(source, 'signed_travel', None)
+    if hasattr(source, 'signed_travel') and (
+            not isinstance(recorded, Mapping)
+            or set(recorded) != {branch_id for branch_id, _ in source}):
+        raise ValueError('ZPP full-Q parent requires complete signed-travel evidence.')
+    source_edges = {}
+    tau = winding.num_phases * q
+    phase_by_position = {
+        (slot, layer): phase for slot, layer, phase, _sign in phase_map(
+            winding.num_slots, winding.num_poles, winding.num_layers,
+            layout.phase_shift_list, winding.num_phases)}
+    groups = {phase: [] for phase in range(winding.num_phases)}
+    for branch_id, path in source:
+        groups[phase_by_position[tuple(path[0][:2])]].append((branch_id, path))
+        if recorded is not None and (
+                not isinstance(recorded[branch_id], (tuple, list))
+                or len(recorded[branch_id]) != len(path) - 1):
+            raise ValueError('ZPP full-Q parent signed travel has the wrong length.')
+        for index, (start, end) in enumerate(zip(path, path[1:])):
+            steps = _connection_travel_steps(
+                source, branch_id, index, start, end, winding.num_slots)
+            if len(steps) != 1 or not steps[0]:
+                raise ValueError('ZPP full-Q parent requires unambiguous signed travel.')
+            if pole_region_crossings(start[0], steps[0], tau) > 1:
+                raise ValueError('ZPP full-Q parent connection crosses multiple pole regions.')
+            source_edges[(tuple(start[:2]), tuple(end[:2]))] = steps[0]
+
+    database = _CandidateBranches()
+    travel = {}
+    for group in groups.values():
+        children = zpp_actual_lane_endpoint_gcd_partition(
+            group, dividers=factors, q=q, pp=pp,
+            layer_count=winding.num_layers, num_slots=winding.num_slots)
+        for child in children:
+            branch_id = len(database) + 1
+            database.append([branch_id, child.path])
+            steps = []
+            for start, end in zip(child.path, child.path[1:]):
+                edge = (tuple(start[:2]), tuple(end[:2]))
+                if edge in source_edges:
+                    step = source_edges[edge]
+                else:
+                    choices = circular_travel_steps(start[0], end[0], winding.num_slots)
+                    if len(choices) != 1 or not choices[0]:
+                        raise ValueError('ZPP new endpoint seam requires unambiguous signed travel.')
+                    step = choices[0]
+                steps.append(step)
+            travel[branch_id] = tuple(steps)
+    database.signed_travel = travel
+    if factors[2] == 2:
+        orient_p2_branches_n_to_s(database, winding, layout)
+    validate_zpp_actual_lane_endpoint_partition(database, winding, layout)
+    return [path[0] for _, path in database], database
+
+
+def _q_pp_q_parent_slices_from_reference(pattern, tp_info, winding, layout):
+    """Cut public Q-only CP/TLP paths without introducing any connection."""
+    factors = _integer_divider_tuple(winding.branch_dividers)
+    route = _selected_integer_divider_route(pattern, winding)
+    gcd_route = route == 'tlp_even_gcd_parent_slices'
+    p2_route = route == 'tlp_p2_parent_slices'
+    predicate = (supports_tlp_even_gcd_parent_slices if gcd_route
+                 else supports_tlp_p2_parent_slices if p2_route else None)
+    if not (predicate(winding, factors) if predicate else
+            supports_integer_q_pp_q_parent_slices(pattern, winding, factors)):
+        raise ValueError(f'{pattern} Q-parent slicing is outside its formula domain.')
+    Q, D, P2 = factors
+    parent_count = gcd(winding.q, winding.ab) if gcd_route else 2 if p2_route else Q
+    parts = winding.ab // parent_count
+    parent_factors = (1, 1, 2) if p2_route else (parent_count, 1, 1)
+    parent = _cp_reference_winding(winding, parent_count, parent_factors)
+    _, source = get_winding_layout(pattern, tp_info, parent, layout)
+    _validate_selected_electrical(f'{pattern} Q-only parent', source, parent, layout)
+    source_travel = getattr(source, 'signed_travel', None)
+    if hasattr(source, 'signed_travel') and (
+            not isinstance(source_travel, Mapping)
+            or set(source_travel) != {branch_id for branch_id, _ in source}):
+        raise ValueError('Q-only parent signed travel must cover every branch.')
+    travel = {}
+    tau = winding.num_phases * winding.q
+    for branch_id, path in source:
+        if source_travel is None:
+            steps = []
+            for start, end in zip(path, path[1:]):
+                choices = circular_travel_steps(start[0], end[0], winding.num_slots)
+                if len(choices) != 1:
+                    raise ValueError('Q-only parent requires unambiguous signed travel.')
+                steps.append(choices[0])
+            steps = tuple(steps)
+        else:
+            steps = source_travel[branch_id]
+        if not isinstance(steps, (tuple, list)) or len(steps) != len(path) - 1:
+            raise ValueError('Q-only parent signed travel has the wrong length.')
+        for step, (start, end) in zip(steps, zip(path, path[1:])):
+            if (type(step) is not int or not step
+                    or (start[0] + step) % winding.num_slots != end[0]):
+                raise ValueError('Q-only parent signed travel does not match its endpoints.')
+            if pole_region_crossings(start[0], step, tau) > 1:
+                raise ValueError('Q-only parent signed connection crosses multiple pole regions.')
+        travel[branch_id] = tuple(steps)
+
+    phase_by_position = {
+        (slot, layer): phase for slot, layer, phase, _sign in phase_map(
+            winding.num_slots, winding.num_poles, winding.num_layers,
+            layout.phase_shift_list, winding.num_phases)}
+    groups = {phase: [] for phase in range(winding.num_phases)}
+    target_length = (2 * winding.q * (winding.num_poles // 2)
+                     * winding.num_layers // winding.ab)
+    for branch_id, path in source:
+        if len(path) != parts * target_length:
+            raise ValueError('Q-only parent has the wrong complete-block length.')
+        groups[phase_by_position[tuple(path[0][:2])]].append((branch_id, path))
+    database = _CandidateBranches()
+    signed_travel = {}
+    for phase, group in groups.items():
+        if len(group) != parent_count:
+            raise ValueError(f'Q-only parent phase {phase + 1} has the wrong branch count.')
+        if gcd_route or p2_route:
+            pieces = DividerConnectionFormula(
+                'identity' if parts == 1 else 'partition',
+                parent_factors, factors).apply(group)
+        else:
+            pieces = apply_route_formula(
+                f'{pattern.lower()}_q_pp_q_parent_slices', group, factors)
+        for piece in pieces:
+            if len(piece.path) != target_length:
+                raise ValueError('Q-parent slices must retain equal complete-block lengths.')
+            branch_id = len(database) + 1
+            first_edge = piece.part_index * target_length
+            database.append([branch_id, piece.path])
+            signed_travel[branch_id] = travel[piece.source_ids[0]][
+                first_edge:first_edge + target_length - 1]
+    database.signed_travel = signed_travel
+    if P2 == 2:
+        orient_p2_branches_n_to_s(database, winding, layout)
+    if pattern == 'CP':
+        validate_selected_cp(database, winding, layout, require_signed_travel=True)
+    else:
+        _validate_selected_electrical('TLP Q-parent slices', database, winding, layout)
+        validate_tlp_welds(database, winding, layout)
+    return [path[0] for _, path in database], database
+
+
+def _cp_two_layer_from_tlp_reference(tp_info, winding, layout):
+    """Retain an actual public two-layer TLP layout under CP's local grammar."""
+    _, source = get_winding_layout('TLP', tp_info, winding, layout)
+    database = _CandidateBranches(deepcopy(list(source)))
+    recorded = getattr(source, 'signed_travel', None)
+    if hasattr(source, 'signed_travel'):
+        if (not isinstance(recorded, Mapping)
+                or set(recorded) != {bid for bid, _ in source}
+                or any(not isinstance(recorded[bid], (tuple, list))
+                       or len(recorded[bid]) != len(path) - 1 for bid, path in source)):
+            raise ValueError('CP two-layer transfer requires complete mother signed evidence.')
+        database.signed_travel = deepcopy(recorded)
+    else:
+        travel = {}
+        for bid, path in source:
+            steps = []
+            for a, b in zip(path, path[1:]):
+                choices = circular_travel_steps(a[0], b[0], winding.num_slots)
+                if len(choices) != 1:
+                    raise ValueError('CP two-layer mother requires unambiguous signed travel.')
+                steps.append(choices[0])
+            travel[bid] = tuple(steps)
+        database.signed_travel = travel
+    validate_cp_parent_partition_welds(database, winding, layout)
+    return [path[0] for _, path in database], database
+
+
+def _cp_polarity_pool_parent_slices_from_reference(tp_info, winding, layout):
+    """Cut configured P2 mothers and lift their complete layer quartets."""
+    factors = _integer_divider_tuple(winding.branch_dividers)
+    if not supports_cp_polarity_pool_parent_slices(winding, factors):
+        raise ValueError('CP polarity-pool slicing is outside its formula domain.')
+    half = winding.num_layers // 2
+    quartets = half // 2 if half % 2 == 0 else 1
+    n = winding.ab // (half if half % 2 == 0 else 2)
+    g, parts = gcd(winding.q, n), n // gcd(winding.q, n)
+    width = winding.num_slots * winding.num_layers // (winding.num_phases * winding.ab)
+    database, travel = _CandidateBranches(), {}
+    for quartet in range(quartets):
+        layer_map = ((2 * quartet, 2 * quartet + 1,
+                      half + 2 * quartet, half + 2 * quartet + 1)
+                     if half % 2 == 0 else tuple(range(winding.num_layers)))
+        parent = _cp_reference_winding(winding, 2 * g, (g, 1, 2), signed_travel=True)
+        parent.num_layers = len(layer_map)
+        fields = vars(layout) if hasattr(layout, '__dict__') else layout._asdict()
+        parent_layout = SimpleNamespace(**deepcopy(fields))
+        parent_layout.phase_shift_list = [layout.phase_shift_list[layer] for layer in layer_map]
+        _, source = get_winding_layout('CP', tp_info, parent, parent_layout)
+        recorded = getattr(source, 'signed_travel', None)
+        if hasattr(source, 'signed_travel') and (
+                not isinstance(recorded, Mapping)
+                or set(recorded) != {bid for bid, _ in source}):
+            raise ValueError('CP polarity-pool mother requires complete signed evidence.')
+        phase_by_position = {(s, l): phase for s, l, phase, _ in phase_map(
+            parent.num_slots, parent.num_poles, parent.num_layers,
+            parent_layout.phase_shift_list, parent.num_phases)}
+        groups, parent_travel = {phase: [] for phase in range(winding.num_phases)}, {}
+        for bid, path in source:
+            if len(path) != parts * width:
+                raise ValueError('CP polarity-pool mother has the wrong complete length.')
+            steps = recorded[bid] if recorded is not None else tuple(
+                circular_travel_steps(a[0], b[0], winding.num_slots)[0]
+                for a, b in zip(path, path[1:])
+                if len(circular_travel_steps(a[0], b[0], winding.num_slots)) == 1)
+            if not isinstance(steps, (tuple, list)) or len(steps) != len(path) - 1:
+                raise ValueError('CP polarity-pool mother signed sequences are incomplete.')
+            for ds, (a, b) in zip(steps, zip(path, path[1:])):
+                if (type(ds) is not int or not ds
+                        or (a[0] + ds) % winding.num_slots != b[0]
+                        or pole_region_crossings(a[0], ds, winding.num_phases * winding.q) > 1):
+                    raise ValueError('CP polarity-pool mother signed edge is invalid.')
+            parent_travel[bid] = tuple(steps)
+            groups[phase_by_position[tuple(path[0][:2])]].append((bid, path))
+        for phase, parents in groups.items():
+            if len(parents) != 2 * g:
+                raise ValueError(f'CP polarity-pool phase {phase + 1} has the wrong mother count.')
+            pieces = DividerConnectionFormula(
+                'identity' if parts == 1 else 'partition', (g, 1, 2), (n, 1, 2)).apply(parents)
+            for piece in pieces:
+                bid = len(database) + 1
+                database.append([bid, [(s, layer_map[l], *rest)
+                                       for s, l, *rest in piece.path]])
+                first = piece.part_index * width
+                travel[bid] = parent_travel[piece.source_ids[0]][first:first + width - 1]
+    database.signed_travel = travel
+    if factors[2] == 2:
+        orient_p2_branches_n_to_s(database, winding, layout)
+    validate_cp_parent_partition_welds(database, winding, layout)
     return [path[0] for _, path in database], database
 
 
@@ -7716,7 +8459,8 @@ def _validate_branch_decomposition(pattern_name, Winding_Para,
             _raise_pattern_error(
                 'pattern_specific_infeasible', layer_reason, pattern_name)
 
-    if Fraction(str(Winding_Para.q)).denominator == 2:
+    if (Fraction(str(Winding_Para.q)).denominator == 2
+            or (pattern_name in ('TLP', 'SLP') and Fraction(str(Winding_Para.q)).denominator > 2)):
         decision = resolve_pattern_route(
             pattern_name, Winding_Para, selected, configuration, layout,
             topology=topology)
@@ -7767,6 +8511,10 @@ def _validate_branch_decomposition(pattern_name, Winding_Para,
         decision = resolve_pattern_route(
             pattern_name, Winding_Para, active_dividers,
             topology=topology)
+        if decision.rule_id in (f'{pattern_name.lower()}_odd_naa_rejected',
+                                'cp_polarity_pool_rejected'):
+            _raise_pattern_error(
+                'pattern_specific_infeasible', decision.reason, pattern_name)
         if decision.rule_id == f'{pattern_name.lower()}_route_unsupported':
             _raise_pattern_error(
                 'unsupported_branch_decomposition', decision.reason, pattern_name)
@@ -7910,6 +8658,10 @@ def _dispatch_winding_pattern(pattern_name, TP_info, Winding_Para, Layout_Para,
 
     if route_decision is not None:
         route = route_decision.route_name
+        if route == 'tlp_rational_half_belt_translation':
+            return _tlp_rational_half_belt_translation_from_formula(Winding_Para)
+        if route == 'slp_rational_half_belt_translation':
+            return _slp_rational_half_belt_translation_from_formula(Winding_Para)
         if Fraction(str(Winding_Para.q)).denominator == 2:
             if route == 'uwp_half_integer_q_pp':
                 return _fractional_uwp_q_pp(TP_info, Winding_Para, Layout_Para)
@@ -7931,6 +8683,19 @@ def _dispatch_winding_pattern(pattern_name, TP_info, Winding_Para, Layout_Para,
             TP_info, Winding_Para, Layout_Para)
     if pattern_name == 'CP' and route == 'cp_q_only_pair_join':
         return _cp_q_only_pair_join_from_p2_parent(
+            TP_info, Winding_Para, Layout_Para)
+    if pattern_name == 'CP' and route in (
+            'cp_gcd_quartet_parent_slices', 'cp_odd_half_span_parent_slices'):
+        return _cp_polarity_pool_parent_slices_from_reference(
+            TP_info, Winding_Para, Layout_Para)
+    if pattern_name == 'CP' and route == 'cp_two_layer_tlp_transfer':
+        return _cp_two_layer_from_tlp_reference(TP_info, Winding_Para, Layout_Para)
+    if route in ('cp_q_pp_q_parent_slices', 'tlp_q_pp_q_parent_slices',
+                 'tlp_even_gcd_parent_slices', 'tlp_p2_parent_slices'):
+        return _q_pp_q_parent_slices_from_reference(
+            pattern_name, TP_info, Winding_Para, Layout_Para)
+    if pattern_name == 'ZPP' and route == 'zpp_actual_lane_endpoint_gcd_partition':
+        return _zpp_actual_lane_endpoint_partition_from_reference(
             TP_info, Winding_Para, Layout_Para)
     if pattern_name == 'CP' and route == 'cp_q_pp_full_parent_slices':
         return _cp_q_pp_full_parent_slices_from_p2_parent(
@@ -7970,6 +8735,9 @@ def _dispatch_winding_pattern(pattern_name, TP_info, Winding_Para, Layout_Para,
         return _slp_pp_from_reference(TP_info, Winding_Para, Layout_Para)
     if pattern_name == 'SLP' and route == 'slp_q_pp_p2_parent_cut':
         return _slp_q_pp_p2_parent_cut_from_full_q(
+            TP_info, Winding_Para, Layout_Para)
+    if pattern_name == 'SLP' and route == 'slp_p2_belt_pass_partition':
+        return _slp_p2_belt_pass_partition_from_reference(
             TP_info, Winding_Para, Layout_Para)
     slp_rotated_weld_constructors = {
         'slp_p2_from_reference': _slp_p2_from_reference,
@@ -8628,6 +9396,9 @@ def get_winding_layout(pattern_name,TP_info,Winding_Para,Layout_Para,
     elif selected_route == 'uwp_short_p2_weld':
         selected_configuration_ok = _configuration_is_neutral(
             TP_info, Layout_Para, weld_side=True, winding=Winding_Para)
+    elif selected_route in ('tlp_rational_half_belt_translation', 'slp_rational_half_belt_translation'):
+        selected_configuration_ok = pp_only_configuration_is_unshifted(
+            TP_info, Layout_Para, weld_side=True)
     elif pattern_name not in ('BWP', 'UWP'):
         selected_configuration_ok = _layout_configuration_is_neutral(
             Layout_Para,
@@ -8911,5 +9682,3 @@ def Winding_Phase_division(Winding_Para,Layout_Para,log=print):  ####[slot,layer
 
 
 #### After the winding division, the winding factor can be calculated, since we already know how many conductors per slot we have for each slot, this information are collected in the Cond_info. structure of the Cond_info: (slot, layer, phase_index, 0, 0, 0, pole_index). Each conductor has its own MMF. or we can pair the positive and negative conductors. 
-
-
