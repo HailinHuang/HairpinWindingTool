@@ -71,6 +71,11 @@ Two earlier legacy checks were stopped after they entered broader Auto searches;
 they supply no new Auto result. Unchanged-source evidence above is reused.
 Independent read-only review found no production blocker; its stale helper
 assertions and status wording were reconciled with the current owner decision.
+Core source commit `d6e20bf` was integrated with the published UWP inlet-repair
+history. The source and tests merged unchanged; only regenerated resources and
+state-document conflicts were resolved to the current reviewed evidence.
+The source-signature check remains valid after integration, so unchanged
+source tests were not repeated solely for the merge.
 
 New TLP even-gcd and odd-q P2-parent cuts, TSP one-complete-pass B>=8
 partitioning, CP polarity-pool/quartet cuts and local two-layer identity

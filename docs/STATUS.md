@@ -32,10 +32,11 @@ There is no remaining owner decision in this selected closure. A neutral
 construction does not certify arbitrary manual TP; preflight, public
 generation, Auto and strong symmetry remain separate.
 
-Branch `codex/core-fractional-q-local`, HEAD `12692cd4de31`; current work is
-uncommitted/unpushed. The earlier delivery review below predates these new
-changes and is historical. No clean-install, native/package, manufacturing
-or broad-regression acceptance is claimed.
+Core source commit `d6e20bf` records this closure and the locally approved
+fractional families. Integration retains the published UWP inlet repair;
+delivery state is recorded by Git and [Master Work Status](https://github.com/HailinHuang/HairpinWindingTool/issues/1).
+The earlier delivery reviews below are historical. No clean-install,
+native/package, manufacturing or broad-regression acceptance is claimed.
 
 ## Workstreams
 
